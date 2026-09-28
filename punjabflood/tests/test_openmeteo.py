@@ -79,6 +79,46 @@ def test_hourly_429_sleeps_to_the_next_hour(tmp_cache):
     assert slept == [(60 - 40) * 60 - 10 + 5]
 
 
+def test_quota_wait_is_deferred_when_it_would_cross_cycle_deadline(tmp_cache):
+    slept = []
+    om = openmeteo.OpenMeteo(
+        cache_dir=tmp_cache,
+        session=FakeSession([Resp(429, {"error": True, "reason": "Hourly API limit"})]),
+        sleep=slept.append,
+        spacing_s=0,
+        deadline=30,
+        monotonic=lambda: 0,
+    )
+    with pytest.raises(openmeteo.QuotaDeferred):
+        om.get("archive", {"latitude": 1, "longitude": 2})
+    assert slept == []
+
+
+def test_weighted_headroom_defers_the_next_large_request(tmp_cache):
+    slept = []
+    om = openmeteo.OpenMeteo(
+        cache_dir=tmp_cache,
+        session=FakeSession([Resp(200, {"ok": 1}), Resp(200, {"ok": 2})]),
+        sleep=slept.append,
+        spacing_s=0,
+        deadline=30,
+        monotonic=lambda: 0,
+        minute_weight_limit=1,
+    )
+    assert om.get("archive", {"latitude": 1, "longitude": 2}) == {"ok": 1}
+    with pytest.raises(openmeteo.QuotaDeferred):
+        om.get(
+            "archive",
+            {
+                "latitude": 1,
+                "longitude": 2,
+                "start_date": "2026-01-01",
+                "end_date": "2026-01-01",
+            },
+        )
+    assert slept == []
+
+
 def test_daily_429_fails_fast(tmp_cache):
     om, _, slept = make(
         [Resp(429, {"error": True, "reason": "Daily API request limit exceeded"})], tmp_cache

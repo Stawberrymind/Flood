@@ -26,6 +26,8 @@ import yaml
 import pytest
 
 WORKFLOW = Path(".github/workflows/monitor.yml")
+HAZARD_WORKFLOW = Path(".github/workflows/hazard-forecast.yml")
+BOOTSTRAP_WORKFLOW = Path(".github/workflows/snow-pull.yml")
 
 
 def workflow() -> dict:
@@ -125,3 +127,24 @@ def test_the_sachet_archive_directory_is_tracked():
     assert any(f.startswith("data/sachet/") for f in tracked()), (
         "data/sachet/ holds no tracked file, so `git add data/sachet/` exits 128"
     )
+
+
+def test_hazard_forecast_requires_fresh_output_and_persists_data_on_failure():
+    steps = yaml.safe_load(HAZARD_WORKFLOW.read_text(encoding="utf-8"))["jobs"]["forecast"]["steps"]
+    forecast = next(s for s in steps if "forecast cycle" in str(s.get("name", "")))
+    persist = next(s for s in steps if "persist forecast-data" in str(s.get("name", "")))
+    publish = next(s for s in steps if "commit the dated record" in str(s.get("name", "")))
+    assert forecast.get("continue-on-error") is not True
+    assert persist.get("if") == "always()"
+    assert "HEAD:forecast-data" in str(persist.get("run"))
+    assert publish.get("if") == "steps.forecast.outcome == 'success'"
+
+
+def test_bootstrap_workflow_commits_partial_progress_and_uses_the_data_branch():
+    steps = yaml.safe_load(BOOTSTRAP_WORKFLOW.read_text(encoding="utf-8"))["jobs"]["bootstrap"]["steps"]
+    pull = next(s for s in steps if "pull one bounded" in str(s.get("name", "")))
+    persist = next(s for s in steps if "persist bootstrap" in str(s.get("name", "")))
+    assert pull.get("continue-on-error") is True
+    assert "bootstrap-forecast-data" in str(pull.get("run"))
+    assert persist.get("if") == "always()"
+    assert "HEAD:forecast-data" in str(persist.get("run"))

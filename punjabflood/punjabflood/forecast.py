@@ -735,6 +735,56 @@ def write_outputs(product: dict, out_dir: Path = Path("outputs/forecast")) -> tu
     return jp, mp
 
 
+class FreshnessError(RuntimeError):
+    """A required live product invariant was not met."""
+
+
+def validate_fresh_product(
+    product: dict,
+    issue_date: str,
+    required_archive_date: str | None = None,
+    generated_after_utc: datetime | None = None,
+) -> None:
+    """Reject stale, partial or input-incomplete products before writing them."""
+    problems = []
+    if product.get("issue_date") != issue_date:
+        problems.append(f"issue date is {product.get('issue_date')!r}, expected {issue_date!r}")
+    generated = product.get("generated_utc")
+    try:
+        generated_ts = pd.Timestamp(generated)
+        if generated_ts.tzinfo is None:
+            generated_ts = generated_ts.tz_localize(UTC)
+        else:
+            generated_ts = generated_ts.tz_convert(UTC)
+    except (TypeError, ValueError):
+        generated_ts = None
+        problems.append("generated_utc is missing or invalid")
+    if generated_after_utc is not None and generated_ts is not None:
+        if generated_ts < pd.Timestamp(generated_after_utc) - pd.Timedelta(seconds=2):
+            problems.append("generated_utc predates this live cycle")
+    status = product.get("input_status") or {}
+    if status.get("status") != "ready":
+        problems.append(f"input status is {status.get('status', 'missing')!r}")
+    if required_archive_date:
+        actual = status.get("archive_last_complete_date")
+        if not actual or pd.Timestamp(actual) < pd.Timestamp(required_archive_date):
+            problems.append(
+                f"archive checkpoint ends at {actual!r}, before required {required_archive_date!r}"
+            )
+    if not product.get("dams"):
+        problems.append("no dam outputs were generated")
+    if not product.get("reaches"):
+        problems.append("no routed reach outputs were generated")
+    for dam, entry in product.get("dams", {}).items():
+        if not entry.get("deterministic") or not entry.get("ensemble"):
+            problems.append(f"{dam} lacks required deterministic or ensemble output")
+    bhakra = product.get("dams", {}).get("Bhakra", {}).get("snowmelt")
+    if bhakra is not None and not bhakra.get("applied"):
+        problems.append("Bhakra snowmelt input was not applied")
+    if problems:
+        raise FreshnessError("; ".join(problems))
+
+
 def ghaggar_climatology(rain_daily: pd.DataFrame) -> dict[str, np.ndarray]:
     """Season (Jun-Sep) 3-day rain totals per catchment from the observed record: every
     catchment the record holds, so the weather watch and the Ghaggar index share one
@@ -912,6 +962,10 @@ def run(
     climatology: dict[str, np.ndarray] | None = None,
     rt_dir: Path | None = None,
     flood_scale_log_sd: float | None = None,
+    forecast_data_store=None,
+    snowpack_state: dict | None = None,
+    input_status: dict | None = None,
+    generated_after_utc: datetime | None = None,
 ) -> dict:
     """One live cycle: bulletin, deterministic and ensemble QPF for every catchment, recent
     rain from the best-match model's past days, then the product on disk. Dam catchments use
@@ -980,7 +1034,18 @@ def run(
         if name in C.LOCAL_CATCHMENTS and IMD_WEIGHT_COL in cat.points
     }
     soil = latest_soil_moisture(client, catchments, params, issue_date)
-    melt = melt_inputs(client, catchments, params, issue_date) if melt_needed else {}
+    melt = (
+        melt_inputs(
+            client,
+            catchments,
+            params,
+            issue_date,
+            data_store=forecast_data_store,
+            state=snowpack_state,
+        )
+        if melt_needed
+        else {}
+    )
     product = build_product(
         issue_date,
         states,
@@ -999,6 +1064,27 @@ def run(
     )
     product["bulletin"] = {k: v for k, v in rec.items() if k != "raw_text"}
     product["recent_rain_source"] = recent_sources
+    if input_status is not None:
+        product["input_status"] = input_status
+        product["model_status"] = {
+            "parameter_source": "data/reference/inflow_params.json",
+            "snowmelt_variant": "fitted Bhakra snowmelt term",
+            "degree_day_melt": {
+                "ddf_mm_per_degree_day": snow.DDF_MM_PER_DEGREE_DAY,
+                "temperature_threshold_c": snow.T0_C,
+            },
+            "deterministic_models": list(DETERMINISTIC_MODELS),
+            "ensemble_model": "ecmwf_ifs025",
+            "issue_date_discipline": (
+                "archive through its last complete observed day; model thereafter"
+            ),
+        }
+        validate_fresh_product(
+            product,
+            issue_date,
+            required_archive_date=input_status.get("required_archive_date"),
+            generated_after_utc=generated_after_utc,
+        )
     write_outputs(product, out_dir)
     return product
 
@@ -1064,6 +1150,8 @@ def melt_inputs(
     recent_days: int = RECENT_DAYS,
     horizon: int = max(HORIZONS),
     model: str = PRIMARY_DETERMINISTIC,
+    data_store=None,
+    state: dict | None = None,
 ) -> dict[str, dict]:
     """The snowmelt inputs per dam catchment whose parameters carry the term: the archive's
     snowfall and temperature at every point over the fixed spans (``snow.MELT_SPANS``, on
@@ -1085,6 +1173,36 @@ def melt_inputs(
         if cat is None:
             continue
         try:
+            if data_store is not None:
+                if state is None:
+                    raise RuntimeError("durable forecast-data store has no snowpack checkpoint")
+                model_frames, _ = rain.weather_points(
+                    client,
+                    cat,
+                    model=model,
+                    days=horizon + 1,
+                    issue_date=issue_date,
+                    weight_col=rain.WEIGHT_COL,
+                    past_days=snow.PAST_DAYS,
+                )
+                from punjabflood import forecast_data
+
+                daily, end, metadata = forecast_data.melt_daily_from_state(
+                    data_store, state, model_frames, issue_date, horizon, model
+                )
+                rec = melt_from_series(daily, issue_date, recent_days, horizon, cat.area_km2)
+                if rec["missing_days"]:
+                    raise RuntimeError(
+                        f"durable snowmelt inputs have {rec['missing_days']} missing "
+                        "model/archive days"
+                    )
+                rec["archive_last_day"] = end.date().isoformat()
+                rec["model"] = model
+                rec["n_points"] = int(len(data_store.points))
+                rec["bucket_gap_days"] = 0
+                rec.update(metadata)
+                out[cat_name] = rec
+                continue
             archive_end = (issue - pd.Timedelta(days=snow.ARCHIVE_LAG_DAYS)).date().isoformat()
             note = None
             try:
@@ -1141,7 +1259,9 @@ def melt_inputs(
             if note:
                 rec["note"] = note
             out[cat_name] = rec
-        except Exception:  # noqa: BLE001 - the melt is a term, never a blocker of the cycle
+        except Exception:  # noqa: BLE001 - legacy fallback keeps its historical behavior
+            if data_store is not None:
+                raise
             log.warning(
                 "melt inputs failed for %s; the snowmelt term contributes nothing this cycle",
                 dam,

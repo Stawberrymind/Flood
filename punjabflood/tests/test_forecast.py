@@ -177,6 +177,41 @@ def test_write_outputs(tmp_path):
     assert latest["issue_date"] == "2026-09-04"
 
 
+def test_freshness_gate_rejects_stale_or_partial_products():
+    product = {
+        "issue_date": "2026-09-04",
+        "generated_utc": "2026-09-04T09:00:00+00:00",
+        "input_status": {
+            "status": "incomplete",
+            "archive_last_complete_date": "2026-09-02",
+        },
+        "dams": {},
+        "reaches": [],
+    }
+    with pytest.raises(forecast.FreshnessError, match="input status"):
+        forecast.validate_fresh_product(product, "2026-09-04", "2026-09-02")
+
+
+def test_freshness_gate_accepts_current_complete_product():
+    product = {
+        "issue_date": "2026-09-04",
+        "generated_utc": "2026-09-04T09:00:00+00:00",
+        "input_status": {
+            "status": "ready",
+            "archive_last_complete_date": "2026-09-02",
+        },
+        "dams": {
+            "Bhakra": {
+                "deterministic": {"ecmwf_ifs025": {}},
+                "ensemble": {"1": {}},
+                "snowmelt": {"applied": True},
+            }
+        },
+        "reaches": [{"station": "Dhilwan"}],
+    }
+    forecast.validate_fresh_product(product, "2026-09-04", "2026-09-02")
+
+
 def test_climatology_round_trip_and_missing_file(tmp_path):
     days = pd.date_range("2001-05-25", "2001-10-05", freq="D")
     rain = pd.DataFrame(

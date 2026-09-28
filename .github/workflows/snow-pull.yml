@@ -1,34 +1,33 @@
-name: punjabflood-snow-pull
+name: punjabflood-forecast-data-bootstrap
 
-# Manual, sharded pull of the ERA5 snow and temperature archive for the Bhakra catchment
-# points (keyless Open-Meteo; its free tier is limited per IP per day, so shards run on
-# separate runners). Each shard uploads its cached responses as an artifact; the files are
-# copied into the local cache and the full script then runs from cache. Nothing is committed.
+# One bounded, resumable historical archive window. Every successful response is committed
+# to the fork's public forecast-data branch, so a later run resumes from the first missing
+# point/span. The cache is only an accelerator; the branch is the durable scientific input.
 
 on:
   workflow_dispatch:
     inputs:
-      shards:
-        description: 'JSON list of comma-separated point index lists, e.g. ["112,113","114,115"]'
-        required: true
-        type: string
-      span:
-        description: 'archive span: 2014, main or 2026 (see scripts/pull_snow_points.py)'
+      issue_date:
+        description: "UTC issue date whose archive should be prepared (YYYY-MM-DD)"
         required: false
-        default: main
+        type: string
+      max_archive_weight:
+        description: "Conservative Open-Meteo weight budget for this bounded window"
+        required: false
+        default: "7500"
         type: string
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: forecast-data-persistence
+  cancel-in-progress: false
 
 jobs:
-  pull:
+  bootstrap:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: ${{ fromJson(inputs.shards) }}
+    timeout-minutes: 35
     defaults:
       run:
         working-directory: punjabflood
@@ -36,11 +35,39 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.13" }
-      - run: pip install -e .
-      - name: pull the shard's points
-        run: python scripts/pull_snow_points.py --points "${{ matrix.shard }}" --span "${{ inputs.span }}"
-      - uses: actions/upload-artifact@v4
+      - run: pip install -e ".[dev]"
+      - uses: actions/cache@v4
+        continue-on-error: true
         with:
-          name: snow-cache-${{ strategy.job-index }}
-          path: punjabflood/data/cache/openmeteo/archive/*.json
-          if-no-files-found: error
+          path: punjabflood/data/cache/openmeteo
+          key: forecast-data-bootstrap-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            hazard-openmeteo-${{ runner.os }}-
+            forecast-data-bootstrap-${{ runner.os }}-
+      - name: attach durable forecast-data branch
+        run: |
+          git fetch origin forecast-data:refs/remotes/origin/forecast-data
+          git worktree add --detach ../forecast-data origin/forecast-data
+      - name: pull one bounded archive window
+        id: bootstrap
+        continue-on-error: true
+        run: >-
+          python -m punjabflood.cli bootstrap-forecast-data
+          --data-dir ../forecast-data
+          --issue-date "${{ inputs.issue_date }}"
+          --max-archive-weight "${{ inputs.max_archive_weight }}"
+      - name: persist bootstrap progress
+        if: always()
+        run: |
+          git -C ../forecast-data config user.name "github-actions[bot]"
+          git -C ../forecast-data config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C ../forecast-data add -A
+          if git -C ../forecast-data diff --cached --quiet; then
+            echo "forecast-data branch unchanged"
+          else
+            git -C ../forecast-data commit -m "forecast-data: persist bootstrap progress"
+            git -C ../forecast-data push origin HEAD:forecast-data
+          fi
+      - name: fail until bootstrap is complete
+        if: steps.bootstrap.outcome == 'failure'
+        run: exit 1

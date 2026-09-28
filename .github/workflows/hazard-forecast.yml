@@ -15,13 +15,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: hazard-forecast
+  group: forecast-data-persistence
   cancel-in-progress: false
 
 jobs:
   forecast:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
     defaults:
       run:
         working-directory: punjabflood
@@ -31,6 +31,10 @@ jobs:
         with: { python-version: "3.13" }
       - run: pip install -e ".[dev]"
       - run: python -m pytest -q          # never publish from a red tree
+      - name: attach durable forecast-data branch
+        run: |
+          git fetch origin forecast-data:refs/remotes/origin/forecast-data
+          git worktree add --detach ../forecast-data origin/forecast-data
       # The client keys forecasts by issue date and historical inputs by their
       # query. Keep successful public downloads between ephemeral runners,
       # including partial progress when the forecast step hits a quota/timeout.
@@ -44,12 +48,25 @@ jobs:
             hazard-openmeteo-${{ runner.os }}-
       # The bulletin fetch can fail from a foreign runner (bbmb.gov.in has an incomplete TLS
       # chain and is not always reachable from outside India). A failed cycle is recorded in
-      # the job log and produces no file; it must not fail the commit step.
-      - name: forecast cycle
+      # the job log, while the durable weather progress is still committed below.
+      - name: forecast cycle (required fresh product)
+        id: forecast
         run: python -m punjabflood.cli forecast
-        continue-on-error: true
         timeout-minutes: 35
+      - name: persist forecast-data progress
+        if: always()
+        run: |
+          git -C ../forecast-data config user.name "github-actions[bot]"
+          git -C ../forecast-data config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C ../forecast-data add -A
+          if git -C ../forecast-data diff --cached --quiet; then
+            echo "forecast-data branch unchanged"
+          else
+            git -C ../forecast-data commit -m "forecast-data: persist public weather progress"
+            git -C ../forecast-data push origin HEAD:forecast-data
+          fi
       - name: commit the dated record
+        if: steps.forecast.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

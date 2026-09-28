@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import json
 import logging
+import time
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -1131,27 +1133,76 @@ def run_verify(horizon_days: int = 5):
 
 
 @app.command("forecast")
-def run_forecast(issue_date: str | None = None):
-    """One live cycle: BBMB bulletin, QPF, index, routing, outputs."""
+def run_forecast(
+    issue_date: str | None = None,
+    data_dir: Path = Path("../forecast-data"),
+    max_archive_weight: int = 7_500,
+    timeout_minutes: int = 35,
+):
+    """One live cycle after durable weather preparation: BBMB bulletin, QPF, index and outputs."""
     _log()
     from punjabflood import forecast as fc
+    from punjabflood import forecast_data
 
     _, ratings, _ = _state()
     cats = catchments_mod.load_geojson()
     params = load_params()
+    issue = issue_date or datetime.now(UTC).date().isoformat()
+    cycle_start = datetime.now(UTC)
+    client = OpenMeteo(deadline=time.monotonic() + timeout_minutes * 60)
+    prepared = forecast_data.prepare_for_issue(
+        client,
+        cats["Bhakra"],
+        data_dir,
+        issue,
+        max_weight=max_archive_weight,
+    )
+    typer.echo(json.dumps(prepared.input_status(), indent=2, sort_keys=True))
+    if not prepared.complete:
+        raise typer.Exit(code=2)
     rain_daily = pd.read_csv(RAIN_CSV) if RAIN_CSV.exists() else None
     clim = None if rain_daily is not None else fc.load_climatology(GHAGGAR_CLIM_JSON)
     product = fc.run(
-        OpenMeteo(),
+        client,
         cats,
         ratings,
         params,
-        issue_date=issue_date,
+        issue_date=issue,
         rain_daily=rain_daily,
         climatology=clim,
         flood_scale_log_sd=fc.load_flood_scale_error(FLOOD_SCALE_ERROR_JSON),
+        forecast_data_store=prepared.store,
+        snowpack_state=prepared.state,
+        input_status=prepared.input_status(),
+        generated_after_utc=cycle_start,
     )
     typer.echo(fc.render_markdown(product))
+
+
+@app.command("bootstrap-forecast-data")
+def bootstrap_forecast_data(
+    issue_date: str | None = None,
+    data_dir: Path = Path("../forecast-data"),
+    max_archive_weight: int = 7_500,
+    timeout_minutes: int = 25,
+):
+    """Run one bounded, resumable public archive bootstrap window."""
+    _log()
+    from punjabflood import forecast_data
+
+    cats = catchments_mod.load_geojson()
+    issue = issue_date or datetime.now(UTC).date().isoformat()
+    client = OpenMeteo(deadline=time.monotonic() + timeout_minutes * 60)
+    prepared = forecast_data.prepare_for_issue(
+        client,
+        cats["Bhakra"],
+        data_dir,
+        issue,
+        max_weight=max_archive_weight,
+    )
+    typer.echo(json.dumps(prepared.input_status(), indent=2, sort_keys=True))
+    if not prepared.complete:
+        raise typer.Exit(code=2)
 
 
 @app.command("report")

@@ -24,7 +24,9 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import time
+from collections import deque
 from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
@@ -51,11 +53,50 @@ class QuotaExhausted(RuntimeError):
     """The daily request budget for a subdomain is spent; try again tomorrow."""
 
 
+class QuotaDeferred(QuotaExhausted):
+    """A quota wait would outlive the caller's bounded cycle budget."""
+
+
 class OpenMeteoError(RuntimeError):
     pass
 
 
 WEATHER_DAILY = ("precipitation_sum", "snowfall_sum", "temperature_2m_max", "temperature_2m_mean")
+
+
+def estimate_request_weight(params: dict) -> int:
+    """Conservatively estimate Open-Meteo's volume-weighted request cost.
+
+    Open-Meteo does not expose the counter in a response. This estimate is deliberately
+    simple and errs high: it is used for pacing and for deciding whether a bounded
+    bootstrap should defer work, not as a claim about the provider's exact billing.
+    """
+    if "start_date" in params and "end_date" in params:
+        try:
+            start = datetime.fromisoformat(str(params["start_date"])).date()
+            end = datetime.fromisoformat(str(params["end_date"])).date()
+            days = max(1, (end - start).days + 1)
+        except ValueError:
+            days = 1
+    else:
+        days = max(1, int(params.get("forecast_days", 1)))
+        if "past_days" in params:
+            days += max(0, int(params.get("past_days", 0)))
+    variables = params.get("daily") or params.get("hourly") or []
+    if isinstance(variables, str):
+        variables = [x for x in variables.split(",") if x]
+    n_variables = max(1, len(list(variables)))
+    locations = params.get("latitude", 1)
+    if isinstance(locations, (list, tuple)):
+        n_locations = max(1, len(locations))
+    else:
+        n_locations = 1
+    models = params.get("models", 1)
+    n_models = max(1, len(models) if isinstance(models, (list, tuple)) else 1)
+    # The public API's weight grows with data points. A 1% headroom factor keeps this
+    # estimate useful even when the provider changes a rounding boundary.
+    points = days * n_variables * n_locations * n_models
+    return max(1, math.ceil(points / 100.0 * 1.01))
 
 
 def canonical(params: dict) -> str:
@@ -78,6 +119,11 @@ class OpenMeteo:
         timeout_s: float = 90.0,
         max_retries: int = 6,
         clock=None,
+        deadline: float | None = None,
+        deadline_safety_s: float = 20.0,
+        monotonic=None,
+        minute_weight_limit: int = 480,
+        hour_weight_limit: int = 4_000,
     ):
         self.cache_dir = Path(cache_dir)
         self.session = session or requests.Session()
@@ -87,9 +133,16 @@ class OpenMeteo:
         self.timeout_s = timeout_s
         self.max_retries = max_retries
         self.clock = clock or (lambda: datetime.now(UTC))
+        self.deadline = deadline
+        self.deadline_safety_s = float(deadline_safety_s)
+        self.monotonic = monotonic or time.monotonic
+        self.minute_weight_limit = int(minute_weight_limit)
+        self.hour_weight_limit = int(hour_weight_limit)
+        self._weight_events = deque()
         self._last = 0.0
         self.calls = 0
         self.cache_hits = 0
+        self.estimated_weight = 0
 
     # -- cache ------------------------------------------------------------------------
     def _cache_path(self, host: str, params: dict) -> Path:
@@ -100,18 +153,34 @@ class OpenMeteo:
     def get(self, host: str, params: dict, use_cache: bool = True) -> dict:
         url = HOSTS[host]
         path = self._cache_path(host, params)
+        estimate = estimate_request_weight(params)
         if use_cache and path.exists():
             self.cache_hits += 1
+            log.info(
+                "open-meteo cache hit endpoint=%s span=%s variables=%d estimated_weight=%d",
+                host,
+                self._span(params),
+                self._variable_count(params),
+                estimate,
+            )
             return json.loads(path.read_text(encoding="utf-8"))["response"]
+        log.info(
+            "open-meteo request endpoint=%s span=%s variables=%d estimated_weight=%d",
+            host,
+            self._span(params),
+            self._variable_count(params),
+            estimate,
+        )
         query = {
             k: (",".join(map(str, v)) if isinstance(v, list | tuple) else v)
             for k, v in params.items()
         }
         for attempt in range(self.max_retries + 1):
-            gap = self.spacing_s - (time.monotonic() - self._last)
+            gap = self.spacing_s - (self.monotonic() - self._last)
             if gap > 0:
-                self.sleep(gap)
-            self._last = time.monotonic()
+                self._sleep_bounded(gap, "request spacing")
+            self._pace_weight(estimate)
+            self._last = self.monotonic()
             self.calls += 1
             try:
                 r = self.session.get(url, params=query, timeout=self.timeout_s)
@@ -119,7 +188,7 @@ class OpenMeteo:
                 if attempt >= self.max_retries:
                     raise
                 log.warning("open-meteo %s: %s; retry in 10 s", host, type(exc).__name__)
-                self.sleep(10)
+                self._sleep_bounded(10, "request retry")
                 continue
             if r.status_code == 200:
                 try:
@@ -131,7 +200,7 @@ class OpenMeteo:
                             f"non-JSON body from {host}: {r.text[:120]!r}"
                         ) from None
                     log.warning("open-meteo %s: 200 with a non-JSON body; retry in 15 s", host)
-                    self.sleep(15)
+                    self._sleep_bounded(15, "non-JSON retry")
                     continue
                 if j.get("error"):
                     raise OpenMeteoError(j.get("reason", "unknown error"))
@@ -147,6 +216,7 @@ class OpenMeteo:
                         ),
                         encoding="utf-8",
                     )
+                self.estimated_weight += estimate
                 return j
             if r.status_code == 429:
                 reason = ""
@@ -158,7 +228,7 @@ class OpenMeteo:
                 continue
             if r.status_code >= 500 and attempt < self.max_retries:
                 log.warning("open-meteo %s: HTTP %s; retry in 15 s", host, r.status_code)
-                self.sleep(15)
+                self._sleep_bounded(15, "server retry")
                 continue
             try:
                 reason = r.json().get("reason", r.text[:200])
@@ -175,10 +245,66 @@ class OpenMeteo:
             now = self.clock()
             secs = (60 - now.minute) * 60 - now.second + 5
             log.warning("open-meteo hourly limit; sleeping %d s", secs)
-            self.sleep(secs)
+            self._sleep_bounded(secs, "hourly quota reset")
             return
         log.info("open-meteo minutely limit; sleeping 61 s")
-        self.sleep(61)
+        self._sleep_bounded(61, "minutely quota reset")
+
+    def _sleep_bounded(self, seconds: float, reason: str) -> None:
+        seconds = max(0.0, float(seconds))
+        if self.deadline is not None:
+            remaining = self.deadline - self.monotonic()
+            if seconds + self.deadline_safety_s > remaining:
+                raise QuotaDeferred(
+                    f"{reason} of {seconds:.0f}s deferred; only {max(0.0, remaining):.0f}s "
+                    "remain in the forecast cycle"
+                )
+        self.sleep(seconds)
+
+    def _pace_weight(self, estimate: int) -> None:
+        """Keep estimated volume below provider limits with headroom."""
+        while True:
+            now = self.monotonic()
+            while self._weight_events and now - self._weight_events[0][0] >= 3600:
+                self._weight_events.popleft()
+            minute = sum(weight for at, weight in self._weight_events if now - at < 60)
+            hour = sum(weight for _at, weight in self._weight_events)
+            waits = []
+            if minute + estimate > self.minute_weight_limit:
+                if not self._weight_events:
+                    raise QuotaDeferred(
+                        f"single request estimate {estimate} exceeds minute weighted limit"
+                    )
+                waits.append(60 - (now - self._weight_events[0][0]))
+            if hour + estimate > self.hour_weight_limit:
+                if not self._weight_events:
+                    raise QuotaDeferred(
+                        f"single request estimate {estimate} exceeds hourly weighted limit"
+                    )
+                waits.append(3600 - (now - self._weight_events[0][0]))
+            wait = max(waits, default=0.0)
+            if wait <= 0:
+                self._weight_events.append((now, estimate))
+                return
+            log.info(
+                "open-meteo weighted pacing wait=%ds estimated_weight=%d minute=%d hour=%d",
+                math.ceil(wait),
+                estimate,
+                minute,
+                hour,
+            )
+            self._sleep_bounded(wait + 1, "weighted quota headroom")
+
+    @staticmethod
+    def _span(params: dict) -> str:
+        if "start_date" in params or "end_date" in params:
+            return f"{params.get('start_date', '?')}..{params.get('end_date', '?')}"
+        return f"issue={params.get('_issue_date', '?')} days={params.get('forecast_days', '?')}"
+
+    @staticmethod
+    def _variable_count(params: dict) -> int:
+        values = params.get("daily") or params.get("hourly") or []
+        return len(values.split(",")) if isinstance(values, str) else len(values)
 
     # -- endpoints --------------------------------------------------------------------
     def archive_daily(

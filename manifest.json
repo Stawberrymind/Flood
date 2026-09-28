@@ -1,0 +1,853 @@
+{
+  "bootstrap": {
+    "completed_requests": [],
+    "last_failure": null,
+    "last_success_utc": null,
+    "spans": [
+      [
+        "2014-01-01",
+        "2014-12-31"
+      ],
+      [
+        "2015-01-01",
+        "2025-12-31"
+      ],
+      [
+        "2026-01-01",
+        "2026-09-15"
+      ],
+      [
+        "2026-09-16",
+        "2026-09-26"
+      ]
+    ],
+    "status": "partial",
+    "target_archive_end": "2026-09-26"
+  },
+  "created_utc": "2026-09-28T16:03:05+00:00",
+  "grid": {
+    "area_km2": 52765.009,
+    "catchment": "Bhakra",
+    "n_points": 131,
+    "points": [
+      {
+        "latitude": 30.25,
+        "longitude": 81.5,
+        "point_id": "30.2500,81.5000",
+        "weight_km2": 0.108
+      },
+      {
+        "latitude": 30.25,
+        "longitude": 81.75,
+        "point_id": "30.2500,81.7500",
+        "weight_km2": 0.427
+      },
+      {
+        "latitude": 30.25,
+        "longitude": 82.0,
+        "point_id": "30.2500,82.0000",
+        "weight_km2": 45.083
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 80.25,
+        "point_id": "30.5000,80.2500",
+        "weight_km2": 111.556
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 80.5,
+        "point_id": "30.5000,80.5000",
+        "weight_km2": 363.985
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 80.75,
+        "point_id": "30.5000,80.7500",
+        "weight_km2": 51.654
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 81.0,
+        "point_id": "30.5000,81.0000",
+        "weight_km2": 55.528
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 81.25,
+        "point_id": "30.5000,81.2500",
+        "weight_km2": 233.032
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 81.5,
+        "point_id": "30.5000,81.5000",
+        "weight_km2": 580.932
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 81.75,
+        "point_id": "30.5000,81.7500",
+        "weight_km2": 592.418
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 82.0,
+        "point_id": "30.5000,82.0000",
+        "weight_km2": 485.734
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 82.25,
+        "point_id": "30.5000,82.2500",
+        "weight_km2": 246.545
+      },
+      {
+        "latitude": 30.5,
+        "longitude": 82.5,
+        "point_id": "30.5000,82.5000",
+        "weight_km2": 52.393
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 80.0,
+        "point_id": "30.7500,80.0000",
+        "weight_km2": 66.291
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 80.25,
+        "point_id": "30.7500,80.2500",
+        "weight_km2": 488.728
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 80.5,
+        "point_id": "30.7500,80.5000",
+        "weight_km2": 659.611
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 80.75,
+        "point_id": "30.7500,80.7500",
+        "weight_km2": 536.868
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 81.0,
+        "point_id": "30.7500,81.0000",
+        "weight_km2": 658.456
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 81.25,
+        "point_id": "30.7500,81.2500",
+        "weight_km2": 663.476
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 81.5,
+        "point_id": "30.7500,81.5000",
+        "weight_km2": 663.476
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 81.75,
+        "point_id": "30.7500,81.7500",
+        "weight_km2": 663.476
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 82.0,
+        "point_id": "30.7500,82.0000",
+        "weight_km2": 618.357
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 82.25,
+        "point_id": "30.7500,82.2500",
+        "weight_km2": 383.754
+      },
+      {
+        "latitude": 30.75,
+        "longitude": 82.5,
+        "point_id": "30.7500,82.5000",
+        "weight_km2": 17.197
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 76.75,
+        "point_id": "31.0000,76.7500",
+        "weight_km2": 59.415
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 77.0,
+        "point_id": "31.0000,77.0000",
+        "weight_km2": 458.875
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 77.25,
+        "point_id": "31.0000,77.2500",
+        "weight_km2": 55.32
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 77.5,
+        "point_id": "31.0000,77.5000",
+        "weight_km2": 0.364
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 79.25,
+        "point_id": "31.0000,79.2500",
+        "weight_km2": 0.559
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 79.5,
+        "point_id": "31.0000,79.5000",
+        "weight_km2": 285.887
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 79.75,
+        "point_id": "31.0000,79.7500",
+        "weight_km2": 387.093
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 80.0,
+        "point_id": "31.0000,80.0000",
+        "weight_km2": 630.412
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 80.25,
+        "point_id": "31.0000,80.2500",
+        "weight_km2": 661.781
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 80.5,
+        "point_id": "31.0000,80.5000",
+        "weight_km2": 661.781
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 80.75,
+        "point_id": "31.0000,80.7500",
+        "weight_km2": 661.781
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 81.0,
+        "point_id": "31.0000,81.0000",
+        "weight_km2": 661.781
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 81.25,
+        "point_id": "31.0000,81.2500",
+        "weight_km2": 661.781
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 81.5,
+        "point_id": "31.0000,81.5000",
+        "weight_km2": 645.615
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 81.75,
+        "point_id": "31.0000,81.7500",
+        "weight_km2": 430.053
+      },
+      {
+        "latitude": 31.0,
+        "longitude": 82.0,
+        "point_id": "31.0000,82.0000",
+        "weight_km2": 60.94
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 76.25,
+        "point_id": "31.2500,76.2500",
+        "weight_km2": 6.43
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 76.5,
+        "point_id": "31.2500,76.5000",
+        "weight_km2": 209.862
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 76.75,
+        "point_id": "31.2500,76.7500",
+        "weight_km2": 508.442
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 77.0,
+        "point_id": "31.2500,77.0000",
+        "weight_km2": 660.074
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 77.25,
+        "point_id": "31.2500,77.2500",
+        "weight_km2": 659.025
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 77.5,
+        "point_id": "31.2500,77.5000",
+        "weight_km2": 353.605
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 77.75,
+        "point_id": "31.2500,77.7500",
+        "weight_km2": 149.067
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 78.0,
+        "point_id": "31.2500,78.0000",
+        "weight_km2": 0.069
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 78.25,
+        "point_id": "31.2500,78.2500",
+        "weight_km2": 139.381
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 78.5,
+        "point_id": "31.2500,78.5000",
+        "weight_km2": 396.212
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 78.75,
+        "point_id": "31.2500,78.7500",
+        "weight_km2": 410.879
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 79.0,
+        "point_id": "31.2500,79.0000",
+        "weight_km2": 61.602
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 79.25,
+        "point_id": "31.2500,79.2500",
+        "weight_km2": 290.451
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 79.5,
+        "point_id": "31.2500,79.5000",
+        "weight_km2": 660.074
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 79.75,
+        "point_id": "31.2500,79.7500",
+        "weight_km2": 660.074
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 80.0,
+        "point_id": "31.2500,80.0000",
+        "weight_km2": 660.074
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 80.25,
+        "point_id": "31.2500,80.2500",
+        "weight_km2": 613.118
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 80.5,
+        "point_id": "31.2500,80.5000",
+        "weight_km2": 616.921
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 80.75,
+        "point_id": "31.2500,80.7500",
+        "weight_km2": 552.895
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 81.0,
+        "point_id": "31.2500,81.0000",
+        "weight_km2": 557.42
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 81.25,
+        "point_id": "31.2500,81.2500",
+        "weight_km2": 163.895
+      },
+      {
+        "latitude": 31.25,
+        "longitude": 81.5,
+        "point_id": "31.2500,81.5000",
+        "weight_km2": 47.218
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 76.25,
+        "point_id": "31.5000,76.2500",
+        "weight_km2": 61.63
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 76.5,
+        "point_id": "31.5000,76.5000",
+        "weight_km2": 522.369
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 76.75,
+        "point_id": "31.5000,76.7500",
+        "weight_km2": 591.308
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 77.0,
+        "point_id": "31.5000,77.0000",
+        "weight_km2": 249.951
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 77.25,
+        "point_id": "31.5000,77.2500",
+        "weight_km2": 324.113
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 77.5,
+        "point_id": "31.5000,77.5000",
+        "weight_km2": 532.392
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 77.75,
+        "point_id": "31.5000,77.7500",
+        "weight_km2": 658.354
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 78.0,
+        "point_id": "31.5000,78.0000",
+        "weight_km2": 598.585
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 78.25,
+        "point_id": "31.5000,78.2500",
+        "weight_km2": 651.117
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 78.5,
+        "point_id": "31.5000,78.5000",
+        "weight_km2": 658.354
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 78.75,
+        "point_id": "31.5000,78.7500",
+        "weight_km2": 658.354
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 79.0,
+        "point_id": "31.5000,79.0000",
+        "weight_km2": 583.4
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 79.25,
+        "point_id": "31.5000,79.2500",
+        "weight_km2": 635.297
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 79.5,
+        "point_id": "31.5000,79.5000",
+        "weight_km2": 658.354
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 79.75,
+        "point_id": "31.5000,79.7500",
+        "weight_km2": 658.354
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 80.0,
+        "point_id": "31.5000,80.0000",
+        "weight_km2": 623.766
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 80.25,
+        "point_id": "31.5000,80.2500",
+        "weight_km2": 114.922
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 80.5,
+        "point_id": "31.5000,80.5000",
+        "weight_km2": 5.982
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 80.75,
+        "point_id": "31.5000,80.7500",
+        "weight_km2": 9.854
+      },
+      {
+        "latitude": 31.5,
+        "longitude": 81.0,
+        "point_id": "31.5000,81.0000",
+        "weight_km2": 1.921
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 76.25,
+        "point_id": "31.7500,76.2500",
+        "weight_km2": 51.943
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 76.5,
+        "point_id": "31.7500,76.5000",
+        "weight_km2": 0.2
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 76.75,
+        "point_id": "31.7500,76.7500",
+        "weight_km2": 99.285
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 77.5,
+        "point_id": "31.7500,77.5000",
+        "weight_km2": 9.868
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 77.75,
+        "point_id": "31.7500,77.7500",
+        "weight_km2": 294.229
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 78.0,
+        "point_id": "31.7500,78.0000",
+        "weight_km2": 656.622
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 78.25,
+        "point_id": "31.7500,78.2500",
+        "weight_km2": 656.622
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 78.5,
+        "point_id": "31.7500,78.5000",
+        "weight_km2": 656.622
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 78.75,
+        "point_id": "31.7500,78.7500",
+        "weight_km2": 656.622
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 79.0,
+        "point_id": "31.7500,79.0000",
+        "weight_km2": 656.622
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 79.25,
+        "point_id": "31.7500,79.2500",
+        "weight_km2": 656.622
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 79.5,
+        "point_id": "31.7500,79.5000",
+        "weight_km2": 656.622
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 79.75,
+        "point_id": "31.7500,79.7500",
+        "weight_km2": 656.622
+      },
+      {
+        "latitude": 31.75,
+        "longitude": 80.0,
+        "point_id": "31.7500,80.0000",
+        "weight_km2": 202.156
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 77.75,
+        "point_id": "32.0000,77.7500",
+        "weight_km2": 235.764
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 78.0,
+        "point_id": "32.0000,78.0000",
+        "weight_km2": 654.877
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 78.25,
+        "point_id": "32.0000,78.2500",
+        "weight_km2": 654.877
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 78.5,
+        "point_id": "32.0000,78.5000",
+        "weight_km2": 654.877
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 78.75,
+        "point_id": "32.0000,78.7500",
+        "weight_km2": 654.877
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 79.0,
+        "point_id": "32.0000,79.0000",
+        "weight_km2": 654.877
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 79.25,
+        "point_id": "32.0000,79.2500",
+        "weight_km2": 654.877
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 79.5,
+        "point_id": "32.0000,79.5000",
+        "weight_km2": 654.877
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 79.75,
+        "point_id": "32.0000,79.7500",
+        "weight_km2": 590.397
+      },
+      {
+        "latitude": 32.0,
+        "longitude": 80.0,
+        "point_id": "32.0000,80.0000",
+        "weight_km2": 46.376
+      },
+      {
+        "latitude": 32.25,
+        "longitude": 77.75,
+        "point_id": "32.2500,77.7500",
+        "weight_km2": 339.523
+      },
+      {
+        "latitude": 32.25,
+        "longitude": 78.0,
+        "point_id": "32.2500,78.0000",
+        "weight_km2": 653.12
+      },
+      {
+        "latitude": 32.25,
+        "longitude": 78.25,
+        "point_id": "32.2500,78.2500",
+        "weight_km2": 653.12
+      },
+      {
+        "latitude": 32.25,
+        "longitude": 78.5,
+        "point_id": "32.2500,78.5000",
+        "weight_km2": 653.12
+      },
+      {
+        "latitude": 32.25,
+        "longitude": 78.75,
+        "point_id": "32.2500,78.7500",
+        "weight_km2": 653.12
+      },
+      {
+        "latitude": 32.25,
+        "longitude": 79.0,
+        "point_id": "32.2500,79.0000",
+        "weight_km2": 633.08
+      },
+      {
+        "latitude": 32.25,
+        "longitude": 79.25,
+        "point_id": "32.2500,79.2500",
+        "weight_km2": 653.12
+      },
+      {
+        "latitude": 32.25,
+        "longitude": 79.5,
+        "point_id": "32.2500,79.5000",
+        "weight_km2": 640.479
+      },
+      {
+        "latitude": 32.25,
+        "longitude": 79.75,
+        "point_id": "32.2500,79.7500",
+        "weight_km2": 241.261
+      },
+      {
+        "latitude": 32.5,
+        "longitude": 77.5,
+        "point_id": "32.5000,77.5000",
+        "weight_km2": 11.845
+      },
+      {
+        "latitude": 32.5,
+        "longitude": 77.75,
+        "point_id": "32.5000,77.7500",
+        "weight_km2": 519.087
+      },
+      {
+        "latitude": 32.5,
+        "longitude": 78.0,
+        "point_id": "32.5000,78.0000",
+        "weight_km2": 592.76
+      },
+      {
+        "latitude": 32.5,
+        "longitude": 78.25,
+        "point_id": "32.5000,78.2500",
+        "weight_km2": 651.35
+      },
+      {
+        "latitude": 32.5,
+        "longitude": 78.5,
+        "point_id": "32.5000,78.5000",
+        "weight_km2": 651.35
+      },
+      {
+        "latitude": 32.5,
+        "longitude": 78.75,
+        "point_id": "32.5000,78.7500",
+        "weight_km2": 452.369
+      },
+      {
+        "latitude": 32.5,
+        "longitude": 79.0,
+        "point_id": "32.5000,79.0000",
+        "weight_km2": 23.725
+      },
+      {
+        "latitude": 32.5,
+        "longitude": 79.25,
+        "point_id": "32.5000,79.2500",
+        "weight_km2": 384.481
+      },
+      {
+        "latitude": 32.5,
+        "longitude": 79.5,
+        "point_id": "32.5000,79.5000",
+        "weight_km2": 184.494
+      },
+      {
+        "latitude": 32.75,
+        "longitude": 77.75,
+        "point_id": "32.7500,77.7500",
+        "weight_km2": 5.595
+      },
+      {
+        "latitude": 32.75,
+        "longitude": 78.0,
+        "point_id": "32.7500,78.0000",
+        "weight_km2": 15.614
+      },
+      {
+        "latitude": 32.75,
+        "longitude": 78.25,
+        "point_id": "32.7500,78.2500",
+        "weight_km2": 191.189
+      },
+      {
+        "latitude": 32.75,
+        "longitude": 78.5,
+        "point_id": "32.7500,78.5000",
+        "weight_km2": 602.209
+      },
+      {
+        "latitude": 32.75,
+        "longitude": 78.75,
+        "point_id": "32.7500,78.7500",
+        "weight_km2": 212.34
+      },
+      {
+        "latitude": 33.0,
+        "longitude": 78.5,
+        "point_id": "33.0000,78.5000",
+        "weight_km2": 41.439
+      },
+      {
+        "latitude": 33.0,
+        "longitude": 78.75,
+        "point_id": "33.0000,78.7500",
+        "weight_km2": 0.198
+      }
+    ],
+    "signature": "525c8fc5f7fcd4813d82a04bf15a364097665262aab9ba1a888b3f9f0bf7b8bd"
+  },
+  "kind": "punjabflood-forecast-data",
+  "model": {
+    "degree_day_melt_mm_per_degree_day": 4.0,
+    "point_weight_column": "weight_km2",
+    "snowfall_cm_to_mm_water": 1.4285714285714286,
+    "state_version": "bhakra-snowpack-v1",
+    "temperature_threshold_c": 0.0
+  },
+  "provider": {
+    "attribution": "Weather data by Open-Meteo.com (CC BY 4.0)",
+    "endpoint": "archive",
+    "name": "Open-Meteo"
+  },
+  "schema_version": 1,
+  "state": {
+    "archive_last_complete_date": null,
+    "path": "state/bhakra_snowpack.json",
+    "status": "missing",
+    "updated_utc": null
+  },
+  "updated_utc": "2026-09-28T16:03:14+00:00",
+  "weather": {
+    "archive_start": "2014-01-01",
+    "correction_overlap_days": 7,
+    "daily_variables": [
+      "snowfall_sum",
+      "temperature_2m_mean",
+      "precipitation_sum"
+    ],
+    "format": "gzip-json-year-shards"
+  }
+}

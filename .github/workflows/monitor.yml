@@ -38,6 +38,7 @@ jobs:
             gfm-current-
       - run: python pipeline/make_current_timelapse.py   # keyless GFM WMS -> rolling current-season timelapse
         continue-on-error: true                          # a WMS hiccup must never block the core monitor publish
+        timeout-minutes: 5                               # a cold monsoon cache must leave time to commit core data
       - name: commit state
         run: |
           git config user.name "github-actions[bot]"

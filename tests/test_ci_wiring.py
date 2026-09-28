@@ -23,6 +23,7 @@ import subprocess
 from pathlib import Path
 
 import yaml
+import pytest
 
 WORKFLOW = Path(".github/workflows/monitor.yml")
 
@@ -70,16 +71,17 @@ def test_every_git_add_pathspec_matches_something_git_tracks():
     assert not unmatched, f"git add would exit 128 on: {unmatched}"
 
 
-def test_the_sachet_step_tolerates_failure_and_is_bounded():
+@pytest.mark.parametrize("script", ["fetch_sachet.py", "make_current_timelapse.py"])
+def test_optional_public_data_steps_tolerate_failure_and_are_bounded(script):
     """`continue-on-error` alone is not enough: an endpoint that accepts the
     connection and never answers would burn the job's whole 25 minutes, and the
     step timeout is what turns that into a recorded failed poll instead."""
-    sachet = [s for s in steps() if "fetch_sachet.py" in str(s.get("run") or "")]
-    assert len(sachet) == 1, f"expected one Sachet step, found {len(sachet)}"
-    step = sachet[0]
-    assert step.get("continue-on-error") is True, "a Sachet outage would block the publish"
-    assert step.get("timeout-minutes"), "the Sachet step has no timeout"
-    assert step["timeout-minutes"] <= 15, "a Sachet hang could consume the job"
+    matches = [s for s in steps() if script in str(s.get("run") or "")]
+    assert len(matches) == 1, f"expected one {script} step, found {len(matches)}"
+    step = matches[0]
+    assert step.get("continue-on-error") is True, f"a {script} outage would block the publish"
+    assert step.get("timeout-minutes"), f"{script} has no timeout"
+    assert step["timeout-minutes"] <= 15, f"a {script} hang could consume the job"
 
 
 def test_the_step_timeout_is_below_the_job_timeout():

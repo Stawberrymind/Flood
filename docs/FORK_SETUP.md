@@ -109,6 +109,11 @@ not turn an older issue into today's forecast. A new fork starts without this
 cache and may need time to accumulate the historical inputs; rate limits can
 still prevent a fresh issue. The cached downloads require no API key.
 
+The optional timelapse step is limited to five minutes so a slow imagery service
+cannot consume the whole monitor run before core data is committed. Its partial
+daily-mask cache is retained for later runs. A new fork may need several runs to
+fill the first full-season cache; the last valid GIF remains available meanwhile.
+
 The local checkout uses `origin` for this fork and `upstream` for the original.
 To collaborate, the owner can invite Rudri from the repository's Collaborators
 settings; forking does not automatically copy collaborators.

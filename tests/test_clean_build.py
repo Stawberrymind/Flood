@@ -109,3 +109,12 @@ def test_clean_vite_build_succeeds_and_emits_the_assets():
     assert (dist / "index.html").exists()
     for asset in _requested_assets():
         assert (dist / "assets" / asset).exists(), f"build did not emit {asset}"
+    # A fresh build must satisfy the same publishing policy as committed docs/.
+    # Previously cleanup was a manual step, so a rebuild reintroduced notes
+    # that caused both the build and the scheduled monitor gate to fail.
+    from pipeline.sanitize_web_bundle import FORBIDDEN
+
+    for chunk in (dist / "assets").glob("*.js"):
+        text = chunk.read_text(encoding="utf-8")
+        for name in FORBIDDEN:
+            assert name not in text, f"fresh build: {chunk.name} contains {name!r}"

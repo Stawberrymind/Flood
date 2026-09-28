@@ -87,6 +87,8 @@ default branch automatically.
 
 Run `npm ci` and `npm run build` in `webapp`, then publish the generated
 `webapp/dist` files into `docs`, preserving the research documents there.
+The build automatically cleans the dependency's translator-note example,
+which is required by the repository's publishing checks.
 Commit the changed generated HTML and assets. The build workflow checks the
 build; it does not automatically copy its output into the committed `docs`
 deployment. Live monitor and forecast updates need no frontend rebuild because

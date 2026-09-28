@@ -14,6 +14,9 @@ rebuild that skips this step fails the suite rather than silently republishing.
 
 Run after building into docs/:
     python -m pipeline.sanitize_web_bundle
+
+The Vite build now applies this same metadata replacement automatically, before
+chunk hashes are computed. This command remains useful for older built files.
 """
 
 from __future__ import annotations

@@ -46,8 +46,10 @@ jobs:
             forecast-data-bootstrap-${{ runner.os }}-
       - name: attach durable forecast-data branch
         run: |
-          git fetch origin forecast-data:refs/remotes/origin/forecast-data
-          git worktree add --detach ../forecast-data origin/forecast-data
+          # The branch is public scientific input. GitHub's workflow token can
+          # read master but may reject an unrelated-history branch over Git.
+          git -c http.https://github.com/.extraheader= -c credential.helper= fetch --no-tags https://github.com/${{ github.repository }}.git forecast-data:refs/remotes/public/forecast-data
+          git worktree add --detach ../forecast-data public/forecast-data
       - name: pull one bounded archive window
         id: bootstrap
         continue-on-error: true

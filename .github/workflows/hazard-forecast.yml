@@ -33,8 +33,10 @@ jobs:
       - run: python -m pytest -q          # never publish from a red tree
       - name: attach durable forecast-data branch
         run: |
-          git fetch origin forecast-data:refs/remotes/origin/forecast-data
-          git worktree add --detach ../forecast-data origin/forecast-data
+          # The branch is public scientific input. GitHub's workflow token can
+          # read master but may reject an unrelated-history branch over Git.
+          git -c http.https://github.com/.extraheader= -c credential.helper= fetch --no-tags https://github.com/${{ github.repository }}.git forecast-data:refs/remotes/public/forecast-data
+          git worktree add --detach ../forecast-data public/forecast-data
       # The client keys forecasts by issue date and historical inputs by their
       # query. Keep successful public downloads between ephemeral runners,
       # including partial progress when the forecast step hits a quota/timeout.

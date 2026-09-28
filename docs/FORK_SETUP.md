@@ -103,6 +103,12 @@ Public satellite coverage, weather-service quotas and bulletin availability are
 independent of GitHub authentication. Forking does not fix those inherited data
 or model limitations.
 
+The daily hazard workflow retains its public Open-Meteo disk cache between
+runs. Forecast cache keys include the issue date, so restoring the cache does
+not turn an older issue into today's forecast. A new fork starts without this
+cache and may need time to accumulate the historical inputs; rate limits can
+still prevent a fresh issue. The cached downloads require no API key.
+
 The local checkout uses `origin` for this fork and `upstream` for the original.
 To collaborate, the owner can invite Rudri from the repository's Collaborators
 settings; forking does not automatically copy collaborators.

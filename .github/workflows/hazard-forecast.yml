@@ -31,6 +31,17 @@ jobs:
         with: { python-version: "3.13" }
       - run: pip install -e ".[dev]"
       - run: python -m pytest -q          # never publish from a red tree
+      # The client keys forecasts by issue date and historical inputs by their
+      # query. Keep successful public downloads between ephemeral runners,
+      # including partial progress when the forecast step hits a quota/timeout.
+      - name: cache public weather inputs
+        uses: actions/cache@v4
+        continue-on-error: true
+        with:
+          path: punjabflood/data/cache/openmeteo
+          key: hazard-openmeteo-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            hazard-openmeteo-${{ runner.os }}-
       # The bulletin fetch can fail from a foreign runner (bbmb.gov.in has an incomplete TLS
       # chain and is not always reachable from outside India). A failed cycle is recorded in
       # the job log and produces no file; it must not fail the commit step.

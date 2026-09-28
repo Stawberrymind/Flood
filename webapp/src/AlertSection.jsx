@@ -9,7 +9,7 @@ import {Card} from '@astryxdesign/core/Card';
 import {Divider} from '@astryxdesign/core/Divider';
 import {StatusDot} from '@astryxdesign/core/StatusDot';
 
-const RAW = 'https://raw.githubusercontent.com/bakathefish/Flood/master/';
+import {RAW} from './repository';
 
 const A_T = {
   en: {

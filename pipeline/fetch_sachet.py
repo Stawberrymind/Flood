@@ -82,7 +82,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ENDPOINT = "https://sachet.ndma.gov.in/cap_public_website/FetchAllAlertDetails"
-UA = "Mozilla/5.0 (compatible; sailaab/1.0; +https://github.com/bakathefish/Flood)"
+UA = (
+    "Mozilla/5.0 (compatible; sailaab/1.0; +https://github.com/"
+    + os.environ.get("GITHUB_REPOSITORY", "Stawberrymind/Flood") + ")"
+)
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "sachet" / "alerts.jsonl"
 POLLS = ROOT / "data" / "sachet" / "polls.jsonl"

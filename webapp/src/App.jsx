@@ -16,12 +16,11 @@ import {MediaTheme} from '@astryxdesign/core/theme';
 import HazardSection from './HazardSection';
 import AlertSection from './AlertSection';
 import ForecastSection from './ForecastSection';
+import {RAW, REPO, REPOSITORY} from './repository';
 // heavy, below-the-fold sections (Leaflet + Recharts + PapaParse) are code-split
 // so the hero paints without their ~200 KB gzip on the critical path
 const MapSection = React.lazy(() => import('./MapSection'));
 const ProofSection = React.lazy(() => import('./ProofSection'));
-
-const RAW = 'https://raw.githubusercontent.com/bakathefish/Flood/master/';
 
 // A full-bleed band holding one measure-width column, set hard to the left.
 // The old band centred every child box, which is what made a page of
@@ -317,7 +316,7 @@ export default function App() {
           </VStack>
           <HStack gap={6} vAlign="center" wrap="wrap">
             <Link href="#forecast" isStandalone>{t.seeLive}</Link>
-            <Link href="https://github.com/bakathefish/Flood" isStandalone>{t.source}</Link>
+            <Link href={REPO} isStandalone>{t.source}</Link>
           </HStack>
         </VStack>
       </Band>
@@ -419,7 +418,7 @@ export default function App() {
             <VStack maxWidth={840}>
               <Text type="supporting" color="secondary">{t.footer}</Text>
             </VStack>
-            <Link href="https://github.com/bakathefish/Flood" isStandalone>github.com/bakathefish/Flood</Link>
+            <Link href={REPO} isStandalone>github.com/{REPOSITORY}</Link>
           </VStack>
         </HStack>
       </Section>

@@ -40,8 +40,8 @@ jobs:
         timeout-minutes: 35
       - name: commit the dated record
         run: |
-          git config user.name "bakathefish"
-          git config user.email "bakathefish@gmail.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add outputs/forecast/
           git diff --cached --quiet || git commit -m "hazard: prospective forecast record"
           # The job runs for minutes; a push that lands in between fails the

@@ -11,7 +11,7 @@ import {Divider} from '@astryxdesign/core/Divider';
 import {Link} from '@astryxdesign/core/Link';
 import {dataColors} from './theme';
 
-const REPO = 'https://github.com/bakathefish/Flood';
+import {REPO} from './repository';
 // same-origin GitHub Pages base ('/Flood/') serves the committed docs/ PDFs as
 // application/pdf (opens inline), unlike raw.githubusercontent's octet-stream
 const SITE = import.meta.env.BASE_URL;

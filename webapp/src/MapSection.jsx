@@ -14,6 +14,7 @@ import {SegmentedControl} from '@astryxdesign/core/SegmentedControl';
 import {SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
 import Papa from 'papaparse';
 import {dataColors} from './theme';
+import {RAW} from './repository';
 
 const MAP_T = {
   en: {
@@ -179,7 +180,7 @@ export default function MapSection({lang}) {
       });
       setByYear(by);
     }).catch(() => {});
-    fetch('https://raw.githubusercontent.com/bakathefish/Flood/master/monitor/nowcast.json')
+    fetch(RAW + 'monitor/nowcast.json')
       .then((r) => r.json())
       .then((j) => {
         if (!on) return;

@@ -12,7 +12,7 @@ import {Link} from '@astryxdesign/core/Link';
 import {Divider} from '@astryxdesign/core/Divider';
 import {num, resolveForecastState} from './forecastSchema';
 
-const RAW = 'https://raw.githubusercontent.com/bakathefish/Flood/master/';
+import {RAW} from './repository';
 
 const F_T = {
   en: {

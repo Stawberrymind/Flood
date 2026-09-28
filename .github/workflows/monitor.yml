@@ -40,8 +40,8 @@ jobs:
         continue-on-error: true                          # a WMS hiccup must never block the core monitor publish
       - name: commit state
         run: |
-          git config user.name "bakathefish"
-          git config user.email "bakathefish@gmail.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add monitor/
           git add data/sachet/
           git add atlas/web/timelapse_current.gif atlas/web/timelapse_current_still.png

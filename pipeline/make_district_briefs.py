@@ -95,8 +95,8 @@ ATLAS = ROOT / "atlas"
 # constants                                                                     #
 # --------------------------------------------------------------------------- #
 GEN_DATE = "2026-07-22"  # printed in the footer + fixed PDF timestamp
-PROJECT_URL = "bakathefish.github.io/Flood"
-REPO = "github.com/bakathefish/Flood"
+PROJECT_URL = "stawberrymind.github.io/Flood"
+REPO = "github.com/Stawberrymind/Flood"
 N_DECADE_SEASONS = 11  # 2015-2025 monsoons (see README)
 EXEMPLARS = ("Firozpur", "Kapurthala", "Gurdaspur")  # for the composite preview
 

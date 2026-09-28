@@ -11,10 +11,10 @@ import {Link} from '@astryxdesign/core/Link';
 import {Divider} from '@astryxdesign/core/Divider';
 import {HORIZONS, resolveHazardState} from './hazardSchema';
 
-const RAW = 'https://raw.githubusercontent.com/bakathefish/Flood/master/';
+import {RAW, REPO, BRANCH} from './repository';
 const FEED = RAW + 'punjabflood/outputs/forecast/latest.json';
-const VERIFY = 'https://github.com/bakathefish/Flood/blob/master/punjabflood/docs/verification.md';
-const RECORDS = 'https://github.com/bakathefish/Flood/blob/master/punjabflood/outputs/forecast/';
+const VERIFY = `${REPO}/blob/${BRANCH}/punjabflood/docs/verification.md`;
+const RECORDS = `${REPO}/tree/${BRANCH}/punjabflood/outputs/forecast/`;
 
 // Every string the section shows, in the three languages of the page.
 const H_T = {

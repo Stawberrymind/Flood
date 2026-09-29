@@ -1,5 +1,5 @@
 {
-  "archive_last_complete_date": "2026-09-26",
+  "archive_last_complete_date": "2026-09-27",
   "archive_start": "2014-01-01",
   "catchment": "Bhakra",
   "correction_overlap_days": 7,
@@ -8,13 +8,6 @@
   "points": {
     "30.2500,81.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.2,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.14,
-          "t2m_mean_c": 4.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 2.2,
@@ -105,25 +98,25 @@
           "pack_mm": 131.39999999999998,
           "snowfall_cm": 57.47,
           "t2m_mean_c": -1.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 146.29999999999998,
+          "snowfall_cm": 10.43,
+          "t2m_mean_c": -4.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.25,
       "longitude": 81.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 131.39999999999998,
+      "pack_mm": 146.29999999999998,
       "weight_km2": 0.108
     },
     "30.2500,81.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 1.4,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.98,
-          "t2m_mean_c": 4.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.6,
@@ -214,25 +207,25 @@
           "pack_mm": 140.3,
           "snowfall_cm": 57.75,
           "t2m_mean_c": 0.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 157.60000000000002,
+          "snowfall_cm": 12.11,
+          "t2m_mean_c": -1.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.25,
       "longitude": 81.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 140.3,
+      "pack_mm": 157.60000000000002,
       "weight_km2": 0.427
     },
     "30.2500,82.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 1403.1999999999962,
-          "snowfall_cm": 3.22,
-          "t2m_mean_c": -0.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -323,25 +316,25 @@
           "pack_mm": 1542.3999999999965,
           "snowfall_cm": 43.68,
           "t2m_mean_c": -4.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 1557.1999999999964,
+          "snowfall_cm": 10.36,
+          "t2m_mean_c": -7.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.25,
       "longitude": 82.0,
-      "pack_before_history_mm": 1398.5999999999963,
-      "pack_mm": 1542.3999999999965,
+      "pack_before_history_mm": 1403.1999999999962,
+      "pack_mm": 1557.1999999999964,
       "weight_km2": 45.083
     },
     "30.5000,80.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 4586.700000000008,
-          "snowfall_cm": 2.45,
-          "t2m_mean_c": -0.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -432,25 +425,25 @@
           "pack_mm": 4739.200000000008,
           "snowfall_cm": 84.07,
           "t2m_mean_c": -5.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 4761.300000000008,
+          "snowfall_cm": 15.47,
+          "t2m_mean_c": -4.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 80.25,
-      "pack_before_history_mm": 4583.200000000008,
-      "pack_mm": 4739.200000000008,
+      "pack_before_history_mm": 4586.700000000008,
+      "pack_mm": 4761.300000000008,
       "weight_km2": 111.556
     },
     "30.5000,80.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 7938.900000000024,
-          "snowfall_cm": 0.7,
-          "t2m_mean_c": -4.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -541,25 +534,25 @@
           "pack_mm": 8091.300000000024,
           "snowfall_cm": 82.46,
           "t2m_mean_c": -11.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 8106.600000000024,
+          "snowfall_cm": 10.71,
+          "t2m_mean_c": -9.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 80.5,
-      "pack_before_history_mm": 7937.900000000024,
-      "pack_mm": 8091.300000000024,
+      "pack_before_history_mm": 7938.900000000024,
+      "pack_mm": 8106.600000000024,
       "weight_km2": 363.985
     },
     "30.5000,80.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.3,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.21,
-          "t2m_mean_c": 3.8
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -650,25 +643,25 @@
           "pack_mm": 128.7,
           "snowfall_cm": 63.98,
           "t2m_mean_c": -4.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 134.89999999999998,
+          "snowfall_cm": 4.34,
+          "t2m_mean_c": -3.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 80.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 128.7,
+      "pack_mm": 134.89999999999998,
       "weight_km2": 51.654
     },
     "30.5000,81.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 7.8
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -759,25 +752,25 @@
           "pack_mm": 118.9,
           "snowfall_cm": 61.39,
           "t2m_mean_c": -1.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 126.4,
+          "snowfall_cm": 5.25,
+          "t2m_mean_c": -1.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 81.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 118.9,
+      "pack_mm": 126.4,
       "weight_km2": 55.528
     },
     "30.5000,81.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.3,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.21,
-          "t2m_mean_c": 3.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.2,
@@ -868,25 +861,25 @@
           "pack_mm": 127.0,
           "snowfall_cm": 59.5,
           "t2m_mean_c": -3.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 133.1,
+          "snowfall_cm": 4.27,
+          "t2m_mean_c": -5.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 81.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 127.0,
+      "pack_mm": 133.1,
       "weight_km2": 233.032
     },
     "30.5000,81.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 8.0,
-          "pack_mm": 1.200000000000001,
-          "snowfall_cm": 0.98,
-          "t2m_mean_c": 2.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 3.700000000000001,
@@ -977,25 +970,25 @@
           "pack_mm": 138.2,
           "snowfall_cm": 61.25,
           "t2m_mean_c": -4.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 148.89999999999998,
+          "snowfall_cm": 7.49,
+          "t2m_mean_c": -5.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 81.5,
-      "pack_before_history_mm": 7.800000000000001,
-      "pack_mm": 138.2,
+      "pack_before_history_mm": 1.200000000000001,
+      "pack_mm": 148.89999999999998,
       "weight_km2": 580.932
     },
     "30.5000,81.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 2.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 1.4,
-          "t2m_mean_c": 4.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 1.5,
@@ -1086,25 +1079,25 @@
           "pack_mm": 121.69999999999999,
           "snowfall_cm": 53.97,
           "t2m_mean_c": -2.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 132.39999999999998,
+          "snowfall_cm": 7.49,
+          "t2m_mean_c": -4.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 81.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 121.69999999999999,
+      "pack_mm": 132.39999999999998,
       "weight_km2": 592.418
     },
     "30.5000,82.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 2.6999999999999997,
-          "pack_mm": 0.0,
-          "snowfall_cm": 1.89,
-          "t2m_mean_c": 2.6
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 2.2,
@@ -1195,25 +1188,25 @@
           "pack_mm": 104.6,
           "snowfall_cm": 39.55,
           "t2m_mean_c": -3.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 113.8,
+          "snowfall_cm": 6.44,
+          "t2m_mean_c": -7.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 82.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 104.6,
+      "pack_mm": 113.8,
       "weight_km2": 485.734
     },
     "30.5000,82.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.8,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.56,
-          "t2m_mean_c": 3.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.8,
@@ -1304,25 +1297,25 @@
           "pack_mm": 90.3,
           "snowfall_cm": 30.52,
           "t2m_mean_c": -2.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 99.2,
+          "snowfall_cm": 6.23,
+          "t2m_mean_c": -4.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 82.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 90.3,
+      "pack_mm": 99.2,
       "weight_km2": 246.545
     },
     "30.5000,82.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 1.3,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.91,
-          "t2m_mean_c": 3.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.1,
@@ -1413,25 +1406,25 @@
           "pack_mm": 71.0,
           "snowfall_cm": 22.47,
           "t2m_mean_c": -2.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 77.1,
+          "snowfall_cm": 4.27,
+          "t2m_mean_c": -4.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.5,
       "longitude": 82.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 71.0,
+      "pack_mm": 77.1,
       "weight_km2": 52.393
     },
     "30.7500,80.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 3.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.1,
@@ -1522,25 +1515,25 @@
           "pack_mm": 128.3,
           "snowfall_cm": 85.05,
           "t2m_mean_c": -3.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 144.5,
+          "snowfall_cm": 11.34,
+          "t2m_mean_c": -2.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 80.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 128.3,
+      "pack_mm": 144.5,
       "weight_km2": 66.291
     },
     "30.7500,80.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 10.100000000000001,
-          "snowfall_cm": 0.77,
-          "t2m_mean_c": -0.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -1631,25 +1624,25 @@
           "pack_mm": 146.3,
           "snowfall_cm": 78.82,
           "t2m_mean_c": -8.0
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 161.9,
+          "snowfall_cm": 10.92,
+          "t2m_mean_c": -6.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 80.25,
-      "pack_before_history_mm": 9.000000000000002,
-      "pack_mm": 146.3,
+      "pack_before_history_mm": 10.100000000000001,
+      "pack_mm": 161.9,
       "weight_km2": 488.728
     },
     "30.7500,80.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.2,
@@ -1740,25 +1733,25 @@
           "pack_mm": 104.0,
           "snowfall_cm": 66.85,
           "t2m_mean_c": -3.8
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 111.8,
+          "snowfall_cm": 5.46,
+          "t2m_mean_c": -3.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 80.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 104.0,
+      "pack_mm": 111.8,
       "weight_km2": 659.611
     },
     "30.7500,80.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 7.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -1849,25 +1842,25 @@
           "pack_mm": 84.5,
           "snowfall_cm": 55.93,
           "t2m_mean_c": -2.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 88.4,
+          "snowfall_cm": 2.73,
+          "t2m_mean_c": -3.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 80.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 84.5,
+      "pack_mm": 88.4,
       "weight_km2": 536.868
     },
     "30.7500,81.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.3,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.21,
-          "t2m_mean_c": 5.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 2.0,
@@ -1958,25 +1951,25 @@
           "pack_mm": 99.7,
           "snowfall_cm": 56.14,
           "t2m_mean_c": -3.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 103.2,
+          "snowfall_cm": 2.45,
+          "t2m_mean_c": -2.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 81.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 99.7,
+      "pack_mm": 103.2,
       "weight_km2": 658.456
     },
     "30.7500,81.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 8.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.5,
@@ -2067,25 +2060,25 @@
           "pack_mm": 80.2,
           "snowfall_cm": 42.84,
           "t2m_mean_c": -0.8
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 2.4,
+          "pack_mm": 79.8,
+          "snowfall_cm": 1.4,
+          "t2m_mean_c": 0.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 81.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 80.2,
+      "pack_mm": 79.8,
       "weight_km2": 663.476
     },
     "30.7500,81.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 1.3,
@@ -2176,25 +2169,25 @@
           "pack_mm": 76.1,
           "snowfall_cm": 42.84,
           "t2m_mean_c": -1.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 79.89999999999999,
+          "snowfall_cm": 2.66,
+          "t2m_mean_c": -1.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 81.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 76.1,
+      "pack_mm": 79.89999999999999,
       "weight_km2": 663.476
     },
     "30.7500,81.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 2.3000000000000003,
-          "pack_mm": 0.0,
-          "snowfall_cm": 1.61,
-          "t2m_mean_c": 3.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 2.6,
@@ -2285,25 +2278,25 @@
           "pack_mm": 89.6,
           "snowfall_cm": 43.75,
           "t2m_mean_c": -3.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 95.3,
+          "snowfall_cm": 3.99,
+          "t2m_mean_c": -4.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 81.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 89.6,
+      "pack_mm": 95.3,
       "weight_km2": 663.476
     },
     "30.7500,82.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 4.4,
-          "pack_mm": 0.0,
-          "snowfall_cm": 3.08,
-          "t2m_mean_c": 3.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 2.8,
@@ -2394,25 +2387,25 @@
           "pack_mm": 85.0,
           "snowfall_cm": 38.64,
           "t2m_mean_c": -2.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 91.8,
+          "snowfall_cm": 4.76,
+          "t2m_mean_c": -3.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 82.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 85.0,
+      "pack_mm": 91.8,
       "weight_km2": 618.357
     },
     "30.7500,82.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 24.8,
-          "snowfall_cm": 2.03,
-          "t2m_mean_c": -0.6
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -2503,25 +2496,25 @@
           "pack_mm": 106.4,
           "snowfall_cm": 29.4,
           "t2m_mean_c": -6.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 112.10000000000001,
+          "snowfall_cm": 3.99,
+          "t2m_mean_c": -8.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 82.25,
-      "pack_before_history_mm": 21.900000000000002,
-      "pack_mm": 106.4,
+      "pack_before_history_mm": 24.8,
+      "pack_mm": 112.10000000000001,
       "weight_km2": 383.754
     },
     "30.7500,82.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 11.6,
-          "snowfall_cm": 2.59,
-          "t2m_mean_c": -0.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -2612,25 +2605,25 @@
           "pack_mm": 84.7,
           "snowfall_cm": 25.9,
           "t2m_mean_c": -5.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 90.60000000000001,
+          "snowfall_cm": 4.13,
+          "t2m_mean_c": -8.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 30.75,
       "longitude": 82.5,
-      "pack_before_history_mm": 7.9,
-      "pack_mm": 84.7,
+      "pack_before_history_mm": 11.6,
+      "pack_mm": 90.60000000000001,
       "weight_km2": 17.197
     },
     "31.0000,76.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 26.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -2721,10 +2714,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 26.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 24.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 76.75,
       "pack_before_history_mm": 0.0,
@@ -2733,13 +2733,6 @@
     },
     "31.0000,77.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 22.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -2830,10 +2823,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 21.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 20.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 77.0,
       "pack_before_history_mm": 0.0,
@@ -2842,13 +2842,6 @@
     },
     "31.0000,77.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 20.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -2939,10 +2932,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 19.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 18.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 77.25,
       "pack_before_history_mm": 0.0,
@@ -2951,13 +2951,6 @@
     },
     "31.0000,77.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 16.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -3048,10 +3041,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 13.0
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 13.1
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 77.5,
       "pack_before_history_mm": 0.0,
@@ -3060,13 +3060,6 @@
     },
     "31.0000,79.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 7587.2000000000035,
-          "snowfall_cm": 0.7,
-          "t2m_mean_c": -2.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -3157,25 +3150,25 @@
           "pack_mm": 7689.500000000003,
           "snowfall_cm": 69.23,
           "t2m_mean_c": -6.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 7718.900000000002,
+          "snowfall_cm": 20.58,
+          "t2m_mean_c": -5.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 79.25,
-      "pack_before_history_mm": 7586.2000000000035,
-      "pack_mm": 7689.500000000003,
+      "pack_before_history_mm": 7587.2000000000035,
+      "pack_mm": 7718.900000000002,
       "weight_km2": 0.559
     },
     "31.0000,79.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 10122.900000000032,
-          "snowfall_cm": 0.56,
-          "t2m_mean_c": -4.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -3266,25 +3259,25 @@
           "pack_mm": 10219.400000000034,
           "snowfall_cm": 63.14,
           "t2m_mean_c": -7.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 10241.500000000035,
+          "snowfall_cm": 15.47,
+          "t2m_mean_c": -7.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 79.5,
-      "pack_before_history_mm": 10122.100000000033,
-      "pack_mm": 10219.400000000034,
+      "pack_before_history_mm": 10122.900000000032,
+      "pack_mm": 10241.500000000035,
       "weight_km2": 285.887
     },
     "31.0000,79.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 1210.7999999999945,
-          "snowfall_cm": 0.35,
-          "t2m_mean_c": -0.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -3375,25 +3368,25 @@
           "pack_mm": 1293.7999999999943,
           "snowfall_cm": 55.37,
           "t2m_mean_c": -7.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 1306.4999999999943,
+          "snowfall_cm": 8.89,
+          "t2m_mean_c": -7.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 79.75,
-      "pack_before_history_mm": 1210.2999999999945,
-      "pack_mm": 1293.7999999999943,
+      "pack_before_history_mm": 1210.7999999999945,
+      "pack_mm": 1306.4999999999943,
       "weight_km2": 387.093
     },
     "31.0000,80.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -3484,25 +3477,25 @@
           "pack_mm": 70.3,
           "snowfall_cm": 49.21,
           "t2m_mean_c": -3.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 78.39999999999999,
+          "snowfall_cm": 5.67,
+          "t2m_mean_c": -2.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 80.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 70.3,
+      "pack_mm": 78.39999999999999,
       "weight_km2": 630.412
     },
     "31.0000,80.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -3593,25 +3586,25 @@
           "pack_mm": 81.3,
           "snowfall_cm": 56.91,
           "t2m_mean_c": -4.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 86.1,
+          "snowfall_cm": 3.36,
+          "t2m_mean_c": -3.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 80.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 81.3,
+      "pack_mm": 86.1,
       "weight_km2": 661.781
     },
     "31.0000,80.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 7.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -3702,25 +3695,25 @@
           "pack_mm": 71.8,
           "snowfall_cm": 50.26,
           "t2m_mean_c": -3.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 75.39999999999999,
+          "snowfall_cm": 2.52,
+          "t2m_mean_c": -3.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 80.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 71.8,
+      "pack_mm": 75.39999999999999,
       "weight_km2": 661.781
     },
     "31.0000,80.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.1,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.07,
-          "t2m_mean_c": 5.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.6,
@@ -3811,25 +3804,25 @@
           "pack_mm": 78.0,
           "snowfall_cm": 48.58,
           "t2m_mean_c": -4.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 81.1,
+          "snowfall_cm": 2.17,
+          "t2m_mean_c": -3.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 80.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 78.0,
+      "pack_mm": 81.1,
       "weight_km2": 661.781
     },
     "31.0000,81.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.9,
@@ -3920,25 +3913,25 @@
           "pack_mm": 72.0,
           "snowfall_cm": 42.28,
           "t2m_mean_c": -3.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 74.1,
+          "snowfall_cm": 1.47,
+          "t2m_mean_c": -4.1
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 81.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 72.0,
+      "pack_mm": 74.1,
       "weight_km2": 661.781
     },
     "31.0000,81.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.1,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.07,
-          "t2m_mean_c": 6.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 1.3,
@@ -4029,25 +4022,25 @@
           "pack_mm": 66.8,
           "snowfall_cm": 36.12,
           "t2m_mean_c": -2.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 68.3,
+          "snowfall_cm": 1.05,
+          "t2m_mean_c": -2.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 81.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 66.8,
+      "pack_mm": 68.3,
       "weight_km2": 661.781
     },
     "31.0000,81.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.8,
-          "pack_mm": 21.2,
-          "snowfall_cm": 3.08,
-          "t2m_mean_c": 0.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -4138,25 +4131,25 @@
           "pack_mm": 96.1,
           "snowfall_cm": 37.17,
           "t2m_mean_c": -5.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 99.19999999999999,
+          "snowfall_cm": 2.17,
+          "t2m_mean_c": -7.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 81.5,
-      "pack_before_history_mm": 17.599999999999998,
-      "pack_mm": 96.1,
+      "pack_before_history_mm": 21.2,
+      "pack_mm": 99.19999999999999,
       "weight_km2": 645.615
     },
     "31.0000,81.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 2.8,
-          "pack_mm": 7.3999999999999995,
-          "snowfall_cm": 2.17,
-          "t2m_mean_c": 0.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -4247,25 +4240,25 @@
           "pack_mm": 83.60000000000001,
           "snowfall_cm": 37.45,
           "t2m_mean_c": -6.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 89.00000000000001,
+          "snowfall_cm": 3.78,
+          "t2m_mean_c": -10.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 81.75,
-      "pack_before_history_mm": 7.099999999999999,
-      "pack_mm": 83.60000000000001,
+      "pack_before_history_mm": 7.3999999999999995,
+      "pack_mm": 89.00000000000001,
       "weight_km2": 430.053
     },
     "31.0000,82.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 1.6,
-          "pack_mm": 0.0,
-          "snowfall_cm": 1.12,
-          "t2m_mean_c": 3.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 1.7,
@@ -4356,25 +4349,25 @@
           "pack_mm": 71.7,
           "snowfall_cm": 34.16,
           "t2m_mean_c": -4.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 76.2,
+          "snowfall_cm": 3.15,
+          "t2m_mean_c": -7.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.0,
       "longitude": 82.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 71.7,
+      "pack_mm": 76.2,
       "weight_km2": 60.94
     },
     "31.2500,76.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 27.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -4465,10 +4458,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 26.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 24.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 76.25,
       "pack_before_history_mm": 0.0,
@@ -4477,13 +4477,6 @@
     },
     "31.2500,76.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 27.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -4574,10 +4567,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 26.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 24.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 76.5,
       "pack_before_history_mm": 0.0,
@@ -4586,13 +4586,6 @@
     },
     "31.2500,76.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 25.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -4683,10 +4676,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 25.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 23.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 76.75,
       "pack_before_history_mm": 0.0,
@@ -4695,13 +4695,6 @@
     },
     "31.2500,77.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 19.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -4792,10 +4785,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 18.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 17.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 77.0,
       "pack_before_history_mm": 0.0,
@@ -4804,13 +4804,6 @@
     },
     "31.2500,77.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 24.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -4901,10 +4894,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 23.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 22.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 77.25,
       "pack_before_history_mm": 0.0,
@@ -4913,13 +4913,6 @@
     },
     "31.2500,77.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 11.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -5010,10 +5003,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 9.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 8.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 77.5,
       "pack_before_history_mm": 0.0,
@@ -5022,13 +5022,6 @@
     },
     "31.2500,77.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 17.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -5119,10 +5112,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 13.8
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 13.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 77.75,
       "pack_before_history_mm": 0.0,
@@ -5131,13 +5131,6 @@
     },
     "31.2500,78.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 10.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -5228,10 +5221,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 5.8
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 6.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 78.0,
       "pack_before_history_mm": 0.0,
@@ -5240,13 +5240,6 @@
     },
     "31.2500,78.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.2,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.14,
-          "t2m_mean_c": 2.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -5337,25 +5330,25 @@
           "pack_mm": 74.8,
           "snowfall_cm": 48.44,
           "t2m_mean_c": -1.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 111.5,
+          "snowfall_cm": 25.69,
+          "t2m_mean_c": -1.1
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 78.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 74.8,
+      "pack_mm": 111.5,
       "weight_km2": 139.381
     },
     "31.2500,78.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 134.60000000000008,
-          "snowfall_cm": 0.28,
-          "t2m_mean_c": 0.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -5446,25 +5439,25 @@
           "pack_mm": 215.30000000000007,
           "snowfall_cm": 53.76,
           "t2m_mean_c": -6.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 247.70000000000007,
+          "snowfall_cm": 22.68,
+          "t2m_mean_c": -3.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 78.5,
-      "pack_before_history_mm": 134.20000000000007,
-      "pack_mm": 215.30000000000007,
+      "pack_before_history_mm": 134.60000000000008,
+      "pack_mm": 247.70000000000007,
       "weight_km2": 396.212
     },
     "31.2500,78.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 9070.800000000034,
-          "snowfall_cm": 2.45,
-          "t2m_mean_c": -2.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -5555,25 +5548,25 @@
           "pack_mm": 9155.200000000035,
           "snowfall_cm": 56.14,
           "t2m_mean_c": -7.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 9183.600000000035,
+          "snowfall_cm": 19.88,
+          "t2m_mean_c": -5.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 78.75,
-      "pack_before_history_mm": 9067.300000000034,
-      "pack_mm": 9155.200000000035,
+      "pack_before_history_mm": 9070.800000000034,
+      "pack_mm": 9183.600000000035,
       "weight_km2": 410.879
     },
     "31.2500,79.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.5,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.35,
-          "t2m_mean_c": 1.8
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -5664,25 +5657,25 @@
           "pack_mm": 78.89999999999999,
           "snowfall_cm": 54.46,
           "t2m_mean_c": -5.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 96.29999999999998,
+          "snowfall_cm": 12.18,
+          "t2m_mean_c": -3.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 79.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 78.89999999999999,
+      "pack_mm": 96.29999999999998,
       "weight_km2": 61.602
     },
     "31.2500,79.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 59.20000000000298,
-          "snowfall_cm": 1.33,
-          "t2m_mean_c": -0.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -5773,25 +5766,25 @@
           "pack_mm": 140.00000000000298,
           "snowfall_cm": 55.58,
           "t2m_mean_c": -7.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 157.20000000000297,
+          "snowfall_cm": 12.04,
+          "t2m_mean_c": -6.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 79.25,
-      "pack_before_history_mm": 57.30000000000298,
-      "pack_mm": 140.00000000000298,
+      "pack_before_history_mm": 59.20000000000298,
+      "pack_mm": 157.20000000000297,
       "weight_km2": 290.451
     },
     "31.2500,79.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 1.5,
-          "pack_mm": 0.0,
-          "snowfall_cm": 1.05,
-          "t2m_mean_c": 4.6
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.3,
@@ -5882,25 +5875,25 @@
           "pack_mm": 64.0,
           "snowfall_cm": 44.8,
           "t2m_mean_c": -4.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 77.3,
+          "snowfall_cm": 9.31,
+          "t2m_mean_c": -5.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 79.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 64.0,
+      "pack_mm": 77.3,
       "weight_km2": 660.074
     },
     "31.2500,79.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.3,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.21,
-          "t2m_mean_c": 6.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -5991,25 +5984,25 @@
           "pack_mm": 57.800000000000004,
           "snowfall_cm": 40.46,
           "t2m_mean_c": -3.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 64.0,
+          "snowfall_cm": 4.34,
+          "t2m_mean_c": -3.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 79.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 57.800000000000004,
+      "pack_mm": 64.0,
       "weight_km2": 660.074
     },
     "31.2500,80.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 9.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -6100,25 +6093,25 @@
           "pack_mm": 50.300000000000004,
           "snowfall_cm": 35.21,
           "t2m_mean_c": -1.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 57.400000000000006,
+          "snowfall_cm": 4.97,
+          "t2m_mean_c": -1.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 80.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 50.300000000000004,
+      "pack_mm": 57.400000000000006,
       "weight_km2": 660.074
     },
     "31.2500,80.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.1,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.07,
-          "t2m_mean_c": 4.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.1,
@@ -6209,25 +6202,25 @@
           "pack_mm": 53.8,
           "snowfall_cm": 37.66,
           "t2m_mean_c": -4.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 56.599999999999994,
+          "snowfall_cm": 1.96,
+          "t2m_mean_c": -3.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 80.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 53.8,
+      "pack_mm": 56.599999999999994,
       "weight_km2": 613.118
     },
     "31.2500,80.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.6,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.42,
-          "t2m_mean_c": 2.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.2,
@@ -6318,25 +6311,25 @@
           "pack_mm": 61.8,
           "snowfall_cm": 38.08,
           "t2m_mean_c": -4.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 63.5,
+          "snowfall_cm": 1.19,
+          "t2m_mean_c": -4.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 80.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 61.8,
+      "pack_mm": 63.5,
       "weight_km2": 616.921
     },
     "31.2500,80.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.8
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -6427,25 +6420,25 @@
           "pack_mm": 49.5,
           "snowfall_cm": 34.65,
           "t2m_mean_c": -2.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 51.7,
+          "snowfall_cm": 1.54,
+          "t2m_mean_c": -2.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 80.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 49.5,
+      "pack_mm": 51.7,
       "weight_km2": 552.895
     },
     "31.2500,81.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 21.599999999999998,
-          "snowfall_cm": 3.64,
-          "t2m_mean_c": -0.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -6536,25 +6529,25 @@
           "pack_mm": 90.30000000000001,
           "snowfall_cm": 38.71,
           "t2m_mean_c": -7.0
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 94.60000000000001,
+          "snowfall_cm": 3.01,
+          "t2m_mean_c": -6.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 81.0,
-      "pack_before_history_mm": 16.4,
-      "pack_mm": 90.30000000000001,
+      "pack_before_history_mm": 21.599999999999998,
+      "pack_mm": 94.60000000000001,
       "weight_km2": 557.42
     },
     "31.2500,81.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 3.9,
-          "pack_mm": 0.0,
-          "snowfall_cm": 2.73,
-          "t2m_mean_c": 3.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.4,
@@ -6645,25 +6638,25 @@
           "pack_mm": 65.2,
           "snowfall_cm": 35.63,
           "t2m_mean_c": -3.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 67.4,
+          "snowfall_cm": 1.54,
+          "t2m_mean_c": -5.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 81.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 65.2,
+      "pack_mm": 67.4,
       "weight_km2": 163.895
     },
     "31.2500,81.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 1.8,
-          "pack_mm": 0.0,
-          "snowfall_cm": 1.26,
-          "t2m_mean_c": 3.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.3,
@@ -6754,25 +6747,25 @@
           "pack_mm": 63.0,
           "snowfall_cm": 34.65,
           "t2m_mean_c": -4.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 65.7,
+          "snowfall_cm": 1.89,
+          "t2m_mean_c": -5.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.25,
       "longitude": 81.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 63.0,
+      "pack_mm": 65.7,
       "weight_km2": 47.218
     },
     "31.5000,76.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 27.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -6863,10 +6856,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 25.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 23.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 76.25,
       "pack_before_history_mm": 0.0,
@@ -6875,13 +6875,6 @@
     },
     "31.5000,76.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 24.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -6972,10 +6965,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 23.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 21.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 76.5,
       "pack_before_history_mm": 0.0,
@@ -6984,13 +6984,6 @@
     },
     "31.5000,76.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 23.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -7081,10 +7074,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 22.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 21.1
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 76.75,
       "pack_before_history_mm": 0.0,
@@ -7093,13 +7093,6 @@
     },
     "31.5000,77.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 19.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -7190,10 +7183,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 17.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 16.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 77.0,
       "pack_before_history_mm": 0.0,
@@ -7202,13 +7202,6 @@
     },
     "31.5000,77.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 13.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -7299,10 +7292,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 11.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 10.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 77.25,
       "pack_before_history_mm": 0.0,
@@ -7311,13 +7311,6 @@
     },
     "31.5000,77.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 13.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -7408,10 +7401,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 11.8
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 9.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 77.5,
       "pack_before_history_mm": 0.0,
@@ -7420,13 +7420,6 @@
     },
     "31.5000,77.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 19.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -7517,10 +7510,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 14.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 14.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 77.75,
       "pack_before_history_mm": 0.0,
@@ -7529,13 +7529,6 @@
     },
     "31.5000,78.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 8.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -7626,25 +7619,25 @@
           "pack_mm": 35.7,
           "snowfall_cm": 31.71,
           "t2m_mean_c": 2.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 6.0,
+          "pack_mm": 64.5,
+          "snowfall_cm": 24.36,
+          "t2m_mean_c": 1.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 78.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 35.7,
+      "pack_mm": 64.5,
       "weight_km2": 598.585
     },
     "31.5000,78.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 12.8
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -7735,25 +7728,25 @@
           "pack_mm": 9.599999999999998,
           "snowfall_cm": 20.72,
           "t2m_mean_c": 5.0
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 16.4,
+          "pack_mm": 9.399999999999999,
+          "snowfall_cm": 11.34,
+          "t2m_mean_c": 4.1
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 78.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 9.599999999999998,
+      "pack_mm": 9.399999999999999,
       "weight_km2": 651.117
     },
     "31.5000,78.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 8.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -7844,25 +7837,25 @@
           "pack_mm": 47.1,
           "snowfall_cm": 35.21,
           "t2m_mean_c": 0.8
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 4.0,
+          "pack_mm": 70.1,
+          "snowfall_cm": 18.9,
+          "t2m_mean_c": 1.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 78.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 47.1,
+      "pack_mm": 70.1,
       "weight_km2": 658.354
     },
     "31.5000,78.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.2,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.14,
-          "t2m_mean_c": 2.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -7953,25 +7946,25 @@
           "pack_mm": 58.6,
           "snowfall_cm": 40.39,
           "t2m_mean_c": -4.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 80.5,
+          "snowfall_cm": 15.33,
+          "t2m_mean_c": -4.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 78.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 58.6,
+      "pack_mm": 80.5,
       "weight_km2": 658.354
     },
     "31.5000,79.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 12.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -8062,25 +8055,25 @@
           "pack_mm": 42.400000000000006,
           "snowfall_cm": 33.88,
           "t2m_mean_c": 1.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 6.8,
+          "pack_mm": 47.00000000000001,
+          "snowfall_cm": 7.98,
+          "t2m_mean_c": 1.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 79.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 42.400000000000006,
+      "pack_mm": 47.00000000000001,
       "weight_km2": 583.4
     },
     "31.5000,79.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 1.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.7,
-          "t2m_mean_c": 6.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -8171,25 +8164,25 @@
           "pack_mm": 50.2,
           "snowfall_cm": 35.14,
           "t2m_mean_c": -2.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 59.2,
+          "snowfall_cm": 6.3,
+          "t2m_mean_c": -3.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 79.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 50.2,
+      "pack_mm": 59.2,
       "weight_km2": 635.297
     },
     "31.5000,79.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 12.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -8280,25 +8273,25 @@
           "pack_mm": 34.400000000000006,
           "snowfall_cm": 26.04,
           "t2m_mean_c": 0.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 39.400000000000006,
+          "snowfall_cm": 3.5,
+          "t2m_mean_c": -0.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 79.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 34.400000000000006,
+      "pack_mm": 39.400000000000006,
       "weight_km2": 658.354
     },
     "31.5000,79.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 12.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -8389,25 +8382,25 @@
           "pack_mm": 31.3,
           "snowfall_cm": 25.55,
           "t2m_mean_c": 1.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 37.6,
+          "snowfall_cm": 4.41,
+          "t2m_mean_c": -0.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 79.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 31.3,
+      "pack_mm": 37.6,
       "weight_km2": 658.354
     },
     "31.5000,80.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -8498,25 +8491,25 @@
           "pack_mm": 39.2,
           "snowfall_cm": 27.44,
           "t2m_mean_c": -3.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 45.2,
+          "snowfall_cm": 4.2,
+          "t2m_mean_c": -3.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 80.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 39.2,
+      "pack_mm": 45.2,
       "weight_km2": 623.766
     },
     "31.5000,80.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 46.49999999999989,
-          "snowfall_cm": 0.63,
-          "t2m_mean_c": -2.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -8607,25 +8600,25 @@
           "pack_mm": 92.2999999999999,
           "snowfall_cm": 30.8,
           "t2m_mean_c": -9.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 98.89999999999989,
+          "snowfall_cm": 4.62,
+          "t2m_mean_c": -9.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 80.25,
-      "pack_before_history_mm": 45.599999999999895,
-      "pack_mm": 92.2999999999999,
+      "pack_before_history_mm": 46.49999999999989,
+      "pack_mm": 98.89999999999989,
       "weight_km2": 114.922
     },
     "31.5000,80.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.7,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.49,
-          "t2m_mean_c": 6.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -8716,25 +8709,25 @@
           "pack_mm": 40.8,
           "snowfall_cm": 28.56,
           "t2m_mean_c": -1.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 42.8,
+          "snowfall_cm": 1.4,
+          "t2m_mean_c": -1.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 80.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 40.8,
+      "pack_mm": 42.8,
       "weight_km2": 5.982
     },
     "31.5000,80.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 1407.3999999999971,
-          "snowfall_cm": 1.75,
-          "t2m_mean_c": -2.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -8825,25 +8818,25 @@
           "pack_mm": 1455.8999999999971,
           "snowfall_cm": 30.03,
           "t2m_mean_c": -9.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 1458.2999999999972,
+          "snowfall_cm": 1.68,
+          "t2m_mean_c": -9.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 80.75,
-      "pack_before_history_mm": 1404.8999999999971,
-      "pack_mm": 1455.8999999999971,
+      "pack_before_history_mm": 1407.3999999999971,
+      "pack_mm": 1458.2999999999972,
       "weight_km2": 9.854
     },
     "31.5000,81.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 2.5,
-          "pack_mm": 0.0,
-          "snowfall_cm": 1.75,
-          "t2m_mean_c": 1.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -8934,25 +8927,25 @@
           "pack_mm": 52.6,
           "snowfall_cm": 31.92,
           "t2m_mean_c": -5.8
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 56.300000000000004,
+          "snowfall_cm": 2.59,
+          "t2m_mean_c": -5.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.5,
       "longitude": 81.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 52.6,
+      "pack_mm": 56.300000000000004,
       "weight_km2": 1.921
     },
     "31.7500,76.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 25.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -9043,10 +9036,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 23.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 22.1
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 76.25,
       "pack_before_history_mm": 0.0,
@@ -9055,13 +9055,6 @@
     },
     "31.7500,76.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 24.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -9152,10 +9145,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 23.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 22.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 76.5,
       "pack_before_history_mm": 0.0,
@@ -9164,13 +9164,6 @@
     },
     "31.7500,76.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 23.8
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -9261,10 +9254,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.0,
           "t2m_mean_c": 23.0
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 0.0,
+          "t2m_mean_c": 21.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 76.75,
       "pack_before_history_mm": 0.0,
@@ -9273,13 +9273,6 @@
     },
     "31.7500,77.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -9370,10 +9363,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 4.06,
           "t2m_mean_c": 4.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 5.0,
+          "pack_mm": 0.0,
+          "snowfall_cm": 3.5,
+          "t2m_mean_c": 2.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 77.5,
       "pack_before_history_mm": 0.0,
@@ -9382,13 +9382,6 @@
     },
     "31.7500,77.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 4758.600000000011,
-          "snowfall_cm": 0.28,
-          "t2m_mean_c": -0.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -9479,25 +9472,25 @@
           "pack_mm": 4792.600000000011,
           "snowfall_cm": 15.26,
           "t2m_mean_c": -3.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 4816.600000000011,
+          "snowfall_cm": 16.8,
+          "t2m_mean_c": -3.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 77.75,
-      "pack_before_history_mm": 4758.200000000012,
-      "pack_mm": 4792.600000000011,
+      "pack_before_history_mm": 4758.600000000011,
+      "pack_mm": 4816.600000000011,
       "weight_km2": 294.229
     },
     "31.7500,78.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -9588,25 +9581,25 @@
           "pack_mm": 33.7,
           "snowfall_cm": 26.39,
           "t2m_mean_c": 1.0
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 3.6,
+          "pack_mm": 71.5,
+          "snowfall_cm": 28.98,
+          "t2m_mean_c": 0.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 78.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 33.7,
+      "pack_mm": 71.5,
       "weight_km2": 656.622
     },
     "31.7500,78.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 7.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -9697,25 +9690,25 @@
           "pack_mm": 42.900000000000006,
           "snowfall_cm": 30.03,
           "t2m_mean_c": -0.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 85.80000000000001,
+          "snowfall_cm": 30.03,
+          "t2m_mean_c": -0.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 78.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 42.900000000000006,
+      "pack_mm": 85.80000000000001,
       "weight_km2": 656.622
     },
     "31.7500,78.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 12.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -9806,25 +9799,25 @@
           "pack_mm": 6.1,
           "snowfall_cm": 12.95,
           "t2m_mean_c": 3.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 7.6,
+          "pack_mm": 0.0,
+          "snowfall_cm": 1.05,
+          "t2m_mean_c": 2.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 78.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 6.1,
+      "pack_mm": 0.0,
       "weight_km2": 656.622
     },
     "31.7500,78.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.3,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.21,
-          "t2m_mean_c": 2.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.1,
@@ -9915,25 +9908,25 @@
           "pack_mm": 49.5,
           "snowfall_cm": 33.39,
           "t2m_mean_c": -5.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 66.0,
+          "snowfall_cm": 11.55,
+          "t2m_mean_c": -4.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 78.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 49.5,
+      "pack_mm": 66.0,
       "weight_km2": 656.622
     },
     "31.7500,79.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 4.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -10024,25 +10017,25 @@
           "pack_mm": 37.6,
           "snowfall_cm": 26.32,
           "t2m_mean_c": -3.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 46.900000000000006,
+          "snowfall_cm": 6.51,
+          "t2m_mean_c": -3.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 79.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 37.6,
+      "pack_mm": 46.900000000000006,
       "weight_km2": 656.622
     },
     "31.7500,79.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 11.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -10133,25 +10126,25 @@
           "pack_mm": 40.8,
           "snowfall_cm": 28.56,
           "t2m_mean_c": -1.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 50.5,
+          "snowfall_cm": 6.79,
+          "t2m_mean_c": -1.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 79.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 40.8,
+      "pack_mm": 50.5,
       "weight_km2": 656.622
     },
     "31.7500,79.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 12.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -10242,25 +10235,25 @@
           "pack_mm": 35.5,
           "snowfall_cm": 24.85,
           "t2m_mean_c": -0.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 41.9,
+          "snowfall_cm": 4.48,
+          "t2m_mean_c": -0.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 79.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 35.5,
+      "pack_mm": 41.9,
       "weight_km2": 656.622
     },
     "31.7500,79.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 7.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -10351,25 +10344,25 @@
           "pack_mm": 33.3,
           "snowfall_cm": 23.31,
           "t2m_mean_c": -3.0
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 39.9,
+          "snowfall_cm": 4.62,
+          "t2m_mean_c": -2.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 79.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 33.3,
+      "pack_mm": 39.9,
       "weight_km2": 656.622
     },
     "31.7500,80.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 1.5,
-          "pack_mm": 0.0,
-          "snowfall_cm": 1.05,
-          "t2m_mean_c": 1.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -10460,25 +10453,25 @@
           "pack_mm": 37.4,
           "snowfall_cm": 25.9,
           "t2m_mean_c": -5.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 43.8,
+          "snowfall_cm": 4.48,
+          "t2m_mean_c": -5.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 31.75,
       "longitude": 80.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 37.4,
+      "pack_mm": 43.8,
       "weight_km2": 202.156
     },
     "32.0000,77.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 9347.100000000026,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -3.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -10569,25 +10562,25 @@
           "pack_mm": 9356.400000000025,
           "snowfall_cm": 2.8,
           "t2m_mean_c": -5.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 9360.900000000025,
+          "snowfall_cm": 3.15,
+          "t2m_mean_c": -7.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 77.75,
       "pack_before_history_mm": 9347.100000000026,
-      "pack_mm": 9356.400000000025,
+      "pack_mm": 9360.900000000025,
       "weight_km2": 235.764
     },
     "32.0000,78.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 2.6,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -0.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -10678,25 +10671,25 @@
           "pack_mm": 21.5,
           "snowfall_cm": 11.34,
           "t2m_mean_c": -6.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 44.0,
+          "snowfall_cm": 15.75,
+          "t2m_mean_c": -9.1
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 78.0,
       "pack_before_history_mm": 2.6,
-      "pack_mm": 21.5,
+      "pack_mm": 44.0,
       "weight_km2": 654.877
     },
     "32.0000,78.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 8.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -10787,25 +10780,25 @@
           "pack_mm": 25.200000000000003,
           "snowfall_cm": 17.64,
           "t2m_mean_c": -0.8
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 59.6,
+          "snowfall_cm": 24.08,
+          "t2m_mean_c": -3.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 78.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 25.200000000000003,
+      "pack_mm": 59.6,
       "weight_km2": 654.877
     },
     "32.0000,78.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.1,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.07,
-          "t2m_mean_c": 6.6
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -10896,25 +10889,25 @@
           "pack_mm": 25.6,
           "snowfall_cm": 17.92,
           "t2m_mean_c": -0.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 61.7,
+          "snowfall_cm": 25.27,
+          "t2m_mean_c": -1.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 78.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 25.6,
+      "pack_mm": 61.7,
       "weight_km2": 654.877
     },
     "32.0000,78.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 5866.8,
-          "snowfall_cm": 0.42,
-          "t2m_mean_c": -6.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -11005,25 +10998,25 @@
           "pack_mm": 5906.3,
           "snowfall_cm": 23.66,
           "t2m_mean_c": -11.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 5926.5,
+          "snowfall_cm": 14.14,
+          "t2m_mean_c": -10.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 78.75,
-      "pack_before_history_mm": 5866.2,
-      "pack_mm": 5906.3,
+      "pack_before_history_mm": 5866.8,
+      "pack_mm": 5926.5,
       "weight_km2": 654.877
     },
     "32.0000,79.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 5.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.1,
@@ -11114,25 +11107,25 @@
           "pack_mm": 35.400000000000006,
           "snowfall_cm": 24.78,
           "t2m_mean_c": -2.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 52.30000000000001,
+          "snowfall_cm": 11.83,
+          "t2m_mean_c": -1.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 79.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 35.400000000000006,
+      "pack_mm": 52.30000000000001,
       "weight_km2": 654.877
     },
     "32.0000,79.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -11223,25 +11216,25 @@
           "pack_mm": 31.3,
           "snowfall_cm": 21.91,
           "t2m_mean_c": -2.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 42.4,
+          "snowfall_cm": 7.77,
+          "t2m_mean_c": -2.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 79.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 31.3,
+      "pack_mm": 42.4,
       "weight_km2": 654.877
     },
     "32.0000,79.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 7.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -11332,25 +11325,25 @@
           "pack_mm": 27.6,
           "snowfall_cm": 19.32,
           "t2m_mean_c": -2.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 39.1,
+          "snowfall_cm": 8.05,
+          "t2m_mean_c": -2.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 79.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 27.6,
+      "pack_mm": 39.1,
       "weight_km2": 654.877
     },
     "32.0000,79.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 5.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.1,
@@ -11441,25 +11434,25 @@
           "pack_mm": 28.000000000000004,
           "snowfall_cm": 19.6,
           "t2m_mean_c": -3.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 38.300000000000004,
+          "snowfall_cm": 7.21,
+          "t2m_mean_c": -3.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 79.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 28.000000000000004,
+      "pack_mm": 38.300000000000004,
       "weight_km2": 590.397
     },
     "32.0000,80.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 13.3,
-          "snowfall_cm": 0.7,
-          "t2m_mean_c": -1.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -11550,25 +11543,25 @@
           "pack_mm": 49.8,
           "snowfall_cm": 24.99,
           "t2m_mean_c": -8.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 57.3,
+          "snowfall_cm": 5.25,
+          "t2m_mean_c": -7.1
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.0,
       "longitude": 80.0,
-      "pack_before_history_mm": 12.3,
-      "pack_mm": 49.8,
+      "pack_before_history_mm": 13.3,
+      "pack_mm": 57.3,
       "weight_km2": 46.376
     },
     "32.2500,77.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 8282.800000000027,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -2.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -11659,25 +11652,25 @@
           "pack_mm": 8290.900000000025,
           "snowfall_cm": 2.1,
           "t2m_mean_c": -5.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 8294.000000000025,
+          "snowfall_cm": 2.17,
+          "t2m_mean_c": -7.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.25,
       "longitude": 77.75,
       "pack_before_history_mm": 8282.800000000027,
-      "pack_mm": 8290.900000000025,
+      "pack_mm": 8294.000000000025,
       "weight_km2": 339.523
     },
     "32.2500,78.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 8.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -11768,25 +11761,25 @@
           "pack_mm": 3.000000000000001,
           "snowfall_cm": 4.9,
           "t2m_mean_c": 1.0
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 16.0,
+          "snowfall_cm": 9.1,
+          "t2m_mean_c": -2.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.25,
       "longitude": 78.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 3.000000000000001,
+      "pack_mm": 16.0,
       "weight_km2": 653.12
     },
     "32.2500,78.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 1.4,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -0.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -11877,25 +11870,25 @@
           "pack_mm": 17.9,
           "snowfall_cm": 10.08,
           "t2m_mean_c": -7.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 41.099999999999994,
+          "snowfall_cm": 16.24,
+          "t2m_mean_c": -9.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.25,
       "longitude": 78.25,
       "pack_before_history_mm": 1.4,
-      "pack_mm": 17.9,
+      "pack_mm": 41.099999999999994,
       "weight_km2": 653.12
     },
     "32.2500,78.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 2.4,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -0.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -11986,25 +11979,25 @@
           "pack_mm": 22.3,
           "snowfall_cm": 12.32,
           "t2m_mean_c": -7.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 48.8,
+          "snowfall_cm": 18.55,
+          "t2m_mean_c": -8.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.25,
       "longitude": 78.5,
       "pack_before_history_mm": 2.4,
-      "pack_mm": 22.3,
+      "pack_mm": 48.8,
       "weight_km2": 653.12
     },
     "32.2500,78.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 11.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -12095,25 +12088,25 @@
           "pack_mm": 4.400000000000002,
           "snowfall_cm": 11.48,
           "t2m_mean_c": 3.0
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 6.4,
+          "pack_mm": 13.700000000000001,
+          "snowfall_cm": 10.99,
+          "t2m_mean_c": 1.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.25,
       "longitude": 78.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 4.400000000000002,
+      "pack_mm": 13.700000000000001,
       "weight_km2": 653.12
     },
     "32.2500,79.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 1398.3,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -3.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -12204,25 +12197,25 @@
           "pack_mm": 1420.1999999999998,
           "snowfall_cm": 13.86,
           "t2m_mean_c": -10.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 1431.1,
+          "snowfall_cm": 7.63,
+          "t2m_mean_c": -10.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.25,
       "longitude": 79.0,
       "pack_before_history_mm": 1398.3,
-      "pack_mm": 1420.1999999999998,
+      "pack_mm": 1431.1,
       "weight_km2": 633.08
     },
     "32.2500,79.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 6.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -12313,25 +12306,25 @@
           "pack_mm": 22.2,
           "snowfall_cm": 15.54,
           "t2m_mean_c": -2.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 33.4,
+          "snowfall_cm": 7.84,
+          "t2m_mean_c": -3.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.25,
       "longitude": 79.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 22.2,
+      "pack_mm": 33.4,
       "weight_km2": 653.12
     },
     "32.2500,79.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.8,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.56,
-          "t2m_mean_c": 4.6
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.4,
@@ -12422,25 +12415,25 @@
           "pack_mm": 23.2,
           "snowfall_cm": 16.24,
           "t2m_mean_c": -3.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 32.9,
+          "snowfall_cm": 6.79,
+          "t2m_mean_c": -3.1
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.25,
       "longitude": 79.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 23.2,
+      "pack_mm": 32.9,
       "weight_km2": 640.479
     },
     "32.2500,79.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 56.69999999999986,
-          "snowfall_cm": 0.28,
-          "t2m_mean_c": -2.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -12531,25 +12524,25 @@
           "pack_mm": 84.19999999999985,
           "snowfall_cm": 18.83,
           "t2m_mean_c": -9.6
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 96.09999999999985,
+          "snowfall_cm": 8.33,
+          "t2m_mean_c": -9.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.25,
       "longitude": 79.75,
-      "pack_before_history_mm": 56.29999999999986,
-      "pack_mm": 84.19999999999985,
+      "pack_before_history_mm": 56.69999999999986,
+      "pack_mm": 96.09999999999985,
       "weight_km2": 241.261
     },
     "32.5000,77.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.1,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.07,
-          "t2m_mean_c": 2.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -12640,25 +12633,25 @@
           "pack_mm": 1.9000000000000004,
           "snowfall_cm": 0.63,
           "t2m_mean_c": 0.7
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 4.200000000000001,
+          "snowfall_cm": 1.61,
+          "t2m_mean_c": -1.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.5,
       "longitude": 77.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 1.9000000000000004,
+      "pack_mm": 4.200000000000001,
       "weight_km2": 11.845
     },
     "32.5000,77.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 2.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -12749,25 +12742,25 @@
           "pack_mm": 3.2,
           "snowfall_cm": 0.84,
           "t2m_mean_c": -0.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 4.4,
+          "snowfall_cm": 0.84,
+          "t2m_mean_c": -2.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.5,
       "longitude": 77.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 3.2,
+      "pack_mm": 4.4,
       "weight_km2": 519.087
     },
     "32.5000,78.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -0.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -12858,25 +12851,25 @@
           "pack_mm": 5.0,
           "snowfall_cm": 1.89,
           "t2m_mean_c": -5.3
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 8.7,
+          "snowfall_cm": 2.59,
+          "t2m_mean_c": -8.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.5,
       "longitude": 78.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 5.0,
+      "pack_mm": 8.7,
       "weight_km2": 592.76
     },
     "32.5000,78.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 2.2,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -0.7
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -12967,25 +12960,25 @@
           "pack_mm": 12.1,
           "snowfall_cm": 5.53,
           "t2m_mean_c": -5.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 26.2,
+          "snowfall_cm": 9.87,
+          "t2m_mean_c": -8.3
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.5,
       "longitude": 78.25,
       "pack_before_history_mm": 2.2,
-      "pack_mm": 12.1,
+      "pack_mm": 26.2,
       "weight_km2": 651.35
     },
     "32.5000,78.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 1.5,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -1.6
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -13076,25 +13069,25 @@
           "pack_mm": 10.8,
           "snowfall_cm": 5.46,
           "t2m_mean_c": -7.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 24.6,
+          "snowfall_cm": 9.66,
+          "t2m_mean_c": -9.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.5,
       "longitude": 78.5,
       "pack_before_history_mm": 1.5,
-      "pack_mm": 10.8,
+      "pack_mm": 24.6,
       "weight_km2": 651.35
     },
     "32.5000,78.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.2,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.14,
-          "t2m_mean_c": 1.0
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.6,
@@ -13185,25 +13178,25 @@
           "pack_mm": 12.3,
           "snowfall_cm": 6.79,
           "t2m_mean_c": -5.8
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 28.9,
+          "snowfall_cm": 11.62,
+          "t2m_mean_c": -6.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.5,
       "longitude": 78.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 12.3,
+      "pack_mm": 28.9,
       "weight_km2": 452.369
     },
     "32.5000,79.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 4.1
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -13294,25 +13287,25 @@
           "pack_mm": 9.200000000000001,
           "snowfall_cm": 6.44,
           "t2m_mean_c": -1.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 19.300000000000004,
+          "snowfall_cm": 7.07,
+          "t2m_mean_c": -3.6
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.5,
       "longitude": 79.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 9.200000000000001,
+      "pack_mm": 19.300000000000004,
       "weight_km2": 23.725
     },
     "32.5000,79.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 38.499999999999936,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -1.8
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -13403,25 +13396,25 @@
           "pack_mm": 56.399999999999935,
           "snowfall_cm": 10.78,
           "t2m_mean_c": -8.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 65.69999999999993,
+          "snowfall_cm": 6.51,
+          "t2m_mean_c": -7.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.5,
       "longitude": 79.25,
       "pack_before_history_mm": 38.499999999999936,
-      "pack_mm": 56.399999999999935,
+      "pack_mm": 65.69999999999993,
       "weight_km2": 384.481
     },
     "32.5000,79.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 604.9999999999984,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -2.6
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -13512,25 +13505,25 @@
           "pack_mm": 627.1999999999983,
           "snowfall_cm": 14.91,
           "t2m_mean_c": -10.1
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 635.0999999999983,
+          "snowfall_cm": 5.53,
+          "t2m_mean_c": -9.9
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.5,
       "longitude": 79.5,
       "pack_before_history_mm": 604.9999999999984,
-      "pack_mm": 627.1999999999983,
+      "pack_mm": 635.0999999999983,
       "weight_km2": 184.494
     },
     "32.7500,77.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.5,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.35,
-          "t2m_mean_c": 2.2
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -13621,25 +13614,25 @@
           "pack_mm": 0.5999999999999999,
           "snowfall_cm": 0.42,
           "t2m_mean_c": 0.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 1.5,
+          "snowfall_cm": 0.63,
+          "t2m_mean_c": -3.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.75,
       "longitude": 77.75,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 0.5999999999999999,
+      "pack_mm": 1.5,
       "weight_km2": 5.595
     },
     "32.7500,78.0000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 3.3
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -13730,25 +13723,25 @@
           "pack_mm": 0.0,
           "snowfall_cm": 0.84,
           "t2m_mean_c": 0.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 0.9,
+          "snowfall_cm": 0.63,
+          "t2m_mean_c": -3.0
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.75,
       "longitude": 78.0,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 0.0,
+      "pack_mm": 0.9,
       "weight_km2": 15.614
     },
     "32.7500,78.2500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 4.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -13839,25 +13832,25 @@
           "pack_mm": 0.19999999999999996,
           "snowfall_cm": 1.26,
           "t2m_mean_c": 0.4
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 2.5,
+          "snowfall_cm": 1.61,
+          "t2m_mean_c": -3.2
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.75,
       "longitude": 78.25,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 0.19999999999999996,
+      "pack_mm": 2.5,
       "weight_km2": 191.189
     },
     "32.7500,78.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 8.6
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -13948,25 +13941,25 @@
           "pack_mm": 0.0,
           "snowfall_cm": 2.38,
           "t2m_mean_c": 2.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 6.1,
+          "snowfall_cm": 4.27,
+          "t2m_mean_c": -0.8
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.75,
       "longitude": 78.5,
       "pack_before_history_mm": 0.0,
-      "pack_mm": 0.0,
+      "pack_mm": 6.1,
       "weight_km2": 602.209
     },
     "32.7500,78.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 154.3999999999998,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -2.9
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -14057,25 +14050,25 @@
           "pack_mm": 164.49999999999977,
           "snowfall_cm": 4.62,
           "t2m_mean_c": -8.9
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 176.89999999999978,
+          "snowfall_cm": 8.68,
+          "t2m_mean_c": -10.7
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 32.75,
       "longitude": 78.75,
       "pack_before_history_mm": 154.3999999999998,
-      "pack_mm": 164.49999999999977,
+      "pack_mm": 176.89999999999978,
       "weight_km2": 212.34
     },
     "33.0000,78.5000": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 3393.699999999988,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": -5.4
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -14166,25 +14159,25 @@
           "pack_mm": 3398.7999999999874,
           "snowfall_cm": 1.54,
           "t2m_mean_c": -10.5
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 0.0,
+          "pack_mm": 3402.1999999999875,
+          "snowfall_cm": 2.38,
+          "t2m_mean_c": -12.4
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 33.0,
       "longitude": 78.5,
       "pack_before_history_mm": 3393.699999999988,
-      "pack_mm": 3398.7999999999874,
+      "pack_mm": 3402.1999999999875,
       "weight_km2": 41.439
     },
     "33.0000,78.7500": {
       "history": [
-        {
-          "date": "2026-09-13",
-          "melt_mm": 0.0,
-          "pack_mm": 0.0,
-          "snowfall_cm": 0.0,
-          "t2m_mean_c": 8.5
-        },
         {
           "date": "2026-09-14",
           "melt_mm": 0.0,
@@ -14275,10 +14268,17 @@
           "pack_mm": 0.0,
           "snowfall_cm": 1.75,
           "t2m_mean_c": 3.2
+        },
+        {
+          "date": "2026-09-27",
+          "melt_mm": 5.3999999999999995,
+          "pack_mm": 0.0,
+          "snowfall_cm": 3.78,
+          "t2m_mean_c": 1.5
         }
       ],
-      "history_end": "2026-09-26",
-      "history_start": "2026-09-13",
+      "history_end": "2026-09-27",
+      "history_start": "2026-09-14",
       "latitude": 33.0,
       "longitude": 78.75,
       "pack_before_history_mm": 0.0,
@@ -14287,12 +14287,14 @@
     }
   },
   "replay": {
-    "changed_dates": [],
+    "changed_dates": [
+      "2026-09-27"
+    ],
     "mode": "incremental",
     "reason": "no revision before checkpoint",
     "start": "2026-09-13"
   },
   "schema_version": 1,
   "state_version": "bhakra-snowpack-v1",
-  "updated_utc": "2026-09-28T16:36:39+00:00"
+  "updated_utc": "2026-09-29T09:27:02+00:00"
 }

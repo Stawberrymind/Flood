@@ -3663,6 +3663,5 @@
     ],
     "ensemble_model": "ecmwf_ifs025",
     "issue_date_discipline": "archive through its last complete observed day; model thereafter"
-  },
-  "record": "2026-09-29.json"
+  }
 }

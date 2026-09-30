@@ -163,7 +163,10 @@ class OpenMeteo:
                 self._variable_count(params),
                 estimate,
             )
-            return json.loads(path.read_text(encoding="utf-8"))["response"]
+            try:
+                return json.loads(path.read_text(encoding="utf-8"))["response"]
+            except (ValueError, KeyError):
+                log.warning("ignoring incomplete Open-Meteo cache entry")
         log.info(
             "open-meteo request endpoint=%s span=%s variables=%d estimated_weight=%d",
             host,
@@ -206,15 +209,15 @@ class OpenMeteo:
                     raise OpenMeteoError(j.get("reason", "unknown error"))
                 if use_cache:
                     path.parent.mkdir(parents=True, exist_ok=True)
-                    path.write_text(
+                    from punjabflood.io import atomic_write_text
+                    atomic_write_text(path,
                         json.dumps(
                             {
                                 "params": params,
                                 "fetched_utc": self.clock().isoformat(),
                                 "response": j,
-                            }
+                            }, allow_nan=False,
                         ),
-                        encoding="utf-8",
                     )
                 self.estimated_weight += estimate
                 return j

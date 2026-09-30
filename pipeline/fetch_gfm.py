@@ -37,6 +37,7 @@ from rasterio.transform import from_bounds
 from sailaab.gfm import (
     flood_mask,
     ref_water_mask,
+    validate_wms_rgba,
     paste_tile,
     tile_offsets,
     tile_bounds,
@@ -137,6 +138,7 @@ def fetch_rgba_grid(layer, time_iso, bounds, ncols, nrows):
         tb = tile_bounds(bounds, ncols, nrows, col_off, row_off, tw, th)
         png = _get(_getmap_params(layer, time_iso, tb, tw, th))
         tile = np.array(Image.open(io.BytesIO(png)).convert("RGBA"), dtype=np.uint8)
+        validate_wms_rgba(tile, (th, tw), check_palette=layer != FOOTPRINT_LAYER)
         paste_tile(canvas, tile, col_off, row_off)
         time.sleep(REQUEST_PAUSE_S)
     return canvas
@@ -147,6 +149,7 @@ def footprint_coverage(time_iso, bounds, size=1024):
     png = _get(_getmap_params(FOOTPRINT_LAYER, time_iso, bounds, size, size))
     time.sleep(REQUEST_PAUSE_S)
     arr = np.array(Image.open(io.BytesIO(png)).convert("RGBA"))
+    validate_wms_rgba(arr, (size, size), check_palette=False)
     return float((arr[..., 3] > 0).mean())
 
 
@@ -154,9 +157,9 @@ def write_mask_tif(path, mask, bounds):
     minx, miny, maxx, maxy = bounds
     nrows, ncols = mask.shape
     transform = from_bounds(minx, miny, maxx, maxy, ncols, nrows)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with rasterio.open(
-        path,
+    from sailaab.io import atomic_path
+    with atomic_path(path) as temporary, rasterio.open(
+        temporary,
         "w",
         driver="GTiff",
         height=nrows,

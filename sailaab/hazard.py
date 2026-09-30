@@ -97,15 +97,12 @@ def excitation_features(
     wide = (
         d.pivot_table(index=date_col, columns=key, values=value_col, aggfunc="max")
         .sort_index()
+        .reindex(index=sorted(d[date_col].unique()), columns=sorted(d[key].unique()))
     )
-    # A missing observation is NOT a dry day. Letting NaN fall through to False
-    # would make an unimaged district-day contribute zero excitation, which
-    # lowers apparent risk exactly where the satellite failed to look. Carry the
-    # last observed state forward instead, and only treat a district as quiet
-    # once something was actually seen.
-    seen = wide.ffill()
-    events = (seen > threshold).astype(float)
-    events[seen.isna()] = 0.0  # nothing ever observed for this district yet
+    # Only observed events excite the process. Missing days do not establish
+    # dryness, but also cannot invent new wet events by carrying a detection.
+    # Observation eligibility is a separate feature/gate; old events still decay.
+    events = (wide > threshold).astype(float)
     days = events.index
     cols = list(events.columns)
     n = len(days)

@@ -29,7 +29,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.13" }
-      - run: pip install -e ".[dev]"
+      - run: pip install --require-hashes -r ../requirements.lock
+      - run: pip install --no-deps --no-build-isolation -e ".[dev]"
       - run: python -m pytest -q          # never publish from a red tree
       - name: attach durable forecast-data branch
         run: |

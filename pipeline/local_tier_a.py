@@ -151,8 +151,8 @@ def read_asset(href, transform, width, height, retries=2):
     GDAL picks appropriate overviews, so only a downsampled window crosses the
     wire. nodata (and out-of-footprint) pixels come back as NaN. The GDAL config
     is applied per call so this is safe to run from a thread pool. Transient
-    network errors are retried; a scene that still fails becomes an all-NaN
-    layer (dropped by the NaN-median composite) rather than killing the run.
+    network errors are retried. An exhausted read aborts the composite so a
+    missing scene cannot be published as dry or consumed by the watermark.
     """
     last_err = None
     for attempt in range(retries + 1):
@@ -184,8 +184,7 @@ def read_asset(href, transform, width, height, retries=2):
             except Exception:
                 pass  # keep the old href; the plain retry may still succeed
             time.sleep(2 * (attempt + 1))
-    print(f"  WARN dropping scene after {retries + 1} attempts: {last_err}")
-    return np.full((height, width), np.nan)
+    raise RuntimeError(f"SAR asset read failed after {retries + 1} attempts") from last_err
 
 
 def composite_window(items, transform, width, height, asset="vv", tag=""):
@@ -195,6 +194,8 @@ def composite_window(items, transform, width, height, asset="vv", tag=""):
     """
     hrefs = [it.assets[asset].href for it in items]
     n = len(hrefs)
+    if not n:
+        raise ValueError("cannot composite an empty SAR window")
 
     def _read(ih):
         i, h = ih
@@ -207,6 +208,8 @@ def composite_window(items, transform, width, height, asset="vv", tag=""):
 
     with ThreadPoolExecutor(max_workers=min(MAX_WORKERS, n)) as ex:
         layers = list(ex.map(_read, enumerate(hrefs)))
+    if not any(np.isfinite(layer).any() for layer in layers):
+        raise RuntimeError("SAR window has no usable pixels")
     return to_db(median_composite(np.stack(layers)))
 
 

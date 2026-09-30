@@ -93,8 +93,8 @@ def _fallback_districts():
 
 
 def _write(payload) -> None:
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
+    from sailaab.io import atomic_write_text
+    atomic_write_text(OUT, json.dumps(payload, ensure_ascii=False, indent=1, allow_nan=False))
 
 
 def _build_notes(

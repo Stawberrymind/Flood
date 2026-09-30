@@ -51,7 +51,8 @@ jobs:
 
       - uses: actions/setup-python@v5
         with: { python-version: "3.13" }
-      - run: pip install -r requirements.txt
+      - run: pip install --require-hashes -r requirements.lock
+      - run: pip install --no-deps --no-build-isolation -e "./punjabflood[dev]"
 
       # With node and node_modules both present the clean-build tests do not
       # skip, so this is the run where they actually execute.
@@ -60,3 +61,7 @@ jobs:
 
       - name: full suite
         run: python -m pytest -q
+
+      - name: river forecast suite
+        working-directory: punjabflood
+        run: python -m pytest -q -m "not network"

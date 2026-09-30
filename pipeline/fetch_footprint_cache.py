@@ -33,13 +33,11 @@ Run: python -m pipeline.fetch_footprint_cache [--limit N]
 from __future__ import annotations
 
 import argparse
-import csv
 import os
 import sys
 import time
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from pipeline.fetch_gfm import FOOTPRINT_LAYER, bbox_3857
@@ -57,13 +55,28 @@ PAUSE = 0.4
 RELIABLE_FROM = "2022-01-01"
 
 
-def _load_done() -> set[str]:
+def _load_done(names=None) -> set[str]:
     if not OUT.exists():
         return set()
-    try:
-        return set(pd.read_csv(OUT, usecols=["date"])["date"].astype(str))
-    except Exception:
-        return set()
+    frame = pd.read_csv(OUT)
+    if names is None:
+        names = pd.read_csv(DAILY, usecols=["district"])["district"].unique()
+    expected = set(names)
+    return {str(day) for day, group in frame.groupby("date")
+            if set(group["district"]) == expected
+            and not group["district"].duplicated().any()
+            and group["acq_fraction"].between(0, 1).all()
+            and group["bbox_fraction"].between(0, 1).all()}
+
+
+def _write_day(rows):
+    """Replace an entire date, including any rows left by an interrupted old run."""
+    from sailaab.io import atomic_write_text
+    new = pd.DataFrame(rows, columns=["date", "district", "acq_fraction", "bbox_fraction", "era"])
+    frame = pd.read_csv(OUT) if OUT.exists() else new.iloc[:0]
+    frame = frame[~frame["date"].isin(new["date"])]
+    frame = pd.concat([frame, new], ignore_index=True).sort_values(["date", "district"])
+    atomic_write_text(OUT, frame.to_csv(index=False))
 
 
 def _alive(lock: Path) -> bool:
@@ -137,35 +150,30 @@ def _run(args) -> int:
     labels, names = _district_labels(bounds, GRID)
     totals = {i: int((labels == i).sum()) for i in range(1, len(names) + 1)}
 
-    new = not OUT.exists()
-    with OUT.open("a", newline="", encoding="utf-8") as fh:
-        w = csv.writer(fh)
-        if new:
-            w.writerow(["date", "district", "acq_fraction", "bbox_fraction", "era"])
-
-        ok = fail = 0
-        for k, day in enumerate(todo, start=1):
-            try:
-                arr = _wms_rgba(FOOTPRINT_LAYER, day, bounds, GRID)
-            except Exception as exc:
-                fail += 1
-                print(f"  {day}  FAIL {type(exc).__name__}", flush=True)
-                time.sleep(PAUSE * 3)
-                continue
-            fp = arr[..., 3] > 0
-            era = "reliable" if day >= RELIABLE_FROM else "era_unreliable"
-            bbox_frac = float(fp.mean())
-            for i, name in enumerate(names, start=1):
-                tot = totals[i]
-                frac = (
-                    float((fp & (labels == i)).sum()) / tot if tot else float("nan")
-                )
-                w.writerow([day, name, round(frac, 5), round(bbox_frac, 5), era])
-            ok += 1
-            if k % 25 == 0:
-                fh.flush()
-                print(f"  {k}/{len(todo)}  last {day} bbox={bbox_frac:.3f}", flush=True)
-            time.sleep(PAUSE)
+    ok = fail = 0
+    for k, day in enumerate(todo, start=1):
+        try:
+            arr = _wms_rgba(FOOTPRINT_LAYER, day, bounds, GRID)
+        except Exception as exc:
+            fail += 1
+            print(f"  {day}  FAIL {type(exc).__name__}", flush=True)
+            time.sleep(PAUSE * 3)
+            continue
+        fp = arr[..., 3] > 0
+        era = "reliable" if day >= RELIABLE_FROM else "era_unreliable"
+        bbox_frac = float(fp.mean())
+        rows = []
+        for i, name in enumerate(names, start=1):
+            tot = totals[i]
+            if not tot:
+                raise ValueError(f"footprint grid does not cover {name}")
+            frac = float((fp & (labels == i)).sum()) / tot
+            rows.append([day, name, round(frac, 5), round(bbox_frac, 5), era])
+        _write_day(rows)
+        ok += 1
+        if k % 25 == 0:
+            print(f"  {k}/{len(todo)}  last {day} bbox={bbox_frac:.3f}", flush=True)
+        time.sleep(PAUSE)
 
     print(f"done: {ok} days cached, {fail} failed -> {OUT}")
     return 0

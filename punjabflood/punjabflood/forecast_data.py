@@ -377,7 +377,8 @@ class WeatherStore:
 
     def missing_dates(self, point_id: str, start: str, end: str) -> list[pd.Timestamp]:
         df = self.read_point(point_id, start, end)
-        bad = df.index[df["t2m_mean_c"].isna()]
+        required = df[["t2m_mean_c", "snowfall_cm"]].to_numpy(dtype=float)
+        bad = df.index[~np.isfinite(required).all(axis=1)]
         return list(pd.DatetimeIndex(bad))
 
     def missing_ranges(self, point_id: str, start: str, end: str) -> list[tuple[str, str]]:
@@ -631,6 +632,11 @@ def melt_daily_from_state(
         future = pd.DataFrame(columns=["snowfall_cm", "t2m_mean_c"])
         if model is not None and len(model):
             future = model.loc[model.index > end, ["snowfall_cm", "t2m_mean_c"]].copy()
+        expected = pd.date_range(end + pd.Timedelta(days=1),
+                                 _date(issue_date) + pd.Timedelta(days=horizon))
+        future = future.reindex(expected)
+        if not np.isfinite(future.to_numpy(dtype=float)).all():
+            raise ForecastDataError(f"incomplete snow/temperature forecast for {spec.point_id}")
         if len(future):
             pack, melt = snow.degree_day_melt(
                 future["snowfall_cm"].to_numpy(dtype=float) * snow.SNOW_CM_TO_MM_WATER,
@@ -653,28 +659,28 @@ def melt_daily_from_state(
             },
             index=idx,
         ),
-        weights,
+        weights, require_complete=True,
     )
     daily["melt_mm"] = rain.weighted_mean(
         pd.DataFrame(
             {pid: frame["melt_mm"].reindex(idx) for pid, frame in per_point.items()},
             index=idx,
         ),
-        weights,
+        weights, require_complete=True,
     )
     daily["pack_mm"] = rain.weighted_mean(
         pd.DataFrame(
             {pid: frame["pack_mm"].reindex(idx) for pid, frame in per_point.items()},
             index=idx,
         ),
-        weights,
+        weights, require_complete=True,
     )
     daily["t2m_mean_c"] = rain.weighted_mean(
         pd.DataFrame(
             {pid: frame["t2m_mean_c"].reindex(idx) for pid, frame in per_point.items()},
             index=idx,
         ),
-        weights,
+        weights, require_complete=True,
     )
     daily["n_points"] = pd.DataFrame(
         {pid: frame["t2m_mean_c"].reindex(idx) for pid, frame in per_point.items()}, index=idx

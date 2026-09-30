@@ -209,6 +209,11 @@ def test_freshness_gate_accepts_current_complete_product():
         },
         "reaches": [{"station": "Dhilwan"}],
     }
+    states, det, ens, params = _inputs()
+    built = forecast.build_product("2026-09-04", states, det, ens, {}, params, flood_scale_log_sd=0.1)
+    product["dams"] = built["dams"]
+    product["dams"]["Bhakra"] = dict(built["dams"]["Pong"], snowmelt={"applied": True})
+    product["bulletin"] = {"as_on_date": "04-09-2026"}
     forecast.validate_fresh_product(product, "2026-09-04", "2026-09-02")
 
 
@@ -440,6 +445,8 @@ def _bhakra_rating():
 
 def test_product_prints_the_rule_curve_scenario_for_bhakra_only_with_a_rating():
     states, det, ens, params = _inputs(qpf_mm=5.0)
+    det["target_date"] -= pd.Timedelta(days=25)
+    ens["target_date"] -= pd.Timedelta(days=25)
     cap = C.BHAKRA.live_capacity_bcm.value
     st = dict(states["Pong"])
     st["storage_bcm"] = cap * 0.96  # above the schedule for 10 August (1,670 ft), below FRL
@@ -694,12 +701,9 @@ def test_melt_inputs_reports_the_hole_when_the_model_no_longer_reaches_the_archi
     out = forecast.melt_inputs(
         client, cats, {"Pong": _melt_params()}, "2026-09-20", recent_days=3, horizon=2
     )
-    r = out["Pong"]
-    # archive complete to 08-20, model past days from 09-10: 08-21 to 09-09 is the hole
-    assert r["archive_last_day"] == "2026-08-20"
-    assert r["bucket_gap_days"] == 20
-    assert "from 2026-08-21 to 2026-09-09 (20 days skipped" in r["note"]
-    assert "archive tail not pulled" in r["note"]
+    # The gap is not a valid operational melt estimate. Excluding it makes the
+    # required live-product gate reject the cycle instead of silently using it.
+    assert out == {}
     assert forecast.bucket_gap_days(None, {}) == 0
 
 

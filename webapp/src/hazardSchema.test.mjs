@@ -34,6 +34,17 @@ function ens(p) {
   return o;
 }
 
+test('both operational dams are required; missing Ranjit is intentional', () => {
+  for (const name of ['Bhakra', 'Pong']) {
+    const partial = feed();
+    delete partial.dams[name];
+    assert.equal(resolveHazardState(partial).state, 'unavailable');
+    partial.dams[name] = {};
+    assert.equal(resolveHazardState(partial).state, 'unavailable');
+  }
+  assert.equal(resolveHazardState(feed()).state, 'watch');
+});
+
 test('impossible calendar dates fail every hazard date consumer', () => {
   for (const date of ['2026-02-31', '2026-02-29', '2026-04-31', '2026-00-01']) {
     assert.equal(formatDate(date, 'en'), null);

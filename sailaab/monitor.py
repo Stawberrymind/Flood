@@ -3,6 +3,7 @@
 
 import json
 from pathlib import Path
+from sailaab.io import atomic_write_text
 
 EPOCH = "1970-01-01T00:00:00"
 
@@ -19,4 +20,4 @@ def load_state(path: Path) -> str:
 
 
 def save_state(path: Path, last_seen: str) -> None:
-    Path(path).write_text(json.dumps({"last_seen": last_seen}))
+    atomic_write_text(path, json.dumps({"last_seen": last_seen}, allow_nan=False))

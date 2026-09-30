@@ -67,12 +67,17 @@ def degree_day_melt(
 
 
 def catchment_melt_from_points(
-    per_point: dict[str, pd.DataFrame], weights: pd.Series, ddf: float = DDF_MM_PER_DEGREE_DAY
+    per_point: dict[str, pd.DataFrame], weights: pd.Series, ddf: float = DDF_MM_PER_DEGREE_DAY,
+    *, require_complete: bool = False,
 ) -> pd.DataFrame:
     """Run the bucket at every point (frames indexed by day with ``snowfall_cm`` and
     ``t2m_mean_c``) and average by area: columns ``COLUMNS``, indexed by day."""
     snow_f, melt_f, pack_f, t_f = {}, {}, {}, {}
     for pid, df in per_point.items():
+        if require_complete and not np.isfinite(
+            df[["snowfall_cm", "t2m_mean_c"]].to_numpy(dtype=float)
+        ).all():
+            raise ValueError(f"incomplete snow/temperature inputs for {pid}")
         snow_mm = df["snowfall_cm"].to_numpy(dtype=float) * SNOW_CM_TO_MM_WATER
         pack, melt = degree_day_melt(snow_mm, df["t2m_mean_c"].to_numpy(dtype=float), ddf)
         snow_f[pid] = pd.Series(snow_mm, index=df.index)
@@ -81,10 +86,10 @@ def catchment_melt_from_points(
         t_f[pid] = df["t2m_mean_c"].astype(float)
     out = pd.DataFrame(
         {
-            "snowfall_mm": weighted_mean(pd.DataFrame(snow_f), weights),
-            "melt_mm": weighted_mean(pd.DataFrame(melt_f), weights),
-            "pack_mm": weighted_mean(pd.DataFrame(pack_f), weights),
-            "t2m_mean_c": weighted_mean(pd.DataFrame(t_f), weights),
+            "snowfall_mm": weighted_mean(pd.DataFrame(snow_f), weights, require_complete=require_complete),
+            "melt_mm": weighted_mean(pd.DataFrame(melt_f), weights, require_complete=require_complete),
+            "pack_mm": weighted_mean(pd.DataFrame(pack_f), weights, require_complete=require_complete),
+            "t2m_mean_c": weighted_mean(pd.DataFrame(t_f), weights, require_complete=require_complete),
         }
     )
     out["n_points"] = pd.DataFrame(t_f).notna().sum(axis=1).reindex(out.index)

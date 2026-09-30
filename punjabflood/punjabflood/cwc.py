@@ -146,6 +146,7 @@ def fetch_month(get: Getter, dam: str, year: int, month: int) -> list[dict]:
     name = CWC_NAMES[dam]
     rows: list[dict] = []
     offset = 0
+    previous = None
     while True:
         j = get(
             {
@@ -158,16 +159,24 @@ def fetch_month(get: Getter, dam: str, year: int, month: int) -> list[dict]:
             }
         )
         recs = j.get("records", []) or []
+        total = j.get("total")
+        if not recs:
+            if total is not None and offset < int(total):
+                raise RuntimeError("CWC pagination ended before its advertised total")
+            break
+        if recs == previous:
+            raise RuntimeError("CWC pagination did not advance")
         for rec in recs:
             row = normalise_record(rec, dam)
-            if row is not None:
-                rows.append(row)
-        if len(recs) < PAGE:
-            break
-        offset += PAGE
-        total = j.get("total")
+            if row is None:
+                raise ValueError("CWC returned an invalid date; month is not complete")
+            rows.append(row)
+        offset += len(recs)
         if total is not None and offset >= int(total):
             break
+        if total is None and len(recs) < PAGE:
+            break
+        previous = recs
     return rows
 
 
@@ -215,7 +224,7 @@ def _parse_date(s: str) -> str | None:
 
 
 def months_present(path: Path) -> set[tuple[str, int, int]]:
-    """``(dam, year, month)`` triples already written, so a rerun can skip them."""
+    """Triples with rows on disk; presence alone does not prove completeness."""
     done: set[tuple[str, int, int]] = set()
     if not path.exists():
         return done
@@ -234,38 +243,76 @@ def pull(
     months: Iterable[int] = (6, 7, 8, 9),
     manifest: Path | None = None,
 ) -> int:
-    """Resumable pull. Appends rows to ``out_csv`` month by month and records every
-    completed month (including empty ones) in ``manifest`` so it is not retried.
-    Returns the number of rows appended in this run.
+    """Resumable pull. Atomically upserts complete months and records checksums
+    in ``manifest``. Only matching CSV/manifest pairs (including empty months)
+    are skipped. Returns the number of rows fetched in this run.
     """
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     manifest = manifest or out_csv.with_suffix(".manifest.jsonl")
-    done = months_present(out_csv) | _manifest_months(manifest)
-    new_file = not out_csv.exists() or out_csv.stat().st_size == 0
+    import hashlib
+    import io
+    from punjabflood.io import atomic_write_text
+
+    def month_key(row):
+        return row["dam"], int(row["date"][:4]), int(row["date"][5:7])
+
+    def csv_text(rows):
+        stream = io.StringIO(newline="")
+        writer = csv.DictWriter(stream, fieldnames=COLUMNS)
+        writer.writeheader()
+        writer.writerows(sorted(rows, key=lambda r: (r["dam"], r["date"])))
+        return stream.getvalue()
+
+    def digest(rows):
+        return hashlib.sha256(csv_text(rows).encode("utf-8")).hexdigest()
+
+    existing = []
+    if out_csv.exists() and out_csv.stat().st_size:
+        with out_csv.open(encoding="utf-8", newline="") as stream:
+            reader = csv.DictReader(stream)
+            if reader.fieldnames != COLUMNS:
+                raise ValueError("unexpected CWC CSV schema")
+            existing = list(reader)
+        if any(None in row or not _parse_date(row["date"]) for row in existing):
+            raise ValueError("incomplete CWC CSV row")
+    markers = []
+    if manifest.exists():
+        lines = manifest.read_text(encoding="utf-8").splitlines()
+        for i, line in enumerate(lines):
+            if not line.strip():
+                continue
+            try:
+                markers.append(json.loads(line))
+            except ValueError:
+                if i != len(lines) - 1:
+                    raise
+                log.warning("ignoring interrupted final CWC manifest entry")
+    done = set()
+    for marker in markers:
+        key = marker["dam"], int(marker["year"]), int(marker["month"])
+        subset = [r for r in existing if month_key(r) == key]
+        if marker.get("sha256") == digest(subset) and marker["rows"] == len(subset):
+            done.add(key)
     appended = 0
-    with out_csv.open("a", encoding="utf-8", newline="") as fh:
-        writer = csv.DictWriter(fh, fieldnames=COLUMNS)
-        if new_file:
-            writer.writeheader()
-        for dam in dams:
-            for year in years:
-                for month in months:
-                    key = (dam, year, month)
-                    if key in done:
-                        continue
-                    rows = fetch_month(get, dam, year, month)
-                    for row in rows:
-                        writer.writerow(row)
-                    fh.flush()
-                    appended += len(rows)
-                    with manifest.open("a", encoding="utf-8") as mf:
-                        mf.write(
-                            json.dumps(
-                                {"dam": dam, "year": year, "month": month, "rows": len(rows)}
-                            )
-                            + "\n"
-                        )
-                    log.info("cwc: %s %04d-%02d -> %d rows", dam, year, month, len(rows))
+    years, months = tuple(years), tuple(months)
+    for dam in dams:
+        for year in years:
+            for month in months:
+                key = dam, year, month
+                if key in done:
+                    continue
+                rows = fetch_month(get, dam, year, month)
+                if any(month_key(row) != key for row in rows):
+                    raise ValueError("CWC returned records outside the requested month")
+                rows = list({(r["dam"], r["date"]): r for r in rows}.values())
+                existing = [r for r in existing if month_key(r) != key] + rows
+                atomic_write_text(out_csv, csv_text(existing))
+                markers = [m for m in markers if (m["dam"], m["year"], m["month"]) != key]
+                markers.append({"dam": dam, "year": year, "month": month,
+                                "rows": len(rows), "sha256": digest(rows)})
+                atomic_write_text(manifest, "".join(json.dumps(m) + "\n" for m in markers))
+                appended += len(rows)
+                log.info("cwc: %s %04d-%02d -> %d rows", dam, year, month, len(rows))
     return appended
 
 

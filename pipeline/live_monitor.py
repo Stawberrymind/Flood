@@ -38,6 +38,7 @@ from pipeline.local_tier_a import (
     search_window,
 )
 from sailaab import figstyle
+from sailaab.io import atomic_path, atomic_write_text
 from sailaab.districts import district_fractions, load_districts, rasterize_districts
 from sailaab.monitor import load_state, new_scenes, save_state
 from sailaab.monitor_pc import (
@@ -277,11 +278,13 @@ def render_latest_png(vv_flood_db, mask, labels, path, *, title, subtitle,
              fontsize=7.3, fontfamily=figstyle.FONT_MONO, va="bottom")
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=125, facecolor=_INK, pil_kwargs={"optimize": True})
+    with atomic_path(path) as temporary:
+        fig.savefig(temporary, dpi=125, facecolor=_INK, pil_kwargs={"optimize": True})
     # JPEG twin for the site: the speckled SAR field makes the PNG ~700 KB,
     # while the JPEG lands near 100 KB. docs/index.html loads the JPEG.
-    fig.savefig(Path(path).with_suffix(".jpg"), dpi=125, facecolor=_INK,
-                pil_kwargs={"quality": 82, "optimize": True, "progressive": True})
+    with atomic_path(Path(path).with_suffix(".jpg")) as temporary:
+        fig.savefig(temporary, dpi=125, facecolor=_INK,
+                    pil_kwargs={"quality": 82, "optimize": True, "progressive": True})
     plt.close(fig)
 
 
@@ -382,10 +385,6 @@ def main():
         "flagged": latest_result["flagged"],
         "alerts": alerts,
     }
-    LATEST.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8"
-    )
-
     subtitle = (
         f"pass {latest_date}  ·  {latest_result['total_km2']:.0f} km² new surface "
         f"water  ·  {latest_result['coverage']:.0%} of Punjab imaged"
@@ -412,6 +411,7 @@ def main():
         status=status,
     )
 
+    atomic_write_text(LATEST, json.dumps(payload, ensure_ascii=False, indent=1, allow_nan=False))
     save_state(STATE, fresh[-1])
     print(
         f"updated: latest pass {latest_date}, {latest_result['total_km2']} km² flooded, "

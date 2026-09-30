@@ -25,6 +25,7 @@ from punjabflood import weather as wx
 from punjabflood.catchments import Catchment
 from punjabflood.imdrain import IMD_WEIGHT_COL, covered_area_km2
 from punjabflood.openmeteo import OpenMeteo, OpenMeteoError, QuotaExhausted
+from punjabflood.io import atomic_write_text
 
 log = logging.getLogger(__name__)
 
@@ -225,6 +226,19 @@ def build_product(
     }
     release_series: dict[str, pd.Series] = {}
     dates = pd.date_range(pd.Timestamp(issue_date) + pd.Timedelta(days=1), periods=max(horizons))
+    # A list of rain values has no date labels once handed to the inflow model.
+    # Check the calendar before converting, so missing days cannot shift lags.
+    for frame, group in ((qpf_det, "model"), (qpf_ens, "member")):
+        if frame.empty:
+            raise ValueError(f"missing {group} QPF")
+        for (cat, name), rows in frame.groupby(["catchment", group]):
+            if rows["target_date"].duplicated().any():
+                raise ValueError(f"duplicate QPF dates for {cat}/{name}")
+            series = rows.set_index(pd.to_datetime(rows["target_date"]))["rain_mm"].reindex(dates)
+            if not np.isfinite(series.to_numpy(dtype=float)).all() or (series < 0).any():
+                raise ValueError(f"incomplete or invalid QPF horizon for {cat}/{name}")
+    qpf_det = qpf_det[pd.to_datetime(qpf_det["target_date"]).isin(dates)].copy()
+    qpf_ens = qpf_ens[pd.to_datetime(qpf_ens["target_date"]).isin(dates)].copy()
     for dam, st in states.items():
         if dam not in params:
             continue
@@ -295,6 +309,8 @@ def build_product(
                 },
             }
         members = _members(qpf_ens, cat)
+        if not det_daily or not members:
+            raise ValueError(f"{dam} lacks deterministic or ensemble QPF")
         if members:
             h_max = max(horizons)
             # the daily prediction is causal, so one run per member over the longest horizon
@@ -724,19 +740,34 @@ def write_outputs(product: dict, out_dir: Path = Path("outputs/forecast")) -> tu
             stem = f"{product['issue_date']}_rerun_{stamp or 'later'}_{n}"
     jp = out_dir / f"{stem}.json"
     mp = out_dir / f"{stem}.md"
-    jp.write_text(json.dumps(product, indent=2, default=str), encoding="utf-8")
-    mp.write_text(render_markdown(product), encoding="utf-8")
+    encoded = json.dumps(product, indent=2, default=str, allow_nan=False)
+    markdown = render_markdown(product)
+    atomic_write_text(jp, encoded)
+    atomic_write_text(mp, markdown)
     # the newest cycle, for readers that cannot list the directory (the public site); it
     # names the dated record it copies, and it is the one file here that is rewritten
     latest = dict(product, record=jp.name)
-    (out_dir / "latest.json").write_text(
-        json.dumps(latest, indent=2, default=str), encoding="utf-8"
-    )
+    atomic_write_text(out_dir / "latest.json",
+                      json.dumps(latest, indent=2, default=str, allow_nan=False))
     return jp, mp
 
 
 class FreshnessError(RuntimeError):
     """A required live product invariant was not met."""
+
+
+def _validate_bulletin_date(bulletin: dict, issue_date: str) -> None:
+    stamp = bulletin.get("as_on_date")
+    try:
+        if not isinstance(stamp, str):
+            raise ValueError("missing date")
+        stamp = stamp.replace("/", "-")
+        fmt = "%Y-%m-%d" if re.fullmatch(r"\d{4}-\d{2}-\d{2}", stamp) else "%d-%m-%Y"
+        day = datetime.strptime(stamp, fmt).date()
+    except (TypeError, ValueError):
+        raise FreshnessError("BBMB bulletin date is missing or invalid") from None
+    if day != pd.Timestamp(issue_date).date():
+        raise FreshnessError("BBMB bulletin is not for this issue date")
 
 
 def validate_fresh_product(
@@ -752,10 +783,9 @@ def validate_fresh_product(
     generated = product.get("generated_utc")
     try:
         generated_ts = pd.Timestamp(generated)
-        if generated_ts.tzinfo is None:
-            generated_ts = generated_ts.tz_localize(UTC)
-        else:
-            generated_ts = generated_ts.tz_convert(UTC)
+        if pd.isna(generated_ts) or generated_ts.tzinfo is None:
+            raise ValueError("missing timezone timestamp")
+        generated_ts = generated_ts.tz_convert(UTC)
     except (TypeError, ValueError):
         generated_ts = None
         problems.append("generated_utc is missing or invalid")
@@ -771,16 +801,50 @@ def validate_fresh_product(
             problems.append(
                 f"archive checkpoint ends at {actual!r}, before required {required_archive_date!r}"
             )
-    if not product.get("dams"):
-        problems.append("no dam outputs were generated")
+    for dam in ("Bhakra", "Pong"):
+        if dam not in product.get("dams", {}):
+            problems.append(f"missing required dam {dam}")
+    try:
+        _validate_bulletin_date(product.get("bulletin") or {}, issue_date)
+    except FreshnessError as exc:
+        problems.append(str(exc))
     if not product.get("reaches"):
         problems.append("no routed reach outputs were generated")
     for dam, entry in product.get("dams", {}).items():
         if not entry.get("deterministic") or not entry.get("ensemble"):
             problems.append(f"{dam} lacks required deterministic or ensemble output")
+        for model, result in entry.get("deterministic", {}).items():
+            for key in ("qpf_mm_by_day", "inflow_bcm_by_day"):
+                values = result.get(key, [])
+                if len(values) != max(HORIZONS) or not all(
+                    isinstance(v, (int, float)) and np.isfinite(v) for v in values
+                ):
+                    problems.append(f"{dam}/{model} has incomplete {key}")
+            if not all(str(h) in result.get("horizons", {}) for h in HORIZONS):
+                problems.append(f"{dam}/{model} lacks horizons")
+        if not all(str(h) in entry.get("ensemble", {}) for h in HORIZONS):
+            problems.append(f"{dam} lacks ensemble horizons")
+        counts = []
+        for horizon, result in entry.get("ensemble", {}).items():
+            count = result.get("n_members")
+            probability = result.get("p_exhaustion_flood_scale")
+            if (not isinstance(count, int) or isinstance(count, bool) or count < 1
+                    or not isinstance(probability, (int, float))
+                    or not np.isfinite(probability) or not 0 <= probability <= 1):
+                problems.append(f"{dam}/{horizon} has incomplete ensemble results")
+            counts.append(count)
+        if len(set(counts)) > 1:
+            problems.append(f"{dam} loses ensemble members across horizons")
+        expected_models = product.get("model_status", {}).get("deterministic_models", [])
+        if not all(model in entry.get("deterministic", {}) for model in expected_models):
+            problems.append(f"{dam} lacks configured deterministic models")
     bhakra = product.get("dams", {}).get("Bhakra", {}).get("snowmelt")
-    if bhakra is not None and not bhakra.get("applied"):
+    if bhakra is None or not bhakra.get("applied"):
         problems.append("Bhakra snowmelt input was not applied")
+    try:
+        json.dumps(product, allow_nan=False, default=str)
+    except (TypeError, ValueError):
+        problems.append("product contains invalid/non-finite JSON values")
     if problems:
         raise FreshnessError("; ".join(problems))
 
@@ -945,6 +1009,10 @@ def recent_rain(
             elif d in model_days.index and model_days[d] == model_days[d]:
                 vals.append(float(model_days[d]))
                 srcs.append(RECENT_MODEL)
+            else:
+                raise FreshnessError(f"missing recent rain for {name} on {d.date()}")
+            if not np.isfinite(vals[-1]) or vals[-1] < 0:
+                raise FreshnessError(f"invalid recent rain for {name} on {d.date()}")
         recent[name] = vals
         sources[name] = srcs
     return recent, sources
@@ -974,7 +1042,10 @@ def run(
     saved ``climatology`` (see ``save_climatology``)."""
     issue_date = issue_date or datetime.now(UTC).date().isoformat()
     rec = bulletin or fetch_bulletin()
+    _validate_bulletin_date(rec, issue_date)
     states = dam_state_from_bulletin(rec, ratings)
+    if not all(dam in states and dam in params for dam in ("Bhakra", "Pong")):
+        raise FreshnessError("live cycle needs states and parameters for both Bhakra and Pong")
     det_frames, ens_frames, wx_frames = [], [], []
     recent, recent_sources = recent_rain(client, catchments, issue_date, rt_dir=rt_dir)
     # a parameter set with the snowmelt term needs the model's past days at the points
@@ -1046,6 +1117,9 @@ def run(
         if melt_needed
         else {}
     )
+    for dam, param in params.items():
+        if dam in states and param.has_melt and DAM_CATCHMENT[dam] not in melt:
+            raise FreshnessError(f"missing required snowmelt inputs for {dam}")
     product = build_product(
         issue_date,
         states,
@@ -1198,7 +1272,7 @@ def melt_inputs(
                     )
                 rec["archive_last_day"] = end.date().isoformat()
                 rec["model"] = model
-                rec["n_points"] = int(len(data_store.points))
+                rec["n_points"] = int(daily["n_points"].min())
                 rec["bucket_gap_days"] = 0
                 rec.update(metadata)
                 out[cat_name] = rec
@@ -1247,14 +1321,16 @@ def melt_inputs(
                 )
                 log.warning("melt inputs for %s: %s", dam, gap_note)
                 note = f"{note}; {gap_note}" if note else gap_note
-            daily = snow.catchment_melt_from_points(joined, weights)
+            daily = snow.catchment_melt_from_points(joined, weights, require_complete=True)
             daily["source"] = [
                 "archive" if (end is not None and d <= end) else model for d in daily.index
             ]
             rec = melt_from_series(daily, issue_date, recent_days, horizon, cat.area_km2)
+            if rec["missing_days"] or gap or daily["n_points"].min() < len(weights):
+                raise FreshnessError(f"incomplete snowmelt inputs for {dam}")
             rec["archive_last_day"] = end.date().isoformat() if end is not None else None
             rec["model"] = model
-            rec["n_points"] = int(len(weights))
+            rec["n_points"] = int(daily["n_points"].min())
             rec["bucket_gap_days"] = int(gap)
             if note:
                 rec["note"] = note

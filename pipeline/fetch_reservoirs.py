@@ -68,13 +68,13 @@ def _get(params, tries=8, base_delay=1.0):
     """GET the API with exponential backoff on 429/transient errors."""
     url = API + "?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={"User-Agent": "sailaab-reservoirs/1.0"})
-    delay = 5.0
+    delay = base_delay
     for attempt in range(tries):
         try:
             with urllib.request.urlopen(req, timeout=45) as r:
                 return json.loads(r.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt < tries - 1:
+            if (e.code == 429 or e.code >= 500) and attempt < tries - 1:
                 time.sleep(delay)
                 delay = min(delay * 2, 60)
                 continue
@@ -118,10 +118,14 @@ def fetch_dam_month(res_name, year, month):
             }
         )
         recs = d.get("records", [])
+        if not recs and d.get("total") is not None and offset < int(d["total"]):
+            raise RuntimeError("CWC pagination ended before its advertised total")
+        if recs and rows and recs == rows[-len(recs):]:
+            raise RuntimeError("CWC pagination did not advance")
         rows.extend(recs)
-        total = int(d.get("total", 0) or 0)
-        offset += PAGE
-        if not recs or offset >= total:
+        total = d.get("total")
+        offset += len(recs)
+        if not recs or (total is not None and offset >= int(total)):
             break
         time.sleep(1.0)
     return rows
@@ -145,7 +149,8 @@ def _row_from_record(rec, label):
 
 
 def _write(out, seen):
-    with out.open("w", newline="", encoding="utf-8") as f:
+    from sailaab.io import atomic_path
+    with atomic_path(out) as temporary, temporary.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=FIELDS)
         w.writeheader()
         for row in sorted(seen.values(), key=lambda r: (r["dam"], r["date"] or "")):
@@ -161,7 +166,7 @@ def main():
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
 
-    seen = {}
+    seen = _load_existing(out)
     for res_name, label in DAMS.items():
         for year in args.years:
             for month in MONSOON_MONTHS:
@@ -169,6 +174,7 @@ def main():
                     if not rec.get("Date"):
                         continue
                     seen[(rec["Date"], label)] = _row_from_record(rec, label)
+                _write(out, seen)
                 print(
                     f"{label} {year}-{month}: cumulative {len(seen)} rows", flush=True
                 )
@@ -176,6 +182,24 @@ def main():
             _write(out, seen)  # checkpoint after each dam-year
     _write(out, seen)
     print(f"wrote {len(seen)} rows -> {out}", flush=True)
+
+
+def _load_existing(out):
+    if not out.exists():
+        return {}
+    with out.open(newline="", encoding="utf-8") as stream:
+        reader = csv.DictReader(stream)
+        if reader.fieldnames != FIELDS:
+            raise ValueError("unexpected reservoir CSV schema; refusing to overwrite")
+        seen = {}
+        for row in reader:
+            if not row["date"] or not row["dam"] or None in row:
+                raise ValueError("incomplete reservoir CSV row")
+            key = (row["date"], row["dam"])
+            if key in seen and seen[key] != row:
+                raise ValueError("conflicting reservoir CSV rows")
+            seen[key] = row
+        return seen
 
 
 if __name__ == "__main__":

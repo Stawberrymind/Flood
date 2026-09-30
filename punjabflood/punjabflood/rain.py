@@ -25,17 +25,21 @@ DEFAULT_LEADS = (1, 2, 3, 4, 5, 6, 7)
 WEIGHT_COL = "weight_km2"
 
 
-def weighted_mean(values: pd.DataFrame, weights: pd.Series) -> pd.Series:
+def weighted_mean(values: pd.DataFrame, weights: pd.Series, *, require_complete=False) -> pd.Series:
     """Row-wise weighted mean of ``values`` (index = time, columns = point ids) with
     ``weights`` indexed by point id. Missing values are excluded and the weights are
     renormalised over the points present that row; an all-missing row is NaN."""
+    if require_complete:
+        values = values.reindex(columns=weights[weights > 0].index)
     w = weights.reindex(values.columns).to_numpy(dtype=float)
     v = values.to_numpy(dtype=float)
-    mask = ~np.isnan(v)
+    mask = np.isfinite(v)
     ww = np.where(mask, w[None, :], 0.0)
     denom = ww.sum(axis=1)
-    num = np.nansum(v * ww, axis=1)
+    num = np.sum(np.where(mask, v, 0.0) * ww, axis=1)
     out = np.where(denom > 0, num / np.where(denom > 0, denom, 1.0), np.nan)
+    if require_complete:
+        out[~mask.all(axis=1)] = np.nan
     return pd.Series(out, index=values.index, name="value")
 
 
@@ -142,7 +146,7 @@ def forecast_catchment(
     wser = pd.Series(weights)
     out = []
     for m in models:
-        s = weighted_mean(pd.DataFrame(per_model[m]), wser)
+        s = weighted_mean(pd.DataFrame(per_model[m]), wser, require_complete=True)
         out.append(pd.DataFrame({"target_date": s.index, "model": m, "rain_mm": s.to_numpy()}))
     res = (
         pd.concat(out, ignore_index=True)
@@ -178,7 +182,7 @@ def ensemble_catchment(
     wser = pd.Series(weights)
     out = []
     for member in sorted(series):
-        s = weighted_mean(pd.DataFrame(series[member]), wser)
+        s = weighted_mean(pd.DataFrame(series[member]), wser, require_complete=True)
         out.append(
             pd.DataFrame({"target_date": s.index, "member": member, "rain_mm": s.to_numpy()})
         )
@@ -251,7 +255,8 @@ def weather_catchment(
     cols = {}
     for name in WEATHER_COLS.values():
         cols[name] = (
-            weighted_mean(pd.DataFrame({pid: f[name] for pid, f in frames.items()}), wser)
+            weighted_mean(pd.DataFrame({pid: f[name] for pid, f in frames.items()}), wser,
+                          require_complete=True)
             if frames
             else pd.Series(dtype=float)
         )

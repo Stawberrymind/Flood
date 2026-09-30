@@ -53,11 +53,12 @@ OUT_CSV = Path("data/gfm_district_daily_2015_2025.csv")
 
 
 def _observed_days() -> set[str]:
-    """Monsoon days the fetcher actually probed, from the progress log."""
+    """Only a verified full grid establishes a dry day, not a coarse probe."""
     if not PROGRESS_CSV.exists():
         return set()
     with PROGRESS_CSV.open(newline="", encoding="utf-8") as fh:
-        return {row["day"] for row in csv.DictReader(fh) if row.get("day")}
+        return {row["day"] for row in csv.DictReader(fh)
+                if row.get("day") and row.get("full_verified") == "1"}
 
 
 def main() -> None:

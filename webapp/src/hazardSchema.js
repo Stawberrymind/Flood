@@ -9,6 +9,7 @@
 import {isoDate} from './calendarDate.js';
 
 export const DAMS = ['Bhakra', 'Pong', 'Ranjit Sagar'];
+export const REQUIRED_DAMS = ['Bhakra', 'Pong'];
 export const HORIZONS = [1, 2, 3, 4, 5];
 export const WATCH_LEVELS = ['quiet', 'watch', 'alert'];
 export const WRD_CLASSES = ['Low', 'Medium', 'High'];
@@ -235,7 +236,7 @@ export function resolveHazardState(feed, {fetchFailed = false, nowMs = null, lan
   if (!feed.dams || typeof feed.dams !== 'object') return out;
 
   const dams = DAMS.map((n) => damRow(n, feed.dams[n])).filter(Boolean);
-  if (dams.length === 0) return out;
+  if (!REQUIRED_DAMS.every((name) => dams.some((dam) => dam.name === name))) return out;
   out.reason = null;
 
   out.state = 'watch';

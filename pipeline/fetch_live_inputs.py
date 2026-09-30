@@ -48,7 +48,7 @@ from pipeline.fetch_gfm import (
 )
 from sailaab import nowcast
 from sailaab.districts import load_districts, rasterize_districts
-from sailaab.gfm import flood_mask, ref_water_mask
+from sailaab.gfm import flood_mask, ref_water_mask, validate_wms_rgba
 
 UA = {"User-Agent": "sailaab-nowcast/1.0 (Punjab flood nowcast; keyless)"}
 
@@ -210,9 +210,25 @@ def _cwc_rows(keyword, year, timeout: int = 12):
         "sort[Date]": "asc",
         "limit": 100,
     }
-    r = requests.get(CWC_RESOURCE, params=params, headers=UA, timeout=timeout)
-    r.raise_for_status()
-    return (r.json() or {}).get("records", []) or []
+    rows, offset, previous = [], 0, None
+    for _ in range(1000):
+        r = requests.get(CWC_RESOURCE, params=dict(params, offset=offset), headers=UA, timeout=timeout)
+        r.raise_for_status()
+        response = r.json() or {}
+        page = response.get("records", []) or []
+        if not page:
+            if response.get("total") is not None and offset < int(response["total"]):
+                raise RuntimeError("CWC pagination ended before its advertised total")
+            return rows
+        if page == previous:
+            raise RuntimeError("CWC pagination did not advance")
+        rows.extend(page)
+        offset += len(page)  # public keys may return fewer than the requested 100
+        total = response.get("total")
+        if total is not None and offset >= int(total):
+            return rows
+        previous = page
+    raise RuntimeError("CWC pagination exceeded its safety bound")
 
 
 def _storage_window(records, w0, w1, upto=None):
@@ -247,13 +263,10 @@ def fetch_reservoirs(window, today_iso, timeout: int = 12):
             note = repr(exc)
             recs = []
         if recs:
-            got_any = True
             mean_s, delta_s = _storage_window(recs, w0, w1, upto=today_iso)
+            got_any |= np.isfinite(mean_s)
             feats[f"{slug}_storage"] = mean_s
             feats[f"{slug}_delta"] = delta_s
-        elif slug == "bhakra":
-            # Bhakra empty/unreachable -> the whole BBMB feed is dark; stop probing.
-            break
     return feats, ("cwc" if got_any else "unavailable"), note
 
 
@@ -265,7 +278,8 @@ GFM_SIZE = 900  # single ~380 m EPSG:3857 tile over the Punjab bbox (1 request/d
 
 def _wms_rgba(layer, day, bounds, size, timeout: int = 90):
     png = _get(_getmap_params(layer, day, bounds, size, size))
-    return np.array(Image.open(io.BytesIO(png)).convert("RGBA"), dtype="uint8")
+    arr = np.array(Image.open(io.BytesIO(png)).convert("RGBA"), dtype="uint8")
+    return validate_wms_rgba(arr, (size, size), check_palette=layer != FOOTPRINT_LAYER)
 
 
 def _district_labels(bounds, size):

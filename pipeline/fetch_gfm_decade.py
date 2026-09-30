@@ -8,13 +8,13 @@ Two phases (all WMS/rasterio IO lives here; pure logic is in ``sailaab.gfm`` and
     python -m pipeline.fetch_gfm_decade fetch [YEAR ...]   # Phase A: pull per-day tifs
     python -m pipeline.fetch_gfm_decade aggregate          # Phase B: build products
 
-Phase A pulls, for every monsoon day (Jun 15 - Sep 30) of each year, a single
-low-res *flood probe* (1024 px over the whole bbox, ~2-3 s). Only when the probe
-is non-empty does it fetch the full ~100 m 4-tile grid and write a per-day mask to
+Phase A pulls, for every monsoon day (Jun 15 - Sep 30) of each year, the
+full ~100 m tiled grid, validates the rendered palette, and writes a per-day mask to
 ``data/gfm/<YEAR>/gfm_punjab_<YYYYMMDD>.tif`` (gitignored). The footprint layer is
 NOT used to gate the archive -- it nearest-value-falls-back to ~100% on old dates
 (see ``docs/notes/gfm-decade.md``); the flood layer has clean exact-day semantics.
-Progress is appended to ``data/gfm/_decade_progress.csv`` so the run is resumable.
+Progress is atomically upserted into ``data/gfm/_decade_progress.csv`` only after
+successful full-grid reads. Legacy coarse-negative/failed probes are rechecked.
 
 Phase B reads the per-day tifs, unions them into the 11 monsoon windows and the
 season, subtracts reference water, rasterizes the 20 Punjab districts on the same
@@ -39,6 +39,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import rasterio
 from PIL import Image
 from rasterio.warp import transform_geom
@@ -105,7 +106,7 @@ def season_days(year: int):
 def flood_probe(day: str, bounds, size: int = PROBE_SIZE) -> int:
     """Flood-pixel count from a single low-res GetMap over the whole bbox.
 
-    Cheap gate: the full ~100 m grid is only pulled when this is > 0.
+    Diagnostic only: a zero coarse probe is not evidence of a dry full grid.
     """
     png = _get(_getmap_params(FLOOD_LAYER, day, bounds, size, size))
     arr = np.array(Image.open(io.BytesIO(png)).convert("RGBA"), dtype=np.uint8)
@@ -117,18 +118,22 @@ def _load_progress() -> set[str]:
     if PROGRESS_CSV.exists():
         with open(PROGRESS_CSV, newline="") as fh:
             for row in csv.DictReader(fh):
-                done.add(row["day"])
+                # Old coarse-negative probes and failed probes are not evidence
+                # of a full-resolution dry day. They must be rechecked.
+                if row.get("full_verified") == "1":
+                    done.add(row["day"])
     return done
 
 
 def _append_progress(day, probe_px, active, full_px, flood_km2):
-    new = not PROGRESS_CSV.exists()
-    PROGRESS_CSV.parent.mkdir(parents=True, exist_ok=True)
-    with open(PROGRESS_CSV, "a", newline="") as fh:
-        w = csv.writer(fh)
-        if new:
-            w.writerow(["day", "probe_px", "active", "full_px", "flood_km2"])
-        w.writerow([day, probe_px, int(active), full_px, f"{flood_km2:.3f}"])
+    from sailaab.io import atomic_write_text
+    frame = pd.read_csv(PROGRESS_CSV) if PROGRESS_CSV.exists() else pd.DataFrame()
+    if len(frame):
+        frame = frame[frame["day"] != day]
+    row = {"day": day, "probe_px": probe_px, "active": int(active),
+           "full_px": full_px, "flood_km2": round(flood_km2, 3), "full_verified": 1}
+    atomic_write_text(PROGRESS_CSV, pd.concat([frame, pd.DataFrame([row])],
+                      ignore_index=True).to_csv(index=False))
 
 
 def fetch_refwater(bounds, ncols, nrows):
@@ -165,27 +170,21 @@ def fetch(years):
                 continue
             probed += 1
             try:
-                px = flood_probe(day, bounds)
+                rgba = fetch_rgba_grid(FLOOD_LAYER, day, bounds, ncols, nrows)
             except Exception as exc:
-                print(f"  {day}: probe failed ({exc}); recording empty, continuing")
-                _append_progress(day, -1, False, 0, 0.0)
+                print(f"  {day}: full-resolution fetch failed ({type(exc).__name__}); not checkpointed")
                 time.sleep(REQUEST_PAUSE_S)
                 continue
             time.sleep(REQUEST_PAUSE_S)
-            if px <= 0:
-                _append_progress(day, px, False, 0, 0.0)
-                continue
-            # flood present -> pull the full-res grid
-            rgba = fetch_rgba_grid(FLOOD_LAYER, day, bounds, ncols, nrows)
             mask = flood_mask(rgba)
             full_px = int(mask.sum())
             km2 = web_mercator_area_km2(mask, bounds)
             write_mask_tif(
                 year_dir / f"gfm_punjab_{day.replace('-', '')}.tif", mask, bounds
             )
-            _append_progress(day, px, True, full_px, km2)
-            active += 1
-            print(f"  {day}: probe {px:5d} -> full {full_px:7d} px = {km2:8.1f} km2")
+            _append_progress(day, full_px, full_px > 0, full_px, km2)
+            active += int(full_px > 0)
+            print(f"  {day}: full {full_px:7d} px = {km2:8.1f} km2")
         # per-season summary (recount from progress for resumed years)
         yr_active = _year_active_days(year)
         print(
@@ -467,7 +466,7 @@ def late():
         len(config.YEARS),
         out_path=LATE_FREQUENCY_PNG,
         subtitle=(
-            f"Late monsoon (Jul 25 - Sep 30) only - paddy-transplant signal excluded\n"
+            "Late monsoon (Jul 25 - Sep 30) only - paddy-transplant signal excluded\n"
             "Copernicus GFM observed flood extent, ~100 m"
         ),
     )

@@ -60,6 +60,7 @@ function uncoveredRow(over = {}) {
 
 function feed(districts, over = {}) {
   return {
+    generated_utc: '2025-08-20T12:00:00Z',
     core_season: true,
     notes: 'quiet',
     forecast: {alert_threshold: 0.7917, status: undefined},
@@ -67,6 +68,14 @@ function feed(districts, over = {}) {
     ...over,
   };
 }
+
+test('a board requires a valid timestamp, and cannot be future-dated', () => {
+  const nowMs = Date.parse('2025-08-20T12:00:00Z');
+  for (const generated_utc of [undefined, null, 'bad', '2025-08-20T12:00:00',
+                               '2025-08-21T12:00:00Z']) {
+    assert.equal(resolveForecastState(feed([row()], {generated_utc}), {nowMs}).state, 'unavailable');
+  }
+});
 
 // --------------------------------------------------------------------------
 // the real committed payload must render

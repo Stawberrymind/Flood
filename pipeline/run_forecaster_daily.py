@@ -70,7 +70,7 @@ FLOOD_DAILY = DATA / "gfm_district_daily_2015_2025.csv"
 RAIN_DAILY = DATA / "rain_district_daily_2015_2025.csv"
 RAIN_CLIMO = DATA / "rain_district_daily_1961_2025.csv"
 BOXES = DATA / "rain_daily_boxes_2015_2025.csv"
-GFM_PROGRESS = DATA / "gfm" / "_decade_progress.csv"
+GFM_FOOTPRINT = DATA / "gfm_footprint_daily.csv"
 
 OUT = DATA / "forecaster_daily_results.csv"
 OUT_OOF = DATA / "forecaster_daily_oof.csv"
@@ -142,11 +142,19 @@ def build_frame(with_rain: bool = True) -> pd.DataFrame:
         validate="1:1",
     ).merge(boxes[["date"] + UP_F], on="date", how="left", validate="m:1")
 
-    # statewide acquisition cadence, from the fetcher's own probe log
-    prog = pd.read_csv(GFM_PROGRESS, parse_dates=["day"]).rename(
-        columns={"day": "date"}
-    )
-    prog["obs_active_now"] = (prog["probe_px"] > 0).astype(float)
+    # Acquisition, not detected flooding, defines this cadence null. Use the
+    # committed footprint record so clean checkouts reproduce the same inputs.
+    footprint = pd.read_csv(GFM_FOOTPRINT, parse_dates=["date"])
+    expected = set(flood["district"])
+    records = []
+    for day, group in footprint.groupby("date"):
+        complete = (set(group["district"]) == expected and
+                    not group["district"].duplicated().any() and
+                    group["acq_fraction"].between(0, 1).all() and
+                    group["era"].eq("reliable").all())
+        records.append({"date": day, "obs_active_now":
+                        float(group["acq_fraction"].gt(0).any()) if complete else np.nan})
+    prog = pd.DataFrame(records, columns=["date", "obs_active_now"])
     prog = trailing_sums(
         prog.assign(_series="acquisitions"), windows=(3, 7),
         value_col="obs_active_now", key="_series", prefix="obs_active",

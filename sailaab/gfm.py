@@ -24,6 +24,24 @@ FLOOD_RGB = (232, 76, 120)  # observed flood extent fill
 REF_WATER_RGB = (0, 75, 114)  # reference water mask fill
 
 
+def validate_wms_rgba(rgba, shape, *, check_palette=True):
+    """Reject error images, changed palettes and wrong-size tiles before decoding.
+
+    Transparent tiles are valid no-detection responses. Opaque pixels must
+    belong to the documented layer palette, including its non-flood overlays.
+    """
+    arr = np.asarray(rgba)
+    if arr.shape != (*shape, 4):
+        raise ValueError(f"unexpected WMS image shape {arr.shape}, expected {(*shape, 4)}")
+    if check_palette:
+        known = arr[..., 3] < 96
+        for color in (FLOOD_RGB, REF_WATER_RGB, (192, 0, 0), (255, 118, 13), (112, 173, 71)):
+            known |= color_mask(arr, color)
+        if not known.all():
+            raise ValueError("unknown GFM WMS palette; refusing to interpret as dry")
+    return arr
+
+
 def color_mask(rgba, target_rgb, tol=48, alpha_min=96):
     """Boolean mask where an RGBA image matches ``target_rgb``.
 

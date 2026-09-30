@@ -402,7 +402,8 @@ def test_training_frame_uses_calendar_windows_and_season_offsets(monkeypatch):
         runner.FLOOD_DAILY: pd.DataFrame({"date": dates, "district": "A", "fraction": [0.9, 0.0, 0.0]}),
         runner.RAIN_DAILY: pd.DataFrame({"date": dates, "district": "A", "rain_mm": [1.0] * 3, "api_mm": [1.0] * 3}),
         runner.BOXES: pd.DataFrame({"date": dates, "upstream_mm": [2.0] * 3}),
-        runner.GFM_PROGRESS: pd.DataFrame({"day": dates, "probe_px": [1] * 3}),
+        runner.GFM_FOOTPRINT: pd.DataFrame({"date": dates, "district": "A",
+            "acq_fraction": [1.0] * 3, "era": "reliable"}),
     }
     monkeypatch.setattr(runner.pd, "read_csv", lambda path, **kwargs: frames[path].copy())
     result = runner.build_frame(with_rain=False)

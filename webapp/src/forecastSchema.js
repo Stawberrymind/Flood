@@ -353,9 +353,13 @@ export function resolveForecastState(nc, {fetchFailed = false, nowMs = null} = {
   }
 
   // A run that stopped hours ago must not sit under a pulsing live dot.
-  if (nowMs !== null && typeof nc.generated_utc === 'string') {
-    const age = nowMs - Date.parse(nc.generated_utc);
-    if (!Number.isFinite(age) || age > MAX_FEED_AGE_MS) {
+  const timestamp = nc.generated_utc;
+  const issuedMs = typeof timestamp === 'string' &&
+    /T.*(?:Z|[+-]\d{2}:\d{2})$/.test(timestamp) ? Date.parse(timestamp) : NaN;
+  if (!Number.isFinite(issuedMs)) return out;
+  if (nowMs !== null) {
+    const age = nowMs - issuedMs;
+    if (!Number.isFinite(age) || age < -5 * 60 * 1000 || age > MAX_FEED_AGE_MS) {
       out.unimaged = unimaged;
       out.unscored = unscored;
       return out;

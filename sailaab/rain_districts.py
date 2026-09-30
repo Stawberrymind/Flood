@@ -198,20 +198,33 @@ def add_api(daily: pd.DataFrame, k: float = 0.9) -> pd.DataFrame:
     but very different flood risk.
 
     ``k`` is the daily retention coefficient and must lie in ``(0, 1)``.
+    Missing rain/calendar days keep the index unknown for that season. A new
+    year's record after an off-season gap starts from the declared zero state;
+    a continuous daily record retains state across New Year's Day.
     """
     if not (0.0 < float(k) < 1.0):
         raise ValueError(f"k must be in (0, 1), got {k}")
     d = daily.copy()
     d["_date"] = pd.to_datetime(d["date"])
     d = d.sort_values(["district", "_date"])
+    if d.duplicated(["district", "_date"]).any():
+        raise ValueError("duplicate district rain dates")
 
     api = np.empty(len(d), dtype=float)
     pos = 0
     for _, grp in d.groupby("district", sort=False):
         acc = 0.0
-        for r in grp["rain_mm"].to_numpy(dtype=float):
-            acc = (0.0 if np.isnan(r) else r) + float(k) * acc
+        previous = None
+        for day, r in zip(grp["_date"], grp["rain_mm"].to_numpy(dtype=float)):
+            # Each monsoon/year starts from the declared zero initial state.
+            # An unknown day contaminates this season's state, not the next one.
+            if previous is not None and day.year != previous.year and (day - previous).days > 1:
+                acc = 0.0
+            elif previous is not None and (day - previous).days != 1:
+                acc = np.nan
+            acc = r + float(k) * acc if np.isfinite(r) else np.nan
             api[pos] = acc
             pos += 1
+            previous = day
     d["api_mm"] = api
     return d.drop(columns="_date").reset_index(drop=True)

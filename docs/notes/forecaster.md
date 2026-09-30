@@ -1,5 +1,12 @@
 # The Sailaab flood forecaster
 
+> Withdrawn from operational use (September 2026): the model and numerical
+> benchmarks below assumed unobserved days were dry. They are historical
+> evidence, not validation of the live forecaster. Observation-aware three-day
+> onset labels currently contain three positives and no confirmed negatives.
+> Deployment is blocked until independently verified labels and past-only
+> holdouts are available. See [P1 remediation](p1-remediation.md).
+
 For every district in Punjab, on every day of the monsoon, using only what is
 known when the forecast is issued: will Copernicus GFM observe flooding above
 0.5% of that district's area within the next three days?

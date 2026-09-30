@@ -32,6 +32,8 @@ def _chunks():
 # Claims that were true of an earlier model or an earlier evaluation and must
 # never reappear on any public surface. Each is paired with what replaced it.
 RETIRED = [
+    ("No action needed now", "a below-floor observation is not a safety assessment"),
+    ("alert floor and rising", "a single satellite pass does not measure a trend"),
     ("0.549", "superseded 2025 AP; the fold-safe walk-forward value is 0.536"),
     ("96%", "retracted alert precision; the out-of-fold value is about a third"),
     ("28 alerts", "pre-rerun alert volume; the fold-safe value is about 24"),
@@ -41,6 +43,13 @@ RETIRED = [
     ("trained only on 2015 to 2024", "walk-forward: every season uses earlier ones"),
     ("without the history features", "the ablation removed excitation features only"),
 ]
+
+
+def test_legacy_model_withdrawal_notice_ships():
+    joined = "\n".join(body for _, body in _chunks())
+    assert "withdrawn from live use" in joined
+    assert "no confirmed negatives" in joined
+    assert "observation-aware-v1" in joined
 
 
 @pytest.mark.parametrize("needle,why", RETIRED, ids=[r[0] for r in RETIRED])

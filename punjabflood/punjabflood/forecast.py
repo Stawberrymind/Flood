@@ -98,9 +98,9 @@ def fetch_bulletin(
         "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
         "Accept": "application/pdf,*/*",
     }
-    # bbmb.gov.in serves an incomplete certificate chain; the poller has needed verify=False
-    # since August 2026. Integrity is checked on content (a PDF that parses to the two rows).
-    r = sess.get(BBMB_URL, headers=headers, timeout=timeout, verify=False)
+    # TLS authenticates the source; PDF parsing cannot substitute for it. A
+    # broken certificate chain must fail closed rather than accept altered data.
+    r = sess.get(BBMB_URL, headers=headers, timeout=timeout, verify=True)
     r.raise_for_status()
     content = r.content
     if content[:4] != b"%PDF":

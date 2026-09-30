@@ -8,22 +8,19 @@ causal by construction. A feature may only look at the issue date and earlier,
 and the helpers drop anything dated later even if a caller hands it over, so a
 late-arriving observation cannot silently turn a forecast into a hindcast.
 
-Two scores are produced for every district, because the evaluation found they
-are better at different jobs and neither dominates:
+Two uncalibrated scores can be produced for eligible observed districts:
 
-* the LEARNED score, which ranked district risk better by average precision in
-  every season containing a flood;
+* the LEARNED score, a ranking output from an approved training bundle;
 * the TRANSPARENT rule, an unweighted rank-sum of the district's own water, its
   seasonal onset climatology and water observed in adjacent districts, which
-  caught more distinct onsets at a fixed five-district alert budget.
+  supplies a non-probabilistic comparison.
 
-The watch set is taken from the transparent rule, since that is the method that
-performed better under the alert-budget objective, and the learned score
-supplies the ranking. Publishing both, and saying which is used for what, is the
-honest reflection of a result where the simple rule is not beaten outright.
+The learned score supplies the ranking and thresholded watch set. Legacy
+assumed-dry benchmark figures do not validate these helpers or justify live
+deployment; the driver rejects the old bundle pending independently verified
+labels and past-only holdouts.
 
-No rainfall is used. Rain added no measurable incremental skill under this model
-and validation protocol, so the live path does not depend on a rain feed at all.
+No rainfall is used by these features; the live model path has no rain input.
 """
 
 from __future__ import annotations

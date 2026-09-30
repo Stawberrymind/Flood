@@ -1,5 +1,11 @@
 # The daily forecaster: forecasting flood onset three days out
 
+> Withdrawn from operational use (September 2026): the benchmark below used
+> assumed-dry days, not independently established negatives. Its figures are
+> preserved for audit, not as evidence of deployable forecast skill. Current
+> observation-aware three-day labels contain three positives and no confirmed
+> negatives. See [P1 remediation](p1-remediation.md) for the deployment gate.
+
 The window forecaster did not beat a one-line persistence baseline, and
 `forecaster-v2.md` records why and publishes that null. This note records what
 replaced it and what the replacement can and cannot claim.

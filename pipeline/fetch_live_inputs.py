@@ -52,6 +52,10 @@ from sailaab.gfm import flood_mask, ref_water_mask, validate_wms_rgba
 
 UA = {"User-Agent": "sailaab-nowcast/1.0 (Punjab flood nowcast; keyless)"}
 
+
+class ReferenceWaterUnavailable(RuntimeError):
+    """Permanent-water subtraction is required to identify newly flooded land."""
+
 # --------------------------------------------------------------------------- #
 # RAIN — Open-Meteo (archive + forecast), keyless
 # --------------------------------------------------------------------------- #
@@ -403,9 +407,8 @@ def fetch_gfm_recent(
         refwater = ref_water_mask(_wms_rgba(REFWATER_LAYER, days[-1], bounds, size))
         time.sleep(pause)
         ref_ok = True
-    except Exception:
-        refwater = np.zeros((size, size), dtype=bool)
-        ref_ok = False
+    except Exception as exc:
+        raise ReferenceWaterUnavailable("GFM reference-water mask is unavailable") from exc
 
     # The feature history has to obey the same rule as the board. These rows
     # become frac_now, frac_max3d and every excitation term, so a day recorded
@@ -475,9 +478,8 @@ def fetch_gfm_observed(
         refwater = ref_water_mask(_wms_rgba(REFWATER_LAYER, ref_day, bounds, size))
         time.sleep(pause)
         ref_ok = True
-    except Exception:
-        refwater = np.zeros((size, size), dtype=bool)
-        ref_ok = False
+    except Exception as exc:
+        raise ReferenceWaterUnavailable("GFM reference-water mask is unavailable") from exc
 
 
     # An all-zero union means one of two very different things: the satellite

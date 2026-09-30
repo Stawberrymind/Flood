@@ -43,6 +43,7 @@ from pipeline.run_forecaster_daily import (
     _fit_predict,
     _fold_prior,
     build_frame,
+    require_evaluable,
 )
 from pipeline.run_forecaster_daily_audit import _recall_at_k, onset_events
 from sailaab.forecast_daily import forward_event, lagged_daily_values, neighbour_water
@@ -91,13 +92,14 @@ def main() -> None:
     d = df.copy()
     d["y"] = forward_event(d, threshold=THRESHOLD, horizon=HORIZON)
     d = _candidates(d, THRESHOLD, hysteresis=False).dropna(subset=["y"])
+    require_evaluable(d)
 
     years = sorted(d["year"].unique())
     parts, picks = [], []
     for ty in years:
         trys = [y for y in years if y != ty]
         fold = d.merge(
-            _fold_prior(d, trys, THRESHOLD), on="district", how="left", validate="m:1"
+            _fold_prior(df, trys, THRESHOLD), on="district", how="left", validate="m:1"
         )
         tr, te = fold[fold["year"].isin(trys)], fold[fold["year"] == ty].copy()
         if te.empty:
@@ -139,8 +141,8 @@ def main() -> None:
         tr_w["week"] = (tr_w["day_of_season"] // 7).astype(int)
         tr_w = tr_w.merge(climo, on=["district", "week"], how="left")
         tr_w["season_climo"] = tr_w["season_climo"].fillna(tr["y"].mean())
-        tr_w["neighbour"] = tr_w["neighbour_wet3d"].fillna(0.0)
-        te["neighbour"] = te["neighbour_wet3d"].fillna(0.0)
+        tr_w["neighbour"] = tr_w["neighbour_wet3d"]
+        te["neighbour"] = te["neighbour_wet3d"]
         AUG = [
             "prior_wet_days", "prior_max_fraction", "frac_now", "frac_max3d",
             "day_of_season", "neighbour", "season_climo",
@@ -152,7 +154,7 @@ def main() -> None:
 
     s = pd.concat(parts, ignore_index=True)
     s["persistence"] = s["frac_now"].fillna(0.0)
-    s["neighbour"] = s["neighbour_wet3d"].fillna(0.0)
+    s["neighbour"] = s["neighbour_wet3d"]
     # transparent additive: neighbours, season and own water, no learning
     s["climo_plus_neighbour"] = (
         s["season_climo"].rank(pct=True)

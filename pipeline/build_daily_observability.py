@@ -35,9 +35,8 @@ This rebuild joins the footprint cache and emits what was actually known:
     era_unreliable  before 2022 the footprint layer answers "everything, every
                     day" for 749 of 749 days, which is not an acquisition
                     pattern. Observability cannot be established there, so the
-                    original value is kept and flagged rather than either
-                    trusted or silently discarded. That choice belongs to the
-                    analysis, not to this script.
+                    original value is retained only in raw columns; it cannot
+                    support primary training or evaluation labels.
     no_probe        the service was never asked
 
 Positives and negatives are treated differently on purpose. Seeing water across
@@ -53,8 +52,9 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
+from sailaab.observations import MIN_OBSERVED, RELIABLE_FROM, SUSPECT_FULL_COVERAGE, mask_observations
+from sailaab.io import atomic_path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -63,8 +63,6 @@ FOOTPRINT = DATA / "gfm_footprint_daily.csv"
 OUT = DATA / "gfm_district_daily_observed_2015_2025.csv"
 
 # Matches MIN_OBSERVED_FRACTION in sailaab/nowcast.py.
-MIN_OBSERVED = 0.95
-RELIABLE_FROM = "2022-01-01"
 # Matches THRESHOLD in pipeline/run_forecaster_daily.py: the model's target is
 # flooding over more than 0.5% of district area, not any standing water.
 TARGET_FRACTION = 0.005
@@ -74,9 +72,6 @@ TARGET_FRACTION = 0.005
 # briefly returning rather than five consecutive full-state acquisitions. A
 # hundred district-days is not worth the risk of treating a measurement
 # artefact as ground truth.
-SUSPECT_FULL_COVERAGE = {
-    "2022-07-14", "2022-07-15", "2022-07-16", "2022-07-17", "2022-07-18",
-}
 
 
 def classify(row) -> str:
@@ -135,18 +130,11 @@ def main() -> int:
     # under water for much of the monsoon, so "any wet pixel" marks 85% of
     # fully-imaged district-days as flooded and is not a flood signal. Using it
     # here understated the usable negatives by a factor of five.
-    wet = df["fraction"].fillna(0.0) > TARGET_FRACTION
-    keep = (
-        (df["observability"] == "observed")
-        | (df["observability"] == "era_unreliable")
-        | ((df["observability"] == "partial") & wet)
-    )
-    df["label_usable"] = keep
     for col in ("flooded_ha", "fraction"):
         df[f"{col}_raw"] = df[col]
-        df.loc[~keep, col] = np.nan
-
-    df.to_csv(OUT, index=False)
+    df = mask_observations(df, TARGET_FRACTION)
+    with atomic_path(OUT) as temporary:
+        df.to_csv(temporary, index=False)
 
     # What the rebuild actually did, stated in the terms that matter.
     rel = df[df["observability"].isin(["observed", "partial", "not_observed", "no_probe"])]

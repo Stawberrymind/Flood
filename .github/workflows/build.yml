@@ -47,7 +47,7 @@ jobs:
         run: npm run build
 
       - name: feed-validator suite
-        run: node --test webapp/src/forecastSchema.test.mjs webapp/src/hazardSchema.test.mjs webapp/src/dataFeeds.test.mjs
+        run: node --test webapp/src/forecastSchema.test.mjs webapp/src/hazardSchema.test.mjs webapp/src/dataFeeds.test.mjs webapp/src/alertSchema.test.mjs
 
       - uses: actions/setup-python@v5
         with: { python-version: "3.13" }

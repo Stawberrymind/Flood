@@ -22,6 +22,7 @@ MODULE = ROOT / "webapp" / "src" / "forecastSchema.js"
 HAZARD_SUITE = ROOT / "webapp" / "src" / "hazardSchema.test.mjs"
 HAZARD_MODULE = ROOT / "webapp" / "src" / "hazardSchema.js"
 DATA_SUITE = ROOT / "webapp" / "src" / "dataFeeds.test.mjs"
+ALERT_SUITE = ROOT / "webapp" / "src" / "alertSchema.test.mjs"
 
 
 def test_validator_module_is_committed():
@@ -54,7 +55,15 @@ def test_hazard_section_uses_the_shared_validator():
     assert "punjabflood/outputs/forecast/latest.json" in jsx
 
 
-@pytest.mark.parametrize("suite", [SUITE, HAZARD_SUITE, DATA_SUITE], ids=["forecast", "hazard", "data"])
+def test_alert_section_uses_checked_snapshot_and_no_coercion():
+    jsx = (ROOT / "webapp" / "src" / "AlertSection.jsx").read_text(encoding="utf-8")
+    assert "resolveAlertState(" in jsx and "fetchMonitorSnapshot(" in jsx
+    assert "+d.flooded_km2" not in jsx and "alert_floor_km2 ||" not in jsx
+    assert "No action needed now" not in jsx and "and rising" not in jsx
+    assert "setInterval(" in jsx and "clearInterval(" in jsx
+
+
+@pytest.mark.parametrize("suite", [SUITE, HAZARD_SUITE, DATA_SUITE, ALERT_SUITE], ids=["forecast", "hazard", "data", "alert"])
 @pytest.mark.skipif(shutil.which("node") is None, reason="node not available")
 def test_node_schema_suite_passes(suite):
     proc = subprocess.run(

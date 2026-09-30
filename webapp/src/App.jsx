@@ -196,9 +196,9 @@ const MODULES = [
   },
   {
     tag: 'AI',
-    en: {name: 'Forecaster', desc: "An XGBoost district-risk model trained on the pipeline's own decade of labels, explained with SHAP and stress-tested by ablation."},
-    hi: {name: 'पूर्वानुमानक', desc: 'पाइपलाइन के अपने दशक-भर के लेबल पर प्रशिक्षित XGBoost ज़िला-जोखिम मॉडल, SHAP से समझाया और ablation से परखा।'},
-    pa: {name: 'ਭਵਿੱਖਬਾਣੀਕਾਰ', desc: 'ਪਾਈਪਲਾਈਨ ਦੇ ਆਪਣੇ ਦਹਾਕੇ ਦੇ ਲੇਬਲਾਂ ਉੱਤੇ ਸਿੱਖਿਆ XGBoost ਜ਼ਿਲ੍ਹਾ-ਖ਼ਤਰਾ ਮਾਡਲ, SHAP ਨਾਲ ਸਮਝਾਇਆ ਤੇ ablation ਨਾਲ ਪਰਖਿਆ।'},
+    en: {name: 'Forecaster', desc: 'Legacy scores are withheld: unobserved days were treated as dry. Independently verified labels are required before deployment.'},
+    hi: {name: 'पूर्वानुमानक', desc: 'पुराने स्कोर रोके गए हैं: बिना अवलोकन वाले दिन सूखे माने गए थे। उपयोग से पहले स्वतंत्र सत्यापित लेबल ज़रूरी हैं।'},
+    pa: {name: 'ਭਵਿੱਖਬਾਣੀਕਾਰ', desc: 'ਪੁਰਾਣੇ ਸਕੋਰ ਰੋਕੇ ਗਏ ਹਨ: ਬਿਨਾਂ ਨਿਰੀਖਣ ਵਾਲੇ ਦਿਨ ਸੁੱਕੇ ਮੰਨੇ ਗਏ ਸਨ। ਵਰਤੋਂ ਤੋਂ ਪਹਿਲਾਂ ਸੁਤੰਤਰ ਪ੍ਰਮਾਣਿਤ ਲੇਬਲ ਜ਼ਰੂਰੀ ਹਨ।'},
   },
   {
     tag: null,

@@ -27,7 +27,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 from sklearn.metrics import average_precision_score
 
@@ -54,16 +53,20 @@ WINNER = PRIOR_F + STATE_F + SEASON_F
 
 def _scored(df: pd.DataFrame, threshold: float, horizon: int) -> pd.DataFrame:
     """Out-of-fold scores for the winning feature set, plus the baselines."""
-    d = df.copy()
+    from pipeline.run_forecaster_daily import observation_frame
+    d = observation_frame(df, threshold)
+    history = d.copy()
     d["y"] = forward_event(d, threshold=threshold, horizon=horizon)
     d = _candidates(d, threshold, hysteresis=False).dropna(subset=["y"])
+    from pipeline.run_forecaster_daily import require_evaluable
+    require_evaluable(d)
 
     years = sorted(d["year"].unique())
     parts = []
     for ty in years:
         trys = [y for y in years if y != ty]
         fold = d.merge(
-            _fold_prior(d, trys, threshold), on="district", how="left", validate="m:1"
+            _fold_prior(history, trys, threshold), on="district", how="left", validate="m:1"
         )
         tr, te = fold[fold["year"].isin(trys)], fold[fold["year"] == ty].copy()
         if te.empty:
@@ -99,14 +102,15 @@ def onset_events(full: pd.DataFrame, threshold: float) -> pd.DataFrame:
     set: candidates are restricted to rows below the threshold, so by
     construction no crossing day appears among them.
     """
-    d = full.copy()
+    from pipeline.run_forecaster_daily import observation_frame
+    d = observation_frame(full, threshold)
     d["md"] = d["date"].dt.strftime("%m-%d")
     d = d[d["md"] >= CORE_MD].sort_values(["district", "year", "date"])
-    wet = d["fraction"].fillna(0.0) > threshold
+    wet = d["fraction"] > threshold
     from sailaab.forecast_daily import lagged_daily_values
 
-    prev = (lagged_daily_values(d).fillna(0.0) > threshold)
-    ev = d[wet & ~prev.astype(bool)]
+    prev = lagged_daily_values(d)
+    ev = d[wet & prev.notna() & prev.le(threshold)]
     return ev[["date", "district", "year"]].reset_index(drop=True)
 
 

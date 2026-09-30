@@ -56,20 +56,25 @@ def group_by_date(datetimes) -> dict[str, list[str]]:
 def plan_passes(new_iso, max_scenes: int = 8):
     """Decide which acquisition dates this run should composite.
 
-    Returns ``(dates, backlog_skipped)``. Normally every new date is processed
-    oldest->newest. If more than ``max_scenes`` new scenes arrived at once (cold
-    start, or the Action was paused for a while) only the **latest** date is
-    processed, to keep a single run comfortably under the runner budget; then
-    ``backlog_skipped`` is ``True`` and the caller notes the dropped dates.
+    Returns ``(dates, backlog_pending)``. Process oldest dates first within the
+    scene budget. A date is indivisible (even if it alone exceeds the budget).
+    Remaining dates are deferred, never skipped by the watermark.
     """
     new_iso = list(new_iso)
+    if not isinstance(max_scenes, int) or isinstance(max_scenes, bool) or max_scenes < 1:
+        raise ValueError("max_scenes must be a positive integer")
     by = group_by_date(new_iso)
     dates = sorted(by)
     if not dates:
         return [], False
-    if len(new_iso) > max_scenes:
-        return [dates[-1]], True
-    return dates, False
+    selected, scenes = [], 0
+    for day in dates:
+        count = len(by[day])
+        if selected and scenes + count > max_scenes:
+            break
+        selected.append(day)
+        scenes += count
+    return selected, len(selected) < len(dates)
 
 
 # --------------------------------------------------------------------------- #

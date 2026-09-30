@@ -62,11 +62,12 @@ from sailaab.forecast_v2 import (
     quiet_window_alert_rate,
     recall_at_k,
 )
+from sailaab.observations import mask_observations
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 
-FLOOD_DAILY = DATA / "gfm_district_daily_2015_2025.csv"
+FLOOD_DAILY = DATA / "gfm_district_daily_observed_2015_2025.csv"
 RAIN_DAILY = DATA / "rain_district_daily_2015_2025.csv"
 RAIN_CLIMO = DATA / "rain_district_daily_1961_2025.csv"
 BOXES = DATA / "rain_daily_boxes_2015_2025.csv"
@@ -114,7 +115,7 @@ def build_frame(with_rain: bool = True) -> pd.DataFrame:
     since rainfall added no measurable incremental skill. The rain columns
     are still present but empty, so callers that name them do not break.
     """
-    flood = pd.read_csv(FLOOD_DAILY, parse_dates=["date"])
+    flood = mask_observations(pd.read_csv(FLOOD_DAILY, parse_dates=["date"]), THRESHOLD)
     flood["year"] = flood["date"].dt.year
 
     rain = pd.read_csv(RAIN_DAILY, parse_dates=["date"])
@@ -151,7 +152,8 @@ def build_frame(with_rain: bool = True) -> pd.DataFrame:
         complete = (set(group["district"]) == expected and
                     not group["district"].duplicated().any() and
                     group["acq_fraction"].between(0, 1).all() and
-                    group["era"].eq("reliable").all())
+                    group["era"].eq("reliable").all() and
+                    not flood.loc[flood["date"].eq(day), "observability"].eq("era_unreliable").any())
         records.append({"date": day, "obs_active_now":
                         float(group["acq_fraction"].gt(0).any()) if complete else np.nan})
     prog = pd.DataFrame(records, columns=["date", "obs_active_now"])
@@ -173,18 +175,43 @@ def build_frame(with_rain: bool = True) -> pd.DataFrame:
 
 
 def _fold_prior(df: pd.DataFrame, train_years, threshold: float) -> pd.DataFrame:
-    """District susceptibility from training years only."""
+    """Exposure-normalized observed susceptibility, from training years only.
+
+    Express the wet-day rate per 107-day monsoon, not a raw count whose
+    denominator changes with acquisition coverage. No observations stays NaN.
+    """
     tr = df[df["year"].isin(train_years)]
     per = tr.groupby(["district", "year"]).agg(
         wet_days=("fraction", lambda s: int((s > threshold).sum())),
+        observed_days=("fraction", "count"),
         max_fraction=("fraction", "max"),
     )
+    per["wet_days"] = 107 * per["wet_days"] / per["observed_days"].replace(0, np.nan)
     out = per.groupby("district").agg(
         prior_wet_days=("wet_days", "mean"),
         prior_max_fraction=("max_fraction", "mean"),
     )
     idx = pd.Index(sorted(df["district"].unique()), name="district")
-    return out.reindex(idx).fillna(0.0).reset_index()
+    return out.reindex(idx).reset_index()
+
+
+def observation_frame(df: pd.DataFrame, threshold: float) -> pd.DataFrame:
+    """Rebuild threshold-dependent observed state before each sensitivity run."""
+    d = mask_observations(df, threshold)
+    d["frac_now"] = d["fraction"]
+    d["frac_max3d"] = trailing_max(d)
+    return d
+
+
+def require_evaluable(d: pd.DataFrame) -> None:
+    """Do not turn a single-class observed record into a skill headline."""
+    if d["y"].nunique() < 2:
+        positive = int(d["y"].eq(1).sum())
+        negative = int(d["y"].eq(0).sum())
+        raise ValueError(
+            f"Observation-aware labels have {positive} positives and {negative} "
+            "confirmed negatives; forecast skill cannot be evaluated."
+        )
 
 
 VARIANTS = {
@@ -259,8 +286,8 @@ def _candidates(
     line supplies cheap "onsets" that are really the same standing water
     crossing back and forth.
 
-    ``require_observed`` defaults to True here even though ``dry_at_issue``
-    itself still defaults to False. A district whose issue day nobody imaged
+    ``require_observed`` defaults to True, as does ``dry_at_issue``.
+    A district whose issue day nobody imaged
     cannot support the claim "this was an onset rather than water already
     present", because whether the water was already present is exactly what is
     unknown. Admitting those rows is the same "not seen means not flooded"
@@ -271,14 +298,13 @@ def _candidates(
     figures. It is kept reachable so the retraction can be demonstrated rather
     than merely asserted; it is not a supported evaluation path.
     """
-    d = d[d["md"] >= CORE_MD]
     dry = dry_at_issue(d, threshold, require_observed=require_observed)
+    core = d["md"] >= CORE_MD
     if not hysteresis:
-        return d[dry]
-    recent_wet = pd.concat(
-        [lagged_daily_values(d, days=i) > threshold for i in (1, 2, 3)], axis=1
-    ).fillna(False).astype(bool).any(axis=1)
-    return d[dry & ~recent_wet]
+        return d[core & dry]
+    previous = pd.concat([lagged_daily_values(d, days=i) for i in (1, 2, 3)], axis=1)
+    prior_dry = previous.le(threshold).all(axis=1) if require_observed else ~previous.gt(threshold).any(axis=1)
+    return d[core & dry & prior_dry]
 
 
 def evaluate(
@@ -289,11 +315,13 @@ def evaluate(
     hysteresis: bool = False,
 ) -> tuple:
     """LOYO over the issue-day frame. Returns (results_rows, oof_by_variant)."""
-    d = df.copy()
+    d = observation_frame(df, threshold)
     label_thr = threshold * 3 if hysteresis else threshold
-    d["y"] = forward_event(d, threshold=label_thr, horizon=horizon)
+    d["y"] = forward_event(observation_frame(df, label_thr), threshold=label_thr, horizon=horizon)
+    history = d.copy()
     d = _candidates(d, threshold, hysteresis)
     d = d.dropna(subset=["y"])
+    require_evaluable(d)
 
     years = sorted(d["year"].unique())
     oofs = {}
@@ -301,7 +329,7 @@ def evaluate(
         parts = []
         for ty in years:
             trys = [y for y in years if y != ty]
-            prior = _fold_prior(d, trys, threshold)
+            prior = _fold_prior(history, trys, threshold)
             fold = d.merge(prior, on="district", how="left", validate="m:1")
             tr = fold[fold["year"].isin(trys)]
             te = fold[fold["year"] == ty].copy()
@@ -353,17 +381,19 @@ ABLATION = {
 
 
 def run_ablation(df, threshold, horizon):
-    d = df.copy()
+    d = observation_frame(df, threshold)
+    history = d.copy()
     d["y"] = forward_event(d, threshold=threshold, horizon=horizon)
     d = d[d["md"] >= CORE_MD]
     d = d[dry_at_issue(d, threshold, require_observed=True)].dropna(subset=["y"])
+    require_evaluable(d)
     years = sorted(d["year"].unique())
     out = []
     for name, feats in ABLATION.items():
         parts = []
         for ty in years:
             trys = [y for y in years if y != ty]
-            fold = d.merge(_fold_prior(d, trys, threshold), on="district",
+            fold = d.merge(_fold_prior(history, trys, threshold), on="district",
                            how="left", validate="m:1")
             tr, te = fold[fold["year"].isin(trys)], fold[fold["year"] == ty].copy()
             if te.empty:
@@ -384,15 +414,17 @@ def run_ablation(df, threshold, horizon):
 
 def run_selection(df, threshold, horizon):
     """Choose the entire variant inside each fold, never on the judged year."""
-    d = df.copy()
+    d = observation_frame(df, threshold)
+    history = d.copy()
     d["y"] = forward_event(d, threshold=threshold, horizon=horizon)
     d = d[d["md"] >= CORE_MD]
     d = d[dry_at_issue(d, threshold, require_observed=True)].dropna(subset=["y"])
+    require_evaluable(d)
     years = sorted(d["year"].unique())
     parts, picks = [], []
     for ty in years:
         trys = [y for y in years if y != ty]
-        fold = d.merge(_fold_prior(d, trys, threshold), on="district",
+        fold = d.merge(_fold_prior(history, trys, threshold), on="district",
                        how="left", validate="m:1")
         tr, te = fold[fold["year"].isin(trys)], fold[fold["year"] == ty].copy()
         if te.empty:

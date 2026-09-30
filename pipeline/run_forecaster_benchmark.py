@@ -56,6 +56,7 @@ from pipeline.run_forecaster_daily import (
     _candidates,
     _fold_prior,
     build_frame,
+    require_evaluable,
 )
 from pipeline.run_forecaster_daily_audit import _event_recall, onset_events
 from pipeline.run_forecaster_daily_audit2 import (
@@ -150,7 +151,8 @@ def main() -> None:
     d = df.copy()
     d["y"] = forward_event(d, threshold=THRESHOLD, horizon=HORIZON)
     d = _candidates(d, THRESHOLD, hysteresis=False).dropna(subset=["y"])
-    d["neighbour"] = d["neighbour_wet3d"].fillna(0.0)
+    require_evaluable(d)
+    d["neighbour"] = d["neighbour_wet3d"]
     d["week"] = (d["day_of_season"] // 7).astype(int)
 
     years = sorted(d["year"].unique())
@@ -161,7 +163,7 @@ def main() -> None:
         te = d[d["year"] == ty].copy()
         if te.empty or tr["y"].nunique() < 2:
             continue
-        prior = _fold_prior(tr, past, THRESHOLD)
+        prior = _fold_prior(df, past, THRESHOLD)
         tr = tr.merge(prior, on="district", how="left", validate="m:1")
         te = te.merge(prior, on="district", how="left", validate="m:1")
         climo = seasonal_climatology(tr)

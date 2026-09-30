@@ -169,10 +169,11 @@ def test_dry_at_issue_excludes_already_flooded_rows():
     assert m.tolist() == [True, False]
 
 
-def test_dry_at_issue_treats_unknown_as_candidate():
-    """Default keeps the historical behaviour so old results reproduce."""
+def test_dry_at_issue_legacy_opt_out_treats_unknown_as_candidate():
+    """The unsafe historical population requires an explicit opt-out."""
     df = _target([np.nan])
-    assert dry_at_issue(df, threshold=0.5).iloc[0]
+    assert dry_at_issue(df, threshold=0.5, require_observed=False).iloc[0]
+    assert not dry_at_issue(df, threshold=0.5).iloc[0]
 
 
 def test_dry_at_issue_strict_refuses_an_unobserved_issue_day():
@@ -220,7 +221,7 @@ def test_candidates_excludes_an_unobserved_issue_day(hysteresis):
 
     df = _issue_frame([0.0, np.nan, 0.9])
     kept = _candidates(df, threshold=0.5, hysteresis=hysteresis)
-    assert kept["district"].tolist() == ["D0"]
+    assert kept["district"].tolist() == ([] if hysteresis else ["D0"])
     assert not kept["fraction"].isna().any()
 
 
@@ -379,10 +380,10 @@ def test_training_neighbour_wrapper_uses_the_same_calendar_window():
 def test_hysteresis_does_not_borrow_a_wet_row_from_outside_three_days():
     from pipeline.run_forecaster_daily import _candidates
 
-    df = _target([0.9, 0.0]).assign(md=["08-01", "08-10"])
-    df["date"] = pd.to_datetime(["2020-08-01", "2020-08-10"])
+    df = _target([0.9, 0.0, 0.0, 0.0, 0.0]).assign(md=["08-01", "08-07", "08-08", "08-09", "08-10"])
+    df["date"] = pd.to_datetime(["2020-08-01", "2020-08-07", "2020-08-08", "2020-08-09", "2020-08-10"])
     kept = _candidates(df, threshold=0.5, hysteresis=True)
-    assert kept.index.tolist() == [1]
+    assert kept.index.tolist() == [4]
 
 
 def test_lagged_daily_values_preserves_index_and_marks_omitted_days():
@@ -397,9 +398,10 @@ def test_lagged_daily_values_preserves_index_and_marks_omitted_days():
 def test_training_frame_uses_calendar_windows_and_season_offsets(monkeypatch):
     from pipeline import run_forecaster_daily as runner
 
-    dates = pd.to_datetime(["2020-06-15", "2020-06-16", "2020-06-20"])
+    dates = pd.to_datetime(["2023-06-15", "2023-06-16", "2023-06-20"])
     frames = {
-        runner.FLOOD_DAILY: pd.DataFrame({"date": dates, "district": "A", "fraction": [0.9, 0.0, 0.0]}),
+        runner.FLOOD_DAILY: pd.DataFrame({"date": dates, "district": "A", "fraction_raw": [0.9, 0.0, 0.0],
+            "acq_fraction": 1.0, "observability": "observed"}),
         runner.RAIN_DAILY: pd.DataFrame({"date": dates, "district": "A", "rain_mm": [1.0] * 3, "api_mm": [1.0] * 3}),
         runner.BOXES: pd.DataFrame({"date": dates, "upstream_mm": [2.0] * 3}),
         runner.GFM_FOOTPRINT: pd.DataFrame({"date": dates, "district": "A",

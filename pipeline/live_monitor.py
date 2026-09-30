@@ -18,8 +18,8 @@ anonymous. The legacy EE path is preserved verbatim in
 ``sailaab.monitor_pc`` (unit-tested).
 
 Runtime is kept under the runner budget by: coarse 150 m grid, reading only the
-new pass's scenes (a swath, not the whole archive), and processing the latest
-date only when a backlog of >``MAX_NEW_SCENES`` scenes arrives at once.
+new pass's scenes (a swath, not the whole archive), and processing the oldest
+whole dates within ``MAX_NEW_SCENES``; pending dates remain behind the watermark.
 """
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ from pipeline.local_tier_a import (
 from sailaab import figstyle
 from sailaab.io import atomic_path, atomic_write_text
 from sailaab.districts import district_fractions, load_districts, rasterize_districts
-from sailaab.monitor import load_state, new_scenes, save_state
+from sailaab.monitor import EPOCH, load_state, new_scenes, save_state
 from sailaab.monitor_pc import (
     build_alerts,
     district_km2_rows,
@@ -60,7 +60,7 @@ LATEST_PNG = Path("monitor/latest.png")
 
 LOOKBACK_DAYS = 12  # one S1 revisit cycle
 ALERT_KM2 = 25.0  # district alert floor
-MAX_NEW_SCENES = 8  # above this, composite the latest date only (backlog guard)
+MAX_NEW_SCENES = 8  # soft scene budget; never split or skip an acquisition date
 
 SOURCE = "Sentinel-1 RTC via Microsoft Planetary Computer (anonymous STAC)"
 REFERENCE_DESC = "pre-monsoon VV dry-season median, 150 m (see monitor/reference)"
@@ -308,13 +308,19 @@ def main():
 
     now = datetime.now(timezone.utc)
     start = (now - timedelta(days=LOOKBACK_DAYS)).strftime("%Y-%m-%d")
+    last_seen = load_state(STATE)
+    # A long outage/backlog must not silently age out of the rolling query.
+    # Only a cold start without a checkpoint deliberately uses the lookback.
+    if last_seen != EPOCH:
+        datetime.fromisoformat(last_seen.replace("Z", "+00:00"))
+        start = min(start, last_seen[:10])
     client = open_client()
     items = search_window(
         client, PUNJAB_BBOX, (start, now.strftime("%Y-%m-%d")), COLLECTION
     )
     iso = sorted(it.properties["datetime"] for it in items)
 
-    fresh = new_scenes(iso, load_state(STATE))
+    fresh = new_scenes(iso, last_seen)
     if not fresh:
         print("no new scenes")
         return
@@ -325,11 +331,12 @@ def main():
     for it in items:
         items_by_date.setdefault(it.properties["datetime"][:10], []).append(it)
 
-    skipped_dates = [d for d in sorted(fresh_by_date) if d not in dates_to_process]
+    pending_dates = [d for d in sorted(fresh_by_date) if d not in dates_to_process]
+    processed_until = max(scene for day in dates_to_process for scene in fresh_by_date[day])
     print(
         f"{len(fresh)} new scene(s) across {len(fresh_by_date)} date(s); "
         f"processing {dates_to_process}"
-        + (f" (backlog: skipped {skipped_dates})" if backlog else "")
+        + (f" (backlog: pending {pending_dates})" if backlog else "")
     )
 
     labels, names = _district_labels(transform, width, height, crs)
@@ -374,10 +381,12 @@ def main():
         "lookback_days": LOOKBACK_DAYS,
         "alert_floor_km2": ALERT_KM2,
         "latest_pass": latest_date,
-        "latest_pass_utc": fresh[-1],
+        "latest_pass_utc": processed_until,
         "new_scenes": len(fresh),
-        "backlog_skipped": backlog,
-        "skipped_dates": skipped_dates,
+        "backlog_skipped": False,
+        "skipped_dates": [],
+        "backlog_pending": backlog,
+        "pending_dates": pending_dates,
         "coverage_fraction": latest_result["coverage"],
         "total_flooded_km2": latest_result["total_km2"],
         "passes": passes,
@@ -398,7 +407,7 @@ def main():
     else:
         status = [f"no district at or above the {ALERT_KM2:.0f} km² alert floor"]
     if backlog:
-        status.append(f"backlog: {len(skipped_dates)} earlier date(s) skipped")
+        status.append(f"backlog: {len(pending_dates)} later date(s) pending")
 
     render_latest_png(
         latest_result["vv_flood"],
@@ -412,7 +421,7 @@ def main():
     )
 
     atomic_write_text(LATEST, json.dumps(payload, ensure_ascii=False, indent=1, allow_nan=False))
-    save_state(STATE, fresh[-1])
+    save_state(STATE, processed_until)
     print(
         f"updated: latest pass {latest_date}, {latest_result['total_km2']} km² flooded, "
         f"{len(latest_result['flagged'])} district(s) >= {ALERT_KM2} km²"

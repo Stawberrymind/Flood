@@ -36,6 +36,19 @@ def test_parse_bulletin_text():
     assert rec["pong_outflow_cusecs"] == 22202
 
 
+def test_bbmb_requires_verified_tls_and_never_archives_on_certificate_failure(tmp_path):
+    import requests
+    class Session:
+        def get(self, url, **kwargs):
+            assert url == forecast.BBMB_URL
+            assert kwargs["verify"] is True
+            raise requests.exceptions.SSLError("untrusted certificate")
+    raw = tmp_path / "bbmb"
+    with pytest.raises(requests.exceptions.SSLError):
+        forecast.fetch_bulletin(raw_dir=raw, session=Session())
+    assert not raw.exists()
+
+
 def _inputs(storage_frac=0.99, qpf_mm=80.0):
     cap = C.PONG.live_capacity_bcm.value
     states = {

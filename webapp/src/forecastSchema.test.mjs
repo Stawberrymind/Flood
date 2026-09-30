@@ -16,6 +16,7 @@ import {
   districtsAreValid,
   rankingIsCoherent,
   resolveForecastState,
+  trainingContractOk,
 } from './forecastSchema.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -63,11 +64,23 @@ function feed(districts, over = {}) {
     generated_utc: '2025-08-20T12:00:00Z',
     core_season: true,
     notes: 'quiet',
-    forecast: {alert_threshold: 0.7917, status: undefined},
+    forecast: {alert_threshold: 0.7917, status: undefined, training_contract: {
+      version: 'observation-aware-v1', validation: 'walk-forward',
+      held_out_seasons: [2024, 2025], n_positive: 10, n_negative: 20,
+      source_sha256: 'a'.repeat(64),
+    }},
     districts,
     ...over,
   };
 }
+
+test('legacy model scores cannot render a forecast board', () => {
+  const nc = feed([row()]);
+  delete nc.forecast.training_contract;
+  assert.equal(resolveForecastState(nc).state, 'unavailable');
+  nc.forecast.training_contract = {version: 'observation-aware-v1', n_negative: 0};
+  assert.equal(resolveForecastState(nc).state, 'unavailable');
+});
 
 test('a board requires a valid timestamp, and cannot be future-dated', () => {
   const nowMs = Date.parse('2025-08-20T12:00:00Z');
@@ -104,7 +117,12 @@ test('the committed live feed resolves to a state it has earned', () => {
                  'unavailable must be the gate refusing, not the schema failing');
     return;
   }
-  assert.equal(state, 'board', 'the committed in-season feed must not fail closed');
+  assert.equal(districtsAreValid(nc.districts), true, 'legacy data still must be schema-valid');
+  if (!trainingContractOk(nc.forecast?.training_contract)) {
+    assert.equal(state, 'unavailable', 'legacy assumed-dry scores must be withheld');
+  } else {
+    assert.equal(state, 'board', 'a validated in-season feed should render');
+  }
 });
 
 // --------------------------------------------------------------------------

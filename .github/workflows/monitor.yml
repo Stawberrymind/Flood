@@ -19,7 +19,7 @@ jobs:
       - run: pip install --require-hashes -r requirements.lock
       - run: python -m pytest -q          # never publish from a red tree
       - run: python -m pipeline.live_monitor   # secretless: anonymous Planetary Computer STAC
-      - run: python -m pipeline.nowcast        # live forecaster nowcast -> monitor/nowcast.json (never fails the job)
+      - run: python -m pipeline.nowcast        # unavailable inputs publish nulls; failed writes must fail the job
       # Every date parameter tried on the Sachet endpoint returns the identical
       # current set, so no backfill route is known and history exists only if we
       # keep it from now on. A missed run is a window nobody can recover; a

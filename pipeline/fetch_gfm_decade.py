@@ -158,6 +158,7 @@ def fetch(years):
 
     done = _load_progress()
     print(f"resume: {len(done)} day-slots already processed\n")
+    failed = []
 
     for year in years:
         t_year = time.time()
@@ -173,6 +174,7 @@ def fetch(years):
                 rgba = fetch_rgba_grid(FLOOD_LAYER, day, bounds, ncols, nrows)
             except Exception as exc:
                 print(f"  {day}: full-resolution fetch failed ({type(exc).__name__}); not checkpointed")
+                failed.append(day)
                 time.sleep(REQUEST_PAUSE_S)
                 continue
             time.sleep(REQUEST_PAUSE_S)
@@ -191,6 +193,8 @@ def fetch(years):
             f"[{year}] done: {probed} newly probed this run, "
             f"{yr_active} flood-active days total  ({time.time() - t_year:.0f}s)\n"
         )
+    if failed:
+        raise RuntimeError(f"{len(failed)} full-resolution fetches failed; retry before aggregation")
     print("FETCH COMPLETE")
 
 

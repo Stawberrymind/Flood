@@ -145,6 +145,11 @@ export default function ProofSection({lang}) {
             </VStack>
           </VStack>
           <VStack maxWidth={680}>
+            <Text type="large" color="primary">{{
+              en: 'Legacy forecast benchmark — withdrawn from live use. Unobserved days were treated as dry; this archived chart does not validate forecast skill. Independent verified labels are required.',
+              hi: 'पुराना पूर्वानुमान परीक्षण — लाइव उपयोग से हटाया गया। बिना अवलोकन वाले दिन सूखे माने गए थे; यह ऐतिहासिक चार्ट पूर्वानुमान का प्रमाण नहीं। स्वतंत्र सत्यापित लेबल ज़रूरी हैं।',
+              pa: 'ਪੁਰਾਣੀ ਭਵਿੱਖਬਾਣੀ ਪਰਖ — ਲਾਈਵ ਵਰਤੋਂ ਤੋਂ ਹਟਾਈ ਗਈ। ਬਿਨਾਂ ਨਿਰੀਖਣ ਵਾਲੇ ਦਿਨ ਸੁੱਕੇ ਮੰਨੇ ਗਏ ਸਨ; ਇਹ ਇਤਿਹਾਸਕ ਚਾਰਟ ਭਵਿੱਖਬਾਣੀ ਦਾ ਸਬੂਤ ਨਹੀਂ। ਸੁਤੰਤਰ ਪ੍ਰਮਾਣਿਤ ਲੇਬਲ ਜ਼ਰੂਰੀ ਹਨ।',
+            }[lang] || 'Legacy forecast benchmark — withdrawn from live use.'}</Text>
             <Text type="large" color="secondary">{t.intro}</Text>
           </VStack>
           {/* Four headline figures as a ruled row, not four boxes. Boxing a

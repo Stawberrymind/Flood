@@ -48,15 +48,15 @@ def test_plan_passes_processes_all_dates_when_small():
     assert skipped is False
 
 
-def test_plan_passes_latest_only_on_backlog():
-    # 9 scenes across 3 dates exceeds max_scenes=8 -> latest date only
+def test_plan_passes_oldest_whole_dates_on_backlog():
+    # 9 scenes across 3 dates exceeds max_scenes=8 -> first two complete dates
     dts = (
         ["2026-07-10T01:00:00Z"] * 3
         + ["2026-07-15T01:00:00Z"] * 3
         + ["2026-07-20T01:00:00Z"] * 3
     )
     dates, skipped = plan_passes(dts, max_scenes=8)
-    assert dates == ["2026-07-20"]
+    assert dates == ["2026-07-10", "2026-07-15"]
     assert skipped is True
 
 
@@ -66,7 +66,18 @@ def test_plan_passes_empty():
 
 def test_plan_passes_checks_backlog_for_generator_inputs():
     scenes = (f"2026-07-{day:02d}T01:00:00Z" for day in range(10, 19))
-    assert plan_passes(scenes, max_scenes=8) == (["2026-07-18"], True)
+    assert plan_passes(scenes, max_scenes=8) == ([f"2026-07-{day:02d}" for day in range(10, 18)], True)
+
+
+def test_oversized_oldest_date_is_processed_whole_not_skipped():
+    dates = ["2026-07-10T01:00:00Z"] * 10 + ["2026-07-11T01:00:00Z"]
+    assert plan_passes(dates, max_scenes=8) == (["2026-07-10"], True)
+
+
+@pytest.mark.parametrize("budget", [0, -1, True, 1.5])
+def test_scene_budget_must_be_a_positive_integer(budget):
+    with pytest.raises(ValueError, match="positive integer"):
+        plan_passes([], max_scenes=budget)
 
 
 def test_alert_threshold_uses_unrounded_area():

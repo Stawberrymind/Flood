@@ -19,6 +19,18 @@ export const TIERS = ['watch', 'elevated', 'low'];
 // A cycle runs every 6 hours; twice that means something has stopped.
 export const MAX_FEED_AGE_MS = 12 * 60 * 60 * 1000;
 
+export function trainingContractOk(contract) {
+  return contract && typeof contract === 'object' && !Array.isArray(contract)
+    && contract.version === 'observation-aware-v1'
+    && contract.validation === 'walk-forward'
+    && Array.isArray(contract.held_out_seasons)
+    && contract.held_out_seasons.every(Number.isInteger)
+    && new Set(contract.held_out_seasons).size >= 2
+    && Number.isInteger(contract.n_positive) && contract.n_positive > 0
+    && Number.isInteger(contract.n_negative) && contract.n_negative > 0
+    && typeof contract.source_sha256 === 'string' && /^[a-f0-9]{64}$/.test(contract.source_sha256);
+}
+
 /** Strictly a JSON number. `+x` turns null, "" and false into 0 and true into
  *  1, so coercing before a finite check lets a malformed field arrive as a
  *  confident zero. */
@@ -319,6 +331,7 @@ export function resolveForecastState(nc, {fetchFailed = false, nowMs = null} = {
   }
 
   if (!districtsAreValid(nc.districts, {issued: nc.generated_utc})) return out;
+  if (!trainingContractOk(fc?.training_contract)) return out;
 
   const scored = nc.districts.filter(hasScore)
     .sort((a, b) => num(a.rank) - num(b.rank));

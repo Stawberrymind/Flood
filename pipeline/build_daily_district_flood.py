@@ -14,11 +14,10 @@ trained on. It reuses the decade pipeline's own grid, reference-water mask,
 district rasterisation and area helpers, so the daily rows aggregate back to the
 committed window table rather than forming a parallel truth.
 
-A monsoon day with no mask file on disk is an observed dry day, not a gap: the
-fetcher probes every day and only writes a full raster when the probe is
-non-empty (`data/gfm/_decade_progress.csv` records every probe). Days absent
-from the progress log are genuinely unobserved and are emitted as NaN so they
-can never be mistaken for zeros.
+A usable day requires both a verified full-resolution fetch checkpoint and its
+raster, including for empty masks. Missing rasters, legacy coarse probes and
+failed requests are unknown, never dry. Acquisition coverage must still be
+joined separately before any model can use these district values as labels.
 
 Run: python -m pipeline.build_daily_district_flood
 
@@ -95,15 +94,13 @@ def main() -> None:
         for day in season_days(year):
             day = str(day)
             tif = by_day.get(day)
-            if tif is not None:
+            if tif is not None and day in observed:
                 mask = _read_mask(tif) & ~refwater
                 fl = _district_ha_from_mask(mask, labels, row_ha, n_labels)
-                n_wet += 1
-            elif day in observed:
-                fl = np.zeros(n_labels + 1, dtype=float)  # probed, no flood
-                n_dry += 1
+                n_wet += int(mask.any())
+                n_dry += int(not mask.any())
             else:
-                fl = None  # never probed: unknown, not dry
+                fl = None  # missing raster or verification: unknown, not dry
                 n_missing += 1
 
             for li, name in enumerate(names, start=1):

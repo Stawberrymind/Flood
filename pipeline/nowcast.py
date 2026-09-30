@@ -12,8 +12,9 @@ model inputs -> ``predict_proba`` for all 20 districts **iff** the window is
 core-season AND coverage passes the publication gate -> shape + write JSON.
 Districts the satellite could not see carry null score, rank and tier.
 
-CI contract: this script must NEVER fail the monitor job. Every exception is
-caught, a valid nulls JSON is written, and the process exits 0.
+Input/model unavailability may publish a valid nulls JSON and exit 0. Failure
+to write that safe product must exit nonzero, keeping the previous file intact
+and preventing the workflow from reporting a successful publication.
 
 Run: ``python -m pipeline.nowcast``
 """
@@ -21,6 +22,8 @@ Run: ``python -m pipeline.nowcast``
 from __future__ import annotations
 
 import json
+import hashlib
+from io import BytesIO
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
@@ -66,18 +69,25 @@ def load_priors() -> dict:
 def load_bundle():
     """The deployed daily forecaster and everything inference needs with it."""
     import joblib
+    from sailaab.observations import has_training_contract
 
-    b = joblib.load(MODEL_PATH)
+    # Reject the legacy all-days-observed artifact before deserializing it.
+    # If either half of a two-file publication failed, the hash also fails shut.
+    meta = json.loads(MODEL_PATH.with_suffix(".json").read_text(encoding="utf-8"))
+    if not isinstance(meta, dict) or not has_training_contract(meta.get("training_contract")):
+        raise ForecastUnavailable(
+            "Forecast withheld: legacy training assumed unobserved days were dry. "
+            "Independent verified labels and walk-forward validation are required."
+        )
+    content = MODEL_PATH.read_bytes()
+    if hashlib.sha256(content).hexdigest() != meta.get("bundle_sha256"):
+        raise ForecastUnavailable("Forecast bundle/provenance mismatch; forecast withheld")
+    b = joblib.load(BytesIO(content))
+    if b.get("training_contract") != meta["training_contract"]:
+        raise ForecastUnavailable("Forecast training provenance mismatch")
     if list(b["feature_order"]) != list(forecast_live.FEATURE_ORDER):
         raise RuntimeError(f"model feature drift: {b['feature_order']}")
     return b
-
-
-def _load_model_legacy():
-    import joblib
-
-    bundle = joblib.load(MODEL_PATH)
-    return bundle["model"], list(bundle["features"])
 
 
 def _fallback_districts():
@@ -188,7 +198,7 @@ def _build_notes(
 
 
 def degraded(generated, today_iso, reason) -> dict:
-    """A schema-valid nulls payload for the never-fail CI contract.
+    """A schema-valid nulls payload when inputs/model are unavailable.
 
     Two things this must never do. It must not claim to know the season when
     the failure was working out the season, because a reader turns
@@ -306,7 +316,6 @@ def main() -> int:
         )
 
         window = nowcast.resolve_window(today_iso)
-        priors = load_priors()
 
         # GFM first: it defines the canonical district order everything keys on.
         observed, antecedent, gfm_meta = fetch_gfm_observed(window, today_iso)
@@ -427,6 +436,7 @@ def main() -> int:
             p_event = {r["district"]: r["p_event"] for r in ranked}
             extras = nowcast.build_extras(ranked, last_seen)
             forecast_block = {
+                "training_contract": bundle["training_contract"],
                 "kind": "district flood onset",
                 "horizon_days": bundle["horizon_days"],
                 "threshold_fraction": bundle["threshold"],
@@ -448,13 +458,10 @@ def main() -> int:
                 "trained_years": bundle["trained_years"],
                 "validation": (
                     "walk-forward, each season forecast using only earlier "
-                    "seasons, with the alert threshold taken from inner "
-                    "out-of-fold scores. At this operating point back-testing "
-                    "raised about 24 alerts a season, roughly one in three "
-                    "followed by flooding within three days, catching about "
-                    "one onset in four. Season-level performance is "
-                    "heterogeneous. Retrospective and post-selection; the 2026 "
-                    "monsoon is the prospective test."
+                    "seasons, with the alert threshold taken from out-of-fold "
+                    "scores on observation-aware labels. This is conditional "
+                    "on acquisition coverage, not a calibrated flood probability. "
+                    "Legacy assumed-dry benchmark metrics do not apply."
                 ),
             }
             n_watch = sum(1 for r in ranked if r["tier"] == "watch")
@@ -562,13 +569,15 @@ def main() -> int:
             _write(payload)
         except Exception:
             traceback.print_exc()
+            return 1
         print(f"NOWCAST UNAVAILABLE -> {OUT}")
-    except Exception as exc:  # never fail the monitor job
+    except Exception as exc:
         traceback.print_exc()
         try:
             _write(degraded(generated, today_iso, f"{type(exc).__name__}: {exc}"))
         except Exception:
             traceback.print_exc()
+            return 1
         print(f"NOWCAST DEGRADED -> {OUT}")
     return 0
 
@@ -578,5 +587,5 @@ if __name__ == "__main__":
         code = main()
     except Exception:  # pragma: no cover - last-resort guard
         traceback.print_exc()
-        code = 0
+        code = 1
     raise SystemExit(code)

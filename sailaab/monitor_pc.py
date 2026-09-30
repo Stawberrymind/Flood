@@ -62,11 +62,12 @@ def plan_passes(new_iso, max_scenes: int = 8):
     processed, to keep a single run comfortably under the runner budget; then
     ``backlog_skipped`` is ``True`` and the caller notes the dropped dates.
     """
+    new_iso = list(new_iso)
     by = group_by_date(new_iso)
     dates = sorted(by)
     if not dates:
         return [], False
-    if len(list(new_iso)) > max_scenes:
+    if len(new_iso) > max_scenes:
         return [dates[-1]], True
     return dates, False
 
@@ -86,7 +87,7 @@ def district_km2_rows(fractions: dict, alert_km2: float):
     ``{flooded_ha, district_ha, flooded_fraction}``. Returns ``(rows, flagged)``:
     ``rows`` sorted by ``flooded_km2`` descending (ties by name) with
     ``flooded_km2`` and ``flooded_fraction`` rounded; ``flagged`` is the subset
-    at or above the ``alert_km2`` district alert floor.
+    at or above the ``alert_km2`` district alert floor using unrounded area.
     """
     rows = []
     for name, d in fractions.items():
@@ -98,7 +99,11 @@ def district_km2_rows(fractions: dict, alert_km2: float):
             }
         )
     rows.sort(key=lambda r: (-r["flooded_km2"], r["district"]))
-    flagged = [r for r in rows if r["flooded_km2"] >= alert_km2]
+    # Display rounding must not move a district across the decision boundary.
+    flagged = [
+        r for r in rows
+        if km2(fractions[r["district"]]["flooded_ha"]) >= alert_km2
+    ]
     return rows, flagged
 
 

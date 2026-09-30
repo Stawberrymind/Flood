@@ -1,5 +1,6 @@
 # tests/test_forecast_features.py
 import numpy as np
+import pytest
 import pandas as pd
 
 from sailaab.forecast_features import (
@@ -117,6 +118,18 @@ def test_classification_metrics_single_class_is_nan():
     assert np.isnan(m["pr_auc"]) and np.isnan(m["roc_auc"])
     assert m["base_rate"] == 0.0
     assert m["n"] == 3
+
+
+def test_classification_metrics_excludes_unknown_pairs_from_sample_counts():
+    result = classification_metrics([0, 1, np.nan, 1], [0.1, 0.9, 0.3, np.nan])
+    assert result["n"] == 2
+    assert result["n_pos"] == 1
+    assert result["roc_auc"] == 1.0
+
+
+def test_classification_metrics_rejects_misaligned_vectors():
+    with pytest.raises(ValueError, match="equal-length"):
+        classification_metrics([0, 1], [0.5])
 
 
 def test_regression_metrics_monotonic_high_spearman():

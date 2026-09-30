@@ -52,13 +52,42 @@ var labelImg = ee.Image(0).where(floodLabelZone, 1).rename('label')
   .updateMask(floodLabelZone.or(dryLabelZone));
 
 // ---------- 3. Spatial folds (anti-leakage) ----------
-var RAVI_BEAS = ['Gurdaspur', 'Amritsar', 'Kapurthala', 'Taran Taran', 'Tarn Taran',
+var RAVI_BEAS = ['Gurdaspur', 'Amritsar', 'Kapurthala', 'Tarn Taran',
                  'Hoshiarpur', 'Jalandhar'];
-var SUTLEJ = ['Firozpur', 'Ferozepur', 'Faridkot', 'Ludhiana', 'Moga', 'Rupnagar',
+var SUTLEJ = ['Firozpur', 'Faridkot', 'Ludhiana', 'Moga', 'Rupnagar',
               'Nawanshahr', 'Fatehgarh Sahib'];
-// NOTE: print district names from 01 and fix spellings above to match GAUL exactly.
-var foldA = districts.filter(ee.Filter.inList('ADM2_NAME', RAVI_BEAS)).geometry();
-var foldB = districts.filter(ee.Filter.inList('ADM2_NAME', SUTLEJ)).geometry();
+// Resolve aliases against the actual collection before making either fold.
+// An absent or ambiguous district must stop the script, not shrink a fold.
+function canonicalDistrict(name) {
+  var key = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  var aliases = {
+    tarantaran: 'tarntaran', ferozepur: 'firozpur', ropar: 'rupnagar',
+    shahidbhagatsinghnagar: 'nawanshahr', shaheedbhagatsinghnagar: 'nawanshahr'
+  };
+  return aliases[key] || key;
+}
+function resolveFoldNames(expected, available) {
+  return expected.map(function (name) {
+    var matches = available.filter(function (actual) {
+      return canonicalDistrict(actual) === canonicalDistrict(name);
+    });
+    if (matches.length !== 1) {
+      throw new Error('Expected one GAUL match for ' + name + ', got ' + matches.length);
+    }
+    return matches[0];
+  });
+}
+// This manual Code Editor script reads only the small district-name list.
+var availableNames = districts.aggregate_array('ADM2_NAME').getInfo();
+var namesA = resolveFoldNames(RAVI_BEAS, availableNames);
+var namesB = resolveFoldNames(SUTLEJ, availableNames);
+if (namesA.some(function (name) { return namesB.indexOf(name) !== -1; })) {
+  throw new Error('Spatial folds overlap');
+}
+print('Validated Ravi-Beas districts:', namesA);
+print('Validated Sutlej districts:', namesB);
+var foldA = districts.filter(ee.Filter.inList('ADM2_NAME', namesA)).geometry();
+var foldB = districts.filter(ee.Filter.inList('ADM2_NAME', namesB)).geometry();
 
 function samplePts(region, n) {
   return stack.addBands(labelImg).stratifiedSample({

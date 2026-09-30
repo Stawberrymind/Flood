@@ -5,6 +5,7 @@ calibration sample must cover a fresh sample at (approximately) the nominal rate
 """
 
 import numpy as np
+import pytest
 
 from sailaab.conformal import (
     conformal_quantile,
@@ -34,6 +35,18 @@ def test_conformal_quantile_ignores_nan():
 def test_conformal_quantile_insufficient_data_is_inf():
     # n=4, 95% -> k = ceil(5*0.95) = 5 > 4 -> infinite (cannot guarantee)
     assert conformal_quantile(np.arange(1, 5), 0.95) == float("inf")
+
+
+@pytest.mark.parametrize("coverage", [0, 1, -0.1, np.nan, np.inf])
+def test_conformal_quantile_rejects_invalid_coverage(coverage):
+    with pytest.raises(ValueError, match="coverage"):
+        conformal_quantile([1, 2], coverage)
+
+
+def test_conformal_quantile_uses_only_finite_absolute_residuals():
+    assert conformal_quantile([1, 2, 3, 4, 5, np.inf, np.nan], 0.8) == 5.0
+    with pytest.raises(ValueError, match="negative"):
+        conformal_quantile([-1, 2], 0.8)
 
 
 # --------------------------------------------------------------------------- #

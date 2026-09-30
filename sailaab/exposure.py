@@ -48,6 +48,8 @@ def counts_to_density(counts, pixel_area_m2, nodata=None):
         valid &= c != nodata
     c = np.where(valid, c, 0.0)
     area = np.asarray(pixel_area_m2, dtype="float64")
+    if not np.isfinite(area).all() or np.any(area <= 0):
+        raise ValueError("pixel areas must be finite and positive")
     return c / area
 
 
@@ -61,6 +63,8 @@ def density_to_counts(density, pixel_area_m2):
     d = np.asarray(density, dtype="float64")
     d = np.where(np.isfinite(d), d, 0.0)
     area = np.asarray(pixel_area_m2, dtype="float64")
+    if not np.isfinite(area).all() or np.any(area <= 0):
+        raise ValueError("pixel areas must be finite and positive")
     return d * area
 
 
@@ -125,6 +129,12 @@ def population_in_mask_by_district(pop_counts, label_array, mask_array, names=No
     pop = np.asarray(pop_counts, dtype="float64")
     pop = np.where(np.isfinite(pop), pop, 0.0)
     mask = np.asarray(mask_array, dtype="float64")
+    if labels.shape != pop.shape or labels.shape != mask.shape:
+        raise ValueError("population, labels and mask must have the same shape")
+    if not np.isfinite(labels).all() or np.any(labels < 0) or np.any(labels != np.floor(labels)):
+        raise ValueError("district labels must be nonnegative integers")
+    if names is not None and labels.size and labels.max() > len(names):
+        raise ValueError("names must cover every district label")
     flooded = np.isfinite(mask) & (mask > 0)
 
     out = {}

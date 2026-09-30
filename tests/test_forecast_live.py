@@ -49,6 +49,19 @@ def test_features_are_in_the_declared_order_and_cover_every_district():
     assert list(X.index) == DISTRICTS
 
 
+def test_live_features_accept_a_district_generator_even_with_excitation():
+    recent = _recent({("2026-08-14", d): 0.0 for d in DISTRICTS})
+    expected = build_live_features(recent, "2026-08-14", DISTRICTS, PRIORS, CLIMO, ADJ, threshold=0.5)
+    actual = build_live_features(recent, "2026-08-14", iter(DISTRICTS), PRIORS, CLIMO, ADJ, threshold=0.5)
+    pd.testing.assert_frame_equal(actual, expected)
+
+
+def test_live_features_reject_ambiguous_duplicate_district_dates():
+    recent = _recent({("2026-08-14", "A"): 0.0})
+    with pytest.raises(ValueError, match="duplicate"):
+        build_live_features(pd.concat([recent, recent]), "2026-08-14", DISTRICTS, PRIORS, CLIMO, ADJ)
+
+
 def test_frac_now_is_todays_value_not_an_older_one():
     recent = _recent(
         {("2026-08-13", "A"): 0.9, ("2026-08-14", "A"): 0.1}

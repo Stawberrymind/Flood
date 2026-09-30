@@ -91,10 +91,14 @@ def rx5day(daily, col, year, season=MONSOON, window=5) -> float:
     Only full ``window``-day sums count; a season shorter than ``window`` days
     yields NaN."""
     s = _year_season(daily, col, year, season)
-    v = s[col].astype(float)
+    if isinstance(window, (bool, np.bool_)) or not isinstance(window, (int, np.integer)) or window < 1:
+        raise ValueError("window must be a positive integer")
+    if s["date"].duplicated().any() or not s["date"].eq(s["date"].dt.normalize()).all():
+        raise ValueError("expected unique calendar dates")
+    v = s.set_index("date")[col].astype(float)
     if len(v) < window:
         return float("nan")
-    return float(v.rolling(window, min_periods=window).sum().max())
+    return float(v.rolling(f"{window}D", min_periods=window).sum().max())
 
 
 def annual_indices(
@@ -250,6 +254,8 @@ def empirical_return_period(values, target) -> dict:
     v = np.asarray(list(values), dtype=float)
     v = v[~np.isnan(v)]
     n = int(v.size)
+    if n == 0 or not np.isfinite(v).all() or not np.isfinite(target):
+        raise ValueError("return periods require a finite target and nonempty finite record")
     rank = int(1 + np.count_nonzero(v > target))
     T = (n + 1) / rank
     return {

@@ -133,6 +133,15 @@ def interp_no_extrap(known_dates, known_values, target_dates) -> np.ndarray:
     """
     kd = pd.DatetimeIndex(pd.to_datetime(known_dates))
     kv = np.asarray(known_values, dtype=float)
+    if kv.ndim != 1 or len(kd) != len(kv):
+        raise ValueError("known dates and values must be equal-length vectors")
+    if kd.hasnans or np.isinf(kv).any():
+        raise ValueError("known dates and values must not contain NaT or infinity")
+    points = pd.Series(kv, index=kd).dropna()
+    if points.groupby(level=0).nunique().gt(1).any():
+        raise ValueError("conflicting values for a duplicate known date")
+    points = points[~points.index.duplicated()].sort_index()
+    kd, kv = points.index, points.to_numpy()
     order = np.argsort(kd.values)
     kx = kd.values[order].astype("datetime64[ns]").astype("int64").astype(float)
     kv = kv[order]
@@ -142,8 +151,11 @@ def interp_no_extrap(known_dates, known_values, target_dates) -> np.ndarray:
         .astype("int64")
         .astype(float)
     )
+    if len(kx) == 0:
+        return np.full(tx.shape, np.nan)
     out = np.interp(tx, kx, kv)
     out[(tx < kx[0]) | (tx > kx[-1])] = np.nan
+    out[pd.isna(pd.to_datetime(target_dates))] = np.nan
     return out
 
 
@@ -158,8 +170,9 @@ def rating_level_to_storage(
     date_col: str = "date",
 ) -> np.ndarray:
     """Hypsometric estimate: map reservoir ``levels`` to storage (BCM) via the
-    dam's own ``(level, storage)`` pairs (monotone linear interpolation on sorted
-    levels). Levels outside the observed range clamp to the nearest observed
+    dam's own ``(level, storage)`` pairs. Repeated levels are averaged and noisy
+    decreases are pooled by weighted isotonic regression before interpolation.
+    Levels outside the observed range clamp to the nearest fitted
     storage (``numpy.interp`` semantics) - i.e. no vertical extrapolation. Used
     for Ranjit Sagar, whose Aug-Sep 2025 flood window was reported in levels only.
     """
@@ -168,10 +181,16 @@ def rating_level_to_storage(
         yrs = {int(y) for y in prior_years}
         df = df[pd.to_datetime(df[date_col]).dt.year.isin(yrs)]
     df = df[[level_col, storage_col]].dropna()
-    x = df[level_col].to_numpy(dtype=float)
-    y = df[storage_col].to_numpy(dtype=float)
-    order = np.argsort(x)
-    return np.interp(np.asarray(levels, dtype=float), x[order], y[order])
+    if not np.isfinite(df.to_numpy(dtype=float)).all():
+        raise ValueError("rating observations must be finite")
+    if df.empty:
+        return np.full(np.asarray(levels, dtype=float).shape, np.nan)
+    from sklearn.isotonic import isotonic_regression
+
+    curve = df.groupby(level_col)[storage_col].agg(["mean", "count"]).sort_index()
+    x = curve.index.to_numpy(dtype=float)
+    y = isotonic_regression(curve["mean"].to_numpy(), sample_weight=curve["count"].to_numpy())
+    return np.interp(np.asarray(levels, dtype=float), x, y)
 
 
 def headroom_deficit(storage_2025_bcm, median_bcm, live_cap_bcm: float):
@@ -181,6 +200,8 @@ def headroom_deficit(storage_2025_bcm, median_bcm, live_cap_bcm: float):
     decade median => less pre-positioned headroom**. ``deficit_pctpts`` expresses
     the same gap as percentage points of live capacity. Scalar or vectorized.
     """
+    if not np.isfinite(live_cap_bcm) or live_cap_bcm <= 0:
+        raise ValueError("live capacity must be finite and positive")
     deficit = storage_2025_bcm - median_bcm
     return deficit, deficit / live_cap_bcm * 100.0
 

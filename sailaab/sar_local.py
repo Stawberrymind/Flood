@@ -32,6 +32,8 @@ def to_db(power, floor: float = DB_FLOOR) -> np.ndarray:
     (``clip`` and ``log10`` both pass NaN through untouched).
     """
     power = np.asarray(power, dtype="float64")
+    if not np.isfinite(floor) or floor <= 0:
+        raise ValueError("floor must be finite and positive")
     return 10.0 * np.log10(np.clip(power, floor, None))
 
 
@@ -44,6 +46,8 @@ def median_composite(stack) -> np.ndarray:
     stack = np.asarray(stack, dtype="float64")
     if stack.ndim != 3:
         raise ValueError(f"expected (scene, y, x) stack, got shape {stack.shape}")
+    if stack.shape[0] == 0:
+        raise ValueError("expected at least one scene")
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=RuntimeWarning)
         return np.nanmedian(stack, axis=0)
@@ -82,6 +86,10 @@ def sieve_mask(
     ``connectivity`` is 8 (default, matches GEE ``connectedPixelCount``) or 4.
     """
     mask = np.asarray(mask, dtype=bool)
+    if isinstance(min_size, (bool, np.bool_)) or not isinstance(min_size, (int, np.integer)) or min_size < 1:
+        raise ValueError("min_size must be a positive integer")
+    if mask.ndim != 2:
+        raise ValueError("mask must be two-dimensional")
     if connectivity == 8:
         structure = np.ones((3, 3), dtype=int)
     elif connectivity == 4:
@@ -94,6 +102,7 @@ def sieve_mask(
     sizes = np.bincount(labels.ravel())
     sizes[0] = 0  # background label never counts
     keep = sizes >= min_size
+    keep[0] = False
     return keep[labels]
 
 

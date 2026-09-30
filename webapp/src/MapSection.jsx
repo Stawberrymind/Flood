@@ -12,7 +12,8 @@ import {Divider} from '@astryxdesign/core/Divider';
 import {Slider} from '@astryxdesign/core/Slider';
 import {SegmentedControl} from '@astryxdesign/core/SegmentedControl';
 import {SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
-import Papa from 'papaparse';
+import {fetchJson, loadCsv} from './dataFeeds';
+import {cropValue, mapValue, numberOrNull, peakYearAreas} from './mapValues';
 import {dataColors} from './theme';
 import {RAW} from './repository';
 
@@ -21,7 +22,7 @@ const MAP_T = {
     no: '05', title: 'Explore the record',
     intro: 'Pull up any monsoon from 2015 to now and watch the water move, even the years the model was never trained on. Or switch to the decade of recurrence and the rupee impact. Hover to compare, click any district for the full breakdown.',
     year: 'Flood by year', freq: 'Decade recurrence', impact: 'Impact (₹)', now: 'Live now (2026)',
-    hint: 'Click a district for its numbers.',
+    hint: 'Click a district for its numbers.', noData: 'Data unavailable', notImaged: 'Not imaged',
     lgYear: 'Hectares flooded that monsoon', lgFreq: 'Seasons flooded ≥1%, 2015–25 (of 11)',
     lgImp: 'Crop value at risk, ₹ crore (2025)', lgNow: 'Water observed this window, km² (live)',
     yr: 'flooded', crop: 'Cropland flooded 2025', val: 'Crop value at risk 2025', rec: 'Seasons flooded, 2015–25', obs: 'Water this window (live)',
@@ -30,7 +31,7 @@ const MAP_T = {
     no: '05', title: 'रिकॉर्ड देखें',
     intro: '2015 से अब तक का कोई भी मानसून चुनें और पानी को चलते देखें — वे साल भी जिन पर मॉडल कभी प्रशिक्षित नहीं हुआ। या दशक की पुनरावृत्ति और रुपये में प्रभाव पर जाएँ। तुलना के लिए होवर करें, पूरा विवरण देखने के लिए किसी ज़िले पर क्लिक करें।',
     year: 'साल दर साल बाढ़', freq: 'दशक पुनरावृत्ति', impact: 'प्रभाव (₹)', now: 'अभी लाइव (2026)',
-    hint: 'ज़िले के आँकड़ों के लिए उस पर क्लिक करें।',
+    hint: 'ज़िले के आँकड़ों के लिए उस पर क्लिक करें।', noData: 'आँकड़े उपलब्ध नहीं', notImaged: 'इमेज उपलब्ध नहीं',
     lgYear: 'उस मानसून में जलमग्न हेक्टेयर', lgFreq: '≥1% जलमग्न मौसम, 2015–25 (11 में से)',
     lgImp: 'फ़सल मूल्य जोखिम में, ₹ करोड़ (2025)', lgNow: 'इस विंडो में देखा गया जल, km² (लाइव)',
     yr: 'जलमग्न', crop: '2025 जलमग्न फ़सली भूमि', val: '2025 फ़सल मूल्य जोखिम में', rec: 'जलमग्न मौसम, 2015–25', obs: 'इस विंडो में जल (लाइव)',
@@ -39,7 +40,7 @@ const MAP_T = {
     no: '05', title: 'ਰਿਕਾਰਡ ਵੇਖੋ',
     intro: '2015 ਤੋਂ ਹੁਣ ਤੱਕ ਕੋਈ ਵੀ ਮਾਨਸੂਨ ਚੁਣੋ ਅਤੇ ਪਾਣੀ ਨੂੰ ਚੱਲਦਾ ਵੇਖੋ — ਉਹ ਸਾਲ ਵੀ ਜਿਨ੍ਹਾਂ ਉੱਤੇ ਮਾਡਲ ਕਦੇ ਸਿਖਲਾਈ ਨਹੀਂ ਹੋਇਆ। ਜਾਂ ਦਹਾਕੇ ਦੀ ਮੁੜ-ਆਵਰਤੀ ਤੇ ਰੁਪਏ ਵਿੱਚ ਪ੍ਰਭਾਵ ਉੱਤੇ ਜਾਓ। ਤੁਲਨਾ ਲਈ ਹੋਵਰ ਕਰੋ, ਪੂਰਾ ਵੇਰਵਾ ਵੇਖਣ ਲਈ ਕਿਸੇ ਜ਼ਿਲ੍ਹੇ ਉੱਤੇ ਕਲਿੱਕ ਕਰੋ।',
     year: 'ਸਾਲ-ਦਰ-ਸਾਲ ਹੜ੍ਹ', freq: 'ਦਹਾਕਾ ਮੁੜ-ਆਵਰਤੀ', impact: 'ਪ੍ਰਭਾਵ (₹)', now: 'ਹੁਣ ਲਾਈਵ (2026)',
-    hint: 'ਜ਼ਿਲ੍ਹੇ ਦੇ ਅੰਕੜਿਆਂ ਲਈ ਉਸ ਉੱਤੇ ਕਲਿੱਕ ਕਰੋ।',
+    hint: 'ਜ਼ਿਲ੍ਹੇ ਦੇ ਅੰਕੜਿਆਂ ਲਈ ਉਸ ਉੱਤੇ ਕਲਿੱਕ ਕਰੋ।', noData: 'ਅੰਕੜੇ ਉਪਲਬਧ ਨਹੀਂ', notImaged: 'ਤਸਵੀਰ ਉਪਲਬਧ ਨਹੀਂ',
     lgYear: 'ਉਸ ਮਾਨਸੂਨ ਵਿੱਚ ਡੁੱਬੇ ਹੈਕਟੇਅਰ', lgFreq: '≥1% ਡੁੱਬੇ ਮੌਸਮ, 2015–25 (11 ਵਿੱਚੋਂ)',
     lgImp: 'ਫ਼ਸਲ ਮੁੱਲ ਜੋਖਮ ਵਿੱਚ, ₹ ਕਰੋੜ (2025)', lgNow: 'ਇਸ ਵਿੰਡੋ ਵਿੱਚ ਵੇਖਿਆ ਪਾਣੀ, km² (ਲਾਈਵ)',
     yr: 'ਡੁੱਬਿਆ', crop: '2025 ਡੁੱਬੀ ਫ਼ਸਲੀ ਜ਼ਮੀਨ', val: '2025 ਫ਼ਸਲ ਮੁੱਲ ਜੋਖਮ ਵਿੱਚ', rec: 'ਡੁੱਬੇ ਮੌਸਮ, 2015–25', obs: 'ਇਸ ਵਿੰਡੋ ਵਿੱਚ ਪਾਣੀ (ਲਾਈਵ)',
@@ -65,7 +66,7 @@ const NO_DATA_PATTERN_ID = 'sailaab-nodata';
 const NO_DATA_FILL = `url(#${NO_DATA_PATTERN_ID})`;
 
 const colorFor = (v, layer) => {
-  if (v === null || v === undefined) return NO_DATA_FILL;
+  if (v === null || v === undefined || !Number.isFinite(v)) return NO_DATA_FILL;
   const {cols, stops} = RAMPS[layer];
   let c = cols[0];
   stops.forEach((s, i) => { if (v >= s && (v > 0 || i === 0)) c = cols[i]; });
@@ -134,11 +135,6 @@ function FitToState({geo}) {
 const ALIAS = {'Shahid Bhagat Singh Nagar': 'Nawanshahr'};
 const dn = (g) => ALIAS[g] || g;
 
-async function loadCsv(url) {
-  const text = await (await fetch(url)).text();
-  return Papa.parse(text, {header: true, skipEmptyLines: true}).data;
-}
-
 function Stat({label, value}) {
   return (
     <HStack justify="between" vAlign="baseline" gap={4}>
@@ -161,27 +157,20 @@ export default function MapSection({lang}) {
 
   useEffect(() => {
     let on = true;
-    fetch('assets/punjab_districts.json').then((r) => r.json()).then((g) => on && setGeo(g)).catch(() => {});
-    loadCsv('assets/district_flood_stats_2025.csv').then((rows) => {
+    fetchJson('assets/punjab_districts.json').then((g) => on && setGeo(g)).catch(() => {});
+    loadCsv('assets/district_flood_stats_2025.csv', ['district']).then((rows) => {
       if (!on) return;
       const m = {}; rows.forEach((d) => (m[d.district] = d)); setStats(m);
     }).catch(() => {});
-    loadCsv('assets/flood_frequency_districts_late_season.csv').then((rows) => {
+    loadCsv('assets/flood_frequency_districts_late_season.csv', ['district', 'seasons_with_fraction_gt1pct']).then((rows) => {
       if (!on) return;
       const m = {}; rows.forEach((d) => (m[d.district] = d)); setFreq(m);
     }).catch(() => {});
-    loadCsv('assets/gfm_district_window_fractions_2015_2025.csv').then((rows) => {
+    loadCsv('assets/gfm_district_window_fractions_2015_2025.csv', ['year', 'district', 'flooded_ha']).then((rows) => {
       if (!on) return;
-      const by = {};
-      rows.forEach((d) => {
-        const y = d.year, dist = d.district, ha = +d.flooded_ha || 0;
-        by[y] = by[y] || {};
-        if (!(dist in by[y]) || ha > by[y][dist]) by[y][dist] = ha; // peak window that year
-      });
-      setByYear(by);
+      setByYear(peakYearAreas(rows));
     }).catch(() => {});
-    fetch(RAW + 'monitor/nowcast.json')
-      .then((r) => r.json())
+    fetchJson(RAW + 'monitor/nowcast.json')
       .then((j) => {
         if (!on) return;
         const m = {}; (j.districts || []).forEach((d) => (m[d.district] = d)); setNow(m);
@@ -189,24 +178,15 @@ export default function MapSection({lang}) {
     return () => { on = false; };
   }, []);
 
-  const ready = geo && Object.keys(stats).length > 0;
+  // Each overlay carries its own missing values; unavailable impact data must
+  // not hide otherwise usable district boundaries and historical layers.
+  const ready = geo;
   const valueOf = (raw) => {
     const name = dn(raw);
-    if (layer === 'year') return +((byYear[year] && byYear[year][name]) || 0);
-    if (layer === 'freq') return +((freq[name] && freq[name].seasons_with_fraction_gt1pct) || 0);
-    if (layer === 'impact') return +((stats[name] && (stats[name].crop_var_inr_v2 || stats[name].crop_var_inr)) || 0) / 1e7;
-    // The live layer is the one place a null must survive. A district the
-    // satellite never imaged has no water figure, and `|| 0` was painting it
-    // the same colour as a district that was imaged and found dry. null here
-    // means unknown, and every caller below has to handle it.
-    const row = now[name];
-    if (!row) return null;
-    if (row.covered === false) return null;
-    const km2 = row.observed_km2;
-    return typeof km2 === 'number' && Number.isFinite(km2) ? km2 : null;
+    return mapValue(layer, name, year, {byYear, freq, stats, now});
   };
   const fmt = (v) => {
-    if (v === null) return 'not imaged';
+    if (v === null) return layer === 'now' ? t.notImaged : t.noData;
     if (layer === 'year') return `${Math.round(v).toLocaleString()} ha`;
     if (layer === 'freq') return `${v} / 11`;
     if (layer === 'impact') return `₹ ${Math.round(v).toLocaleString()} cr`;
@@ -245,10 +225,12 @@ export default function MapSection({lang}) {
     {k: 'now', label: t.now},
   ];
   const s = sel ? stats[dn(sel)] : null;
-  const n = sel ? now[dn(sel)] : null;
   const fq = sel ? freq[dn(sel)] : null;
   const selYearHa = sel && byYear[year] ? byYear[year][dn(sel)] : null;
-  const crore = s ? (+((s.crop_var_inr_v2 || s.crop_var_inr)) / 1e7).toFixed(0) : null;
+  const value = cropValue(s);
+  const crore = value === null ? null : (value / 1e7).toFixed(0);
+  const cropHa = numberOrNull(s?.crop_flooded_ha);
+  const seasons = numberOrNull(fq?.seasons_with_fraction_gt1pct);
   const activeLabel = (LAYERS.find((L) => L.k === layer) || {}).label || '';
   const headDesc = layer === 'year' ? `${year} ${t.yr}` : activeLabel;
 
@@ -321,11 +303,11 @@ export default function MapSection({lang}) {
                   <Divider />
                   <VStack paddingBlock={3}><Stat label={`${year} ${t.yr}`} value={selYearHa != null ? `${Math.round(selYearHa).toLocaleString()} ha` : '—'} /></VStack>
                   <Divider />
-                  <VStack paddingBlock={3}><Stat label={t.rec} value={fq ? `${fq.seasons_with_fraction_gt1pct} / 11` : '—'} /></VStack>
+                  <VStack paddingBlock={3}><Stat label={t.rec} value={seasons === null ? '—' : `${seasons} / 11`} /></VStack>
                   {year === 2025 && (
                     <>
                       <Divider />
-                      <VStack paddingBlock={3}><Stat label={t.crop} value={s ? `${Math.round(+s.crop_flooded_ha).toLocaleString()} ha` : '—'} /></VStack>
+                      <VStack paddingBlock={3}><Stat label={t.crop} value={cropHa === null ? '—' : `${Math.round(cropHa).toLocaleString()} ha`} /></VStack>
                       <Divider />
                       <VStack paddingBlock={3}><Stat label={t.val} value={crore ? `₹ ${(+crore).toLocaleString()} crore` : '—'} /></VStack>
                     </>

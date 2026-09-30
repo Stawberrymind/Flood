@@ -176,10 +176,16 @@ def block_bootstrap_ci(
     With only a handful of event years the interval is descriptive, not a
     calibrated confidence statement, and should be reported as such.
     """
+    if isinstance(n, (bool, np.bool_)) or not isinstance(n, (int, np.integer)) or n < 1:
+        raise ValueError("n must be a positive integer")
+    if not np.isfinite(alpha) or not 0 < alpha < 1:
+        raise ValueError("alpha must be finite and strictly between 0 and 1")
     years = sorted(values_by_year)
     if len(years) < 2:
         raise ValueError("need at least 2 year blocks to bootstrap")
     blocks = [np.asarray(values_by_year[y], dtype=float) for y in years]
+    if any(b.ndim != 1 or b.size == 0 or not np.isfinite(b).any() or np.isinf(b).any() for b in blocks):
+        raise ValueError("each year block must contain finite observations and no infinities")
     rng = np.random.default_rng(seed)
     stats = np.empty(n, dtype=float)
     for i in range(n):

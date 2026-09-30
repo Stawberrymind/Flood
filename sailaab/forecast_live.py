@@ -95,10 +95,13 @@ def build_live_features(
     ``(district, week_of_season)`` to the training onset rate, and ``adjacency``
     maps district to its neighbours. Missing entries yield NaN.
     """
+    districts = list(districts)
     issue = pd.Timestamp(issue_date)
     r = recent.copy()
     r["date"] = pd.to_datetime(r["date"])
     r = r[r["date"] <= issue]  # never look past the issue date
+    if r.duplicated(["date", "district"]).any():
+        raise ValueError("duplicate district observation dates")
 
     day = int(season_day_index(issue))
     week = day // 7

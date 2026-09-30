@@ -225,3 +225,33 @@ def test_absorbable_days_is_deficit_over_rate():
 
 def test_absorbable_days_zero_headroom_is_zero_days():
     assert absorbable_days(0.0, 173_000) == pytest.approx(0.0)
+
+
+def test_empty_interpolation_is_unknown():
+    assert np.isnan(interp_no_extrap([], [], ["2025-08-01"])).all()
+
+
+def test_interpolation_rejects_conflicting_duplicate_dates():
+    with pytest.raises(ValueError, match="duplicate"):
+        interp_no_extrap(["2025-08-01"] * 2, [1.0, 2.0], ["2025-08-01"])
+
+
+def test_interpolation_accepts_identical_duplicates_and_missing_targets():
+    result = interp_no_extrap(["2025-08-01"] * 2, [1.0, 1.0], ["2025-08-01", None])
+    assert result[0] == 1.0
+    assert np.isnan(result[1])
+
+
+def test_rating_curve_pools_noisy_decreases_instead_of_reversing_storage():
+    frame = pd.DataFrame({"dam": ["RS"] * 2, "level_m": [500.0, 510.0], "storage_value": [2.0, 1.0]})
+    np.testing.assert_allclose(rating_level_to_storage(frame, "RS", [500.0, 505.0, 510.0]), [1.5] * 3)
+
+
+def test_rating_curve_pools_repeated_levels_with_observation_weights():
+    frame = pd.DataFrame({"dam": ["RS"] * 3, "level_m": [500.0, 500.0, 510.0], "storage_value": [1.0, 3.0, 1.0]})
+    np.testing.assert_allclose(rating_level_to_storage(frame, "RS", [500.0, 510.0]), [5 / 3] * 2)
+
+
+def test_missing_dam_rating_curve_is_unknown():
+    frame = pd.DataFrame(columns=["dam", "level_m", "storage_value"])
+    assert np.isnan(rating_level_to_storage(frame, "RS", [505.0])).all()

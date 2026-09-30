@@ -118,6 +118,23 @@ def test_sieve_rejects_bad_connectivity():
         sieve_mask(np.zeros((3, 3), dtype=bool), connectivity=6)
 
 
+@pytest.mark.parametrize("size", [0, -1, 1.5, True])
+def test_sieve_rejects_invalid_sizes_without_flooding_background(size):
+    with pytest.raises(ValueError, match="positive integer"):
+        sieve_mask(np.eye(3, dtype=bool), min_size=size)
+
+
+def test_median_composite_rejects_an_empty_scene_axis():
+    with pytest.raises(ValueError, match="at least one scene"):
+        median_composite(np.empty((0, 2, 2)))
+
+
+@pytest.mark.parametrize("floor", [0, -1, np.nan, np.inf])
+def test_to_db_rejects_nonpositive_or_nonfinite_floor(floor):
+    with pytest.raises(ValueError, match="positive"):
+        to_db([0.0], floor=floor)
+
+
 # --- flooded_hectares ------------------------------------------------------
 def test_flooded_hectares():
     m = np.zeros((10, 10), dtype=bool)

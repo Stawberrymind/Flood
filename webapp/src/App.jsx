@@ -16,7 +16,8 @@ import {MediaTheme} from '@astryxdesign/core/theme';
 import HazardSection from './HazardSection';
 import AlertSection from './AlertSection';
 import ForecastSection from './ForecastSection';
-import {RAW, REPO, REPOSITORY} from './repository';
+import {BRANCH, REPO, REPOSITORY} from './repository';
+import {fetchMonitorSnapshot} from './dataFeeds';
 // heavy, below-the-fold sections (Leaflet + Recharts + PapaParse) are code-split
 // so the hero paints without their ~200 KB gzip on the critical path
 const MapSection = React.lazy(() => import('./MapSection'));
@@ -103,6 +104,7 @@ const T = {
     liveCovL: 'Coverage',
     liveFloodL: 'Water flagged',
     liveLoading: 'querying…',
+    liveUnavailable: 'Monitor unavailable',
     footer: 'SAILAAB · built by a Punjab student during the 2026 monsoon · India AI Impact Festival 2026 · Code MIT · Maps & tables CC-BY-4.0 · Contains modified Copernicus Sentinel & CEMS-GFM data',
   },
   hi: {
@@ -135,6 +137,7 @@ const T = {
     liveCovL: 'कवरेज',
     liveFloodL: 'चिह्नित जल',
     liveLoading: 'खोजा जा रहा है…',
+    liveUnavailable: 'मॉनिटर उपलब्ध नहीं',
     footer: 'SAILAAB · 2026 मानसून में एक पंजाबी छात्र द्वारा निर्मित · India AI Impact Festival 2026 · कोड MIT · नक्शे व तालिकाएँ CC-BY-4.0 · संशोधित Copernicus Sentinel व CEMS-GFM डेटा युक्त',
   },
   pa: {
@@ -167,6 +170,7 @@ const T = {
     liveCovL: 'ਕਵਰੇਜ',
     liveFloodL: 'ਚਿੰਨ੍ਹਿਤ ਪਾਣੀ',
     liveLoading: 'ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ…',
+    liveUnavailable: 'ਮਾਨੀਟਰ ਉਪਲਬਧ ਨਹੀਂ',
     footer: 'SAILAAB · 2026 ਮਾਨਸੂਨ ਵਿੱਚ ਇੱਕ ਪੰਜਾਬੀ ਵਿਦਿਆਰਥੀ ਵੱਲੋਂ ਬਣਾਇਆ · India AI Impact Festival 2026 · ਕੋਡ MIT · ਨਕਸ਼ੇ ਤੇ ਸਾਰਣੀਆਂ CC-BY-4.0 · ਸੋਧੇ Copernicus Sentinel ਤੇ CEMS-GFM ਡੇਟਾ ਸਹਿਤ',
   },
 };
@@ -209,12 +213,12 @@ const MODULES = [
 // warm page. This is the novel, working part, so it leads.
 function LiveSection({t}) {
   const [live, setLive] = useState(null);
+  const [failed, setFailed] = useState(false);
   useEffect(() => {
     let on = true;
-    fetch(RAW + 'monitor/latest.json')
-      .then((r) => r.json())
+    fetchMonitorSnapshot(REPOSITORY, BRANCH)
       .then((j) => on && setLive(j))
-      .catch(() => {});
+      .catch(() => on && setFailed(true));
     return () => {
       on = false;
     };
@@ -238,7 +242,7 @@ function LiveSection({t}) {
         <HStack justify="center" width="100%">
           <VStack width="100%" maxWidth={1120} paddingInline={4} paddingBlock={8} gap={5} hAlign="start" id="live">
             <HStack gap={3} vAlign="center" wrap="wrap">
-              <StatusDot variant="accent" label="live" isPulsing />
+              <StatusDot variant={failed ? 'neutral' : 'accent'} label={failed ? t.liveUnavailable : 'live'} isPulsing={!failed} />
               <Text type="label" color="secondary">{t.liveHead}</Text>
             </HStack>
             <HStack gap={4} vAlign="baseline" wrap="wrap">
@@ -247,8 +251,8 @@ function LiveSection({t}) {
             </HStack>
             <Grid columns={{minWidth: 340, max: 2}} gap={6} align="stretch" width="100%">
               <VStack gap={3} width="100%">
-                <img
-                  src={RAW + 'monitor/latest.jpg'}
+                {live && <img
+                  src={live.imageUrl}
                   alt={t.liveAlt}
                   loading="lazy"
                   style={{
@@ -257,12 +261,12 @@ function LiveSection({t}) {
                     borderRadius: 'var(--radius-inner, 2px)',
                     filter: 'saturate(1.05) contrast(1.03)',
                   }}
-                />
+                />}
                 <Text type="supporting" color="secondary">{t.liveCap}</Text>
               </VStack>
               <VStack gap={0} justify="start">
                 <Divider />
-                <VStack paddingBlock={4}><StatBig label={t.liveLastL} value={live ? live.latest_pass : t.liveLoading} /></VStack>
+                <VStack paddingBlock={4}><StatBig label={t.liveLastL} value={live ? live.latest_pass : failed ? t.liveUnavailable : t.liveLoading} /></VStack>
                 <Divider />
                 <VStack paddingBlock={4}><StatBig label={t.liveCovL} value={pct} /></VStack>
                 <Divider />

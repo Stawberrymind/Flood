@@ -45,7 +45,7 @@ from pipeline.run_forecaster_daily import (
     build_frame,
 )
 from pipeline.run_forecaster_daily_audit import _recall_at_k, onset_events
-from sailaab.forecast_daily import forward_event
+from sailaab.forecast_daily import forward_event, lagged_daily_values, neighbour_water
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -71,22 +71,7 @@ def add_neighbour_water(df: pd.DataFrame, adj: dict) -> pd.DataFrame:
     Strictly excludes the target district, so any skill it shows is skill from
     the flood being visible somewhere else already.
     """
-    d = df.copy()
-    d["_f3"] = (
-        d.sort_values(["district", "year", "date"])
-        .groupby(["district", "year"], sort=False)["fraction"]
-        .transform(lambda s: s.rolling(3, min_periods=1).max())
-    )
-    wide = d.pivot_table(index="date", columns="district", values="_f3")
-    out = pd.DataFrame(index=wide.index)
-    for dist, nbrs in adj.items():
-        cols = [n for n in nbrs if n in wide.columns]
-        out[dist] = wide[cols].max(axis=1) if cols else np.nan
-    long = out.stack().rename("neighbour_wet3d").reset_index()
-    long.columns = ["date", "district", "neighbour_wet3d"]
-    return d.drop(columns="_f3").merge(
-        long, on=["date", "district"], how="left", validate="1:1"
-    )
+    return df.assign(neighbour_wet3d=neighbour_water(df, adj, days=3).to_numpy())
 
 
 def seasonal_climatology(tr: pd.DataFrame) -> pd.DataFrame:
@@ -204,11 +189,7 @@ def main() -> None:
     print("=" * 74)
     full = df.copy()
     full["md"] = full["date"].dt.strftime("%m-%d")
-    prev = (
-        full.sort_values(["district", "year", "date"])
-        .groupby(["district", "year"], sort=False)["fraction"]
-        .shift(1)
-    )
+    prev = lagged_daily_values(full)
     full["prev_frac"] = prev
     ev = events.merge(
         full[["date", "district", "prev_frac"]], on=["date", "district"], how="left"

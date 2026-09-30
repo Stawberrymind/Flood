@@ -103,7 +103,9 @@ def onset_events(full: pd.DataFrame, threshold: float) -> pd.DataFrame:
     d["md"] = d["date"].dt.strftime("%m-%d")
     d = d[d["md"] >= CORE_MD].sort_values(["district", "year", "date"])
     wet = d["fraction"].fillna(0.0) > threshold
-    prev = wet.groupby([d["district"], d["year"]]).shift(1).fillna(False)
+    from sailaab.forecast_daily import lagged_daily_values
+
+    prev = (lagged_daily_values(d).fillna(0.0) > threshold)
     ev = d[wet & ~prev.astype(bool)]
     return ev[["date", "district", "year"]].reset_index(drop=True)
 

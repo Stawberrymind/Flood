@@ -6,6 +6,8 @@
 // and the states are mutually exclusive. The feed is the product JSON with a
 // `record` field naming the dated file it copies.
 
+import {isoDate} from './calendarDate.js';
+
 export const DAMS = ['Bhakra', 'Pong', 'Ranjit Sagar'];
 export const HORIZONS = [1, 2, 3, 4, 5];
 export const WATCH_LEVELS = ['quiet', 'watch', 'alert'];
@@ -22,10 +24,6 @@ export function num(x) {
 export function inRange(x, lo, hi) {
   const v = num(x);
   return v === null || v < lo || v > hi ? null : v;
-}
-
-function isoDate(s) {
-  return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : null;
 }
 
 // ---- names and dates, one form per language --------------------------------
@@ -89,7 +87,6 @@ export function formatDate(iso, lang, {year = true, short = false} = {}) {
   const d = isoDate(iso);
   if (d === null) return null;
   const [y, m, day] = d.split('-').map((x) => parseInt(x, 10));
-  if (m < 1 || m > 12 || day < 1 || day > 31) return null;
   const names = (short ? MONTHS_SHORT : MONTHS)[lang] || (short ? MONTHS_SHORT : MONTHS).en;
   return `${day} ${names[m - 1]}${year ? ` ${y}` : ''}`;
 }
@@ -102,6 +99,7 @@ export function formatBulletinAsOn(as_on_date, as_on_time, lang) {
   const m = /^(\d{2})-(\d{2})-(\d{4})$/.exec(as_on_date);
   const iso = m ? `${m[3]}-${m[2]}-${m[1]}` : null;
   const date = iso ? formatDate(iso, lang) : as_on_date;
+  if (date === null) return null;
   const time = typeof as_on_time === 'string' && /^\d{2}:\d{2}$/.test(as_on_time) ? ` ${as_on_time}` : '';
   return `${date}${time}`;
 }
@@ -121,7 +119,7 @@ export function horizonLabels(issueIso, lang) {
 // Days between the issue date (UTC midnight) and now; null when unknown.
 export function issueAgeDays(issueDate, nowMs) {
   const d = isoDate(issueDate);
-  if (d === null || typeof nowMs !== 'number') return null;
+  if (d === null || !Number.isFinite(nowMs)) return null;
   const t = Date.parse(d + 'T00:00:00Z');
   if (!Number.isFinite(t)) return null;
   return Math.floor((nowMs - t) / 86400000);
@@ -232,6 +230,8 @@ export function resolveHazardState(feed, {fetchFailed = false, nowMs = null, lan
   out.reason = 'malformed';
   const issue = isoDate(feed.issue_date);
   if (issue === null) return out;
+  const ageDays = issueAgeDays(issue, nowMs);
+  if (ageDays !== null && ageDays < 0) return out;
   if (!feed.dams || typeof feed.dams !== 'object') return out;
 
   const dams = DAMS.map((n) => damRow(n, feed.dams[n])).filter(Boolean);
@@ -250,7 +250,7 @@ export function resolveHazardState(feed, {fetchFailed = false, nowMs = null, lan
     ? (typeof b.as_on_time === 'string' ? `${b.as_on_date} ${b.as_on_time}` : b.as_on_date)
     : null;
   out.bulletin_label = formatBulletinAsOn(b.as_on_date, b.as_on_time, lang);
-  out.ageDays = issueAgeDays(issue, nowMs);
+  out.ageDays = ageDays;
   out.stale = out.ageDays !== null && out.ageDays > MAX_ISSUE_AGE_DAYS;
   out.dams = dams.map((d) => ({...d, label: localName(d.name, lang)}));
   const wx = feed.weather && typeof feed.weather === 'object' ? feed.weather : {};

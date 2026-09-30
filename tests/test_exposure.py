@@ -12,6 +12,20 @@ from sailaab.exposure import (
 )
 
 
+@pytest.mark.parametrize("area", [0, -1, np.inf, np.nan])
+def test_population_conversion_rejects_invalid_pixel_areas(area):
+    for convert in [counts_to_density, density_to_counts]:
+        with pytest.raises(ValueError, match="positive"):
+            convert([10.0], area)
+
+
+def test_district_population_rejects_misaligned_grids_and_missing_names():
+    with pytest.raises(ValueError, match="same shape"):
+        population_in_mask_by_district(np.ones((2, 2)), np.ones((2, 2)), np.ones((2, 1)))
+    with pytest.raises(ValueError, match="names"):
+        population_in_mask_by_district([10.0], [2], [True], names=["A"])
+
+
 # --------------------------------------------------------------------------- #
 # counts <-> density (the head-count-conserving core)
 # --------------------------------------------------------------------------- #

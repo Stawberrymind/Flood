@@ -39,6 +39,20 @@ def test_trailing_sums_are_per_district():
     assert out[out.district == "B"]["rain_2d"].tolist() == [10.0, 20.0, 20.0]
 
 
+def test_trailing_sum_censors_a_gap_and_does_not_borrow_old_rows():
+    df = _daily([10, 20, 30, 40, 50]).drop(index=1)
+    out = trailing_sums(df, windows=(3,))
+    assert np.isnan(out["rain_3d"].iloc[1])
+    assert np.isnan(out["rain_3d"].iloc[2])
+    assert out["rain_3d"].iloc[3] == 120.0
+
+
+def test_daily_windows_reject_duplicate_dates():
+    df = pd.concat([_daily([1]), _daily([2])], ignore_index=True)
+    with pytest.raises(ValueError, match="duplicate"):
+        trailing_sums(df)
+
+
 # --- climatology --------------------------------------------------------------
 def _climo_frame(years, value=1.0, district="A"):
     parts = []
@@ -185,6 +199,7 @@ def _issue_frame(fractions, md="08-01", year=2023):
         {
             "district": [f"D{i}" for i in range(len(fractions))],
             "year": year,
+            "date": pd.Timestamp(f"{year}-{md}"),
             "md": md,
             "fraction": np.asarray(fractions, dtype=float),
         }
@@ -318,3 +333,81 @@ def test_a_fully_observed_dry_horizon_is_a_real_negative():
     df = _target([0.0, 0.0, 0.0, 0.0])
     y = forward_event(df, threshold=0.5, horizon=2)
     assert y.iloc[0] == 0.0
+
+
+def test_forward_horizon_does_not_expand_across_a_missing_day():
+    df = _target([0.0, 0.0, 0.0, 0.9]).drop(index=1)
+    y = forward_event(df, threshold=0.5, horizon=2)
+    assert np.isnan(y.iloc[0])  # day+3 flood is outside the calendar horizon
+    assert y.iloc[1] == 1.0
+
+
+def test_forward_horizon_preserves_unsorted_input_index():
+    df = _target([0.0, 0.9, 0.0]).iloc[[2, 0, 1]]
+    y = forward_event(df, threshold=0.5, horizon=1)
+    assert y.index.equals(df.index)
+    assert np.isnan(y.iloc[0])
+    assert y.iloc[1:].tolist() == [1.0, 0.0]
+
+
+def test_neighbour_water_expires_by_calendar_time_on_sparse_inputs():
+    from sailaab.forecast_daily import neighbour_water
+
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2020-08-01", "2020-08-10", "2020-08-02"]),
+        "district": ["A", "B", "B"], "fraction": [0.9, 0.0, 0.0],
+    }, index=[8, 3, 6])
+    values = neighbour_water(df, {"A": ["B"], "B": ["A"]}, days=3)
+    assert values.index.equals(df.index)
+    assert np.isnan(values.loc[3])
+    assert values.loc[6] == 0.9
+
+
+def test_training_neighbour_wrapper_uses_the_same_calendar_window():
+    from pipeline.run_forecaster_daily_audit2 import add_neighbour_water
+
+    df = pd.DataFrame({
+        "date": pd.to_datetime(["2020-08-01", "2020-08-10", "2020-08-02"]),
+        "district": ["A", "B", "B"], "year": 2020, "fraction": [0.9, 0.0, 0.0],
+    }, index=[8, 3, 6])
+    result = add_neighbour_water(df, {"A": ["B"], "B": ["A"]})
+    assert result.index.equals(df.index)
+    assert np.isnan(result.loc[3, "neighbour_wet3d"])
+    assert result.loc[6, "neighbour_wet3d"] == 0.9
+
+
+def test_hysteresis_does_not_borrow_a_wet_row_from_outside_three_days():
+    from pipeline.run_forecaster_daily import _candidates
+
+    df = _target([0.9, 0.0]).assign(md=["08-01", "08-10"])
+    df["date"] = pd.to_datetime(["2020-08-01", "2020-08-10"])
+    kept = _candidates(df, threshold=0.5, hysteresis=True)
+    assert kept.index.tolist() == [1]
+
+
+def test_lagged_daily_values_preserves_index_and_marks_omitted_days():
+    from sailaab.forecast_daily import lagged_daily_values
+
+    df = _target([0.1, 0.2, 0.3]).drop(index=1).iloc[::-1]
+    result = lagged_daily_values(df)
+    assert result.index.equals(df.index)
+    assert result.isna().all()
+
+
+def test_training_frame_uses_calendar_windows_and_season_offsets(monkeypatch):
+    from pipeline import run_forecaster_daily as runner
+
+    dates = pd.to_datetime(["2020-06-15", "2020-06-16", "2020-06-20"])
+    frames = {
+        runner.FLOOD_DAILY: pd.DataFrame({"date": dates, "district": "A", "fraction": [0.9, 0.0, 0.0]}),
+        runner.RAIN_DAILY: pd.DataFrame({"date": dates, "district": "A", "rain_mm": [1.0] * 3, "api_mm": [1.0] * 3}),
+        runner.BOXES: pd.DataFrame({"date": dates, "upstream_mm": [2.0] * 3}),
+        runner.GFM_PROGRESS: pd.DataFrame({"day": dates, "probe_px": [1] * 3}),
+    }
+    monkeypatch.setattr(runner.pd, "read_csv", lambda path, **kwargs: frames[path].copy())
+    result = runner.build_frame(with_rain=False)
+    last = result.iloc[-1]
+    assert last["frac_max3d"] == 0.0
+    assert last["day_of_season"] == 5
+    assert np.isnan(last["up_3d"])
+    assert np.isnan(last["obs_active_3d"])

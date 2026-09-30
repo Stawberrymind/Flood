@@ -21,6 +21,7 @@ SUITE = ROOT / "webapp" / "src" / "forecastSchema.test.mjs"
 MODULE = ROOT / "webapp" / "src" / "forecastSchema.js"
 HAZARD_SUITE = ROOT / "webapp" / "src" / "hazardSchema.test.mjs"
 HAZARD_MODULE = ROOT / "webapp" / "src" / "hazardSchema.js"
+DATA_SUITE = ROOT / "webapp" / "src" / "dataFeeds.test.mjs"
 
 
 def test_validator_module_is_committed():
@@ -53,7 +54,7 @@ def test_hazard_section_uses_the_shared_validator():
     assert "punjabflood/outputs/forecast/latest.json" in jsx
 
 
-@pytest.mark.parametrize("suite", [SUITE, HAZARD_SUITE], ids=["forecast", "hazard"])
+@pytest.mark.parametrize("suite", [SUITE, HAZARD_SUITE, DATA_SUITE], ids=["forecast", "hazard", "data"])
 @pytest.mark.skipif(shutil.which("node") is None, reason="node not available")
 def test_node_schema_suite_passes(suite):
     proc = subprocess.run(

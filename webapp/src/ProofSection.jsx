@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import Papa from 'papaparse';
+import {loadCsv} from './dataFeeds';
 import {ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, LabelList} from 'recharts';
 import {Section} from '@astryxdesign/core/Section';
 import {VStack} from '@astryxdesign/core/VStack';
@@ -24,14 +24,11 @@ const SITE = import.meta.env.BASE_URL;
 const AXIS = dataColors.axis, GRID = dataColors.grid;
 const TIP_BG = dataColors.tipBg, TIP_BD = dataColors.tipBorder, TIP_FG = dataColors.tipFg;
 const FLOODED = dataColors.floodedBar, DRY = dataColors.dryBar;
-
-async function loadCsv(url) {
-  const res = await fetch(url);
-  // Without this a 404 parses as CSV and the chart vanishes with no trace.
-  if (!res.ok) throw new Error(url + ': ' + res.status);
-  const text = await res.text();
-  return Papa.parse(text, {header: true, skipEmptyLines: true}).data;
-}
+const PRED_UNAVAILABLE = {
+  en: 'The district ranking chart is unavailable.',
+  hi: 'ज़िलों की रैंकिंग का चार्ट उपलब्ध नहीं है।',
+  pa: 'ਜ਼ਿਲ੍ਹਿਆਂ ਦੀ ਰੈਂਕਿੰਗ ਦਾ ਚਾਰਟ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।',
+};
 
 const PRED_T = {
   en: {title: 'Ranking score by district, 2025 forecast from earlier seasons only', cap: 'Each bar is the district’s highest daily score across the 2025 monsoon, from a walk-forward run in which 2025 was forecast by a model fitted only to earlier seasons. Teal flooded within three days at some point, grey never did. It put the flooded districts on top. The score is an uncalibrated ranking value, not a probability.'},
@@ -109,10 +106,11 @@ export default function ProofSection({lang}) {
   const t = P_T[lang] || P_T.en;
   const pt = PRED_T[lang] || PRED_T.en;
   const [preds, setPreds] = useState([]);
+  const [predFailed, setPredFailed] = useState(false);
 
   useEffect(() => {
     let on = true;
-    loadCsv('assets/forecaster_2025_walkforward.csv').then((data) => {
+    loadCsv('assets/forecaster_2025_walkforward.csv', ['district', 'score', 'flooded_within_3d']).then((data) => {
       if (!on) return;
       const peak = {};
       data.forEach((d) => {
@@ -130,7 +128,8 @@ export default function ProofSection({lang}) {
       });
       setPreds(Object.values(peak).sort((a, b) => b.p - a.p).slice(0, 8)
         .map((d) => ({district: d.district, score: +d.p.toFixed(3), flooded: d.flooded})));
-    }).catch(() => {});
+      if (Object.keys(peak).length === 0) setPredFailed(true);
+    }).catch(() => on && setPredFailed(true));
     return () => { on = false; };
   }, []);
 
@@ -167,6 +166,7 @@ export default function ProofSection({lang}) {
             <Text color="secondary">{t.honesty}</Text>
           </VStack>
 
+          {predFailed && <Text color="secondary">{PRED_UNAVAILABLE[lang] || PRED_UNAVAILABLE.en}</Text>}
           {preds.length > 0 && (
             <VStack gap={3} width="100%">
               <Text type="label" color="secondary">{pt.title}</Text>

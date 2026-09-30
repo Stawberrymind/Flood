@@ -191,3 +191,15 @@ def test_block_bootstrap_is_deterministic_under_seed():
 def test_block_bootstrap_rejects_too_few_blocks():
     with pytest.raises(ValueError, match="at least 2"):
         block_bootstrap_ci({2025: [1.0]}, n=100, seed=1)
+
+
+@pytest.mark.parametrize("block", [[], [np.nan], [np.inf]])
+def test_block_bootstrap_rejects_unusable_years(block):
+    with pytest.raises(ValueError, match="finite observations"):
+        block_bootstrap_ci({2020: [1.0], 2021: block})
+
+
+@pytest.mark.parametrize("kwargs", [{"n": 0}, {"n": 1.5}, {"alpha": 0}, {"alpha": np.nan}])
+def test_block_bootstrap_rejects_invalid_controls(kwargs):
+    with pytest.raises(ValueError):
+        block_bootstrap_ci({2020: [1.0], 2021: [2.0]}, **kwargs)

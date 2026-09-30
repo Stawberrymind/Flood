@@ -24,6 +24,19 @@ from sailaab.climatology import (
 )
 
 
+def test_rx5day_never_counts_rows_on_opposite_sides_of_a_gap():
+    frame = pd.DataFrame({
+        "date": pd.to_datetime(["2020-06-01", "2020-06-02", "2020-06-10", "2020-06-11", "2020-06-12"]),
+        "rain": [20.0] * 5,
+    })
+    assert np.isnan(rx5day(frame, "rain", 2020))
+
+
+def test_return_period_rejects_an_empty_record():
+    with pytest.raises(ValueError, match="nonempty"):
+        empirical_return_period([], 1.0)
+
+
 def _year_daily(year, monsoon_values, col="punjab_mm"):
     """A one-year daily frame whose Jun1-Sep30 days take `monsoon_values`
     (padded/truncated to the 122 JJAS days) and 0.0 elsewhere."""

@@ -81,10 +81,19 @@ def add_district_prior(
 
 def classification_metrics(y_true, prob, threshold: float = 0.5) -> dict:
     """PR-AUC (average precision), ROC-AUC, F1/precision/recall at ``threshold``,
-    base rate and n. Single-class inputs -> AUCs/F1 are NaN (undefined), base
-    rate and n still reported. Mirrors the single-class guard in sailaab.model."""
+    base rate and n. Pairs with unknown labels or scores are excluded. Single-
+    class inputs -> AUCs/F1 are NaN (undefined), base rate and n still reported.
+    Mirrors the single-class guard in sailaab.model."""
     y_true = np.asarray(y_true, dtype=float)
     prob = np.asarray(prob, dtype=float)
+    if y_true.ndim != 1 or prob.shape != y_true.shape:
+        raise ValueError("labels and scores must be equal-length vectors")
+    if not np.isfinite(threshold) or not 0 <= threshold <= 1:
+        raise ValueError("threshold must be finite and in [0, 1]")
+    valid = np.isfinite(y_true) & np.isfinite(prob)
+    y_true, prob = y_true[valid], prob[valid]
+    if not np.isin(y_true, [0, 1]).all() or np.any((prob < 0) | (prob > 1)):
+        raise ValueError("labels must be binary and scores must be in [0, 1]")
     n = int(len(y_true))
     base = float(np.mean(y_true)) if n else float("nan")
     out = {

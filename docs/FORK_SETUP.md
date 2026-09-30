@@ -119,8 +119,8 @@ the browser fetches their JSON directly from this fork.
 ## Checks that matter after migration
 
 Check both the Actions result and the output timestamps. The hazard workflow
-currently tolerates a failed or timed-out forecast step, so a green overall run
-does not prove a new forecast was issued. The website shows stale feeds as stale.
+requires the forecast step to succeed; a failed or timed-out forecast fails the
+job and does not publish a new forecast. The website shows stale feeds as stale.
 Public satellite coverage, weather-service quotas and bulletin availability are
 independent of GitHub authentication. Forking does not fix those inherited data
 or model limitations.

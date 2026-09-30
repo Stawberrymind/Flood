@@ -64,6 +64,21 @@ def test_plan_passes_empty():
     assert plan_passes([]) == ([], False)
 
 
+def test_plan_passes_checks_backlog_for_generator_inputs():
+    scenes = (f"2026-07-{day:02d}T01:00:00Z" for day in range(10, 19))
+    assert plan_passes(scenes, max_scenes=8) == (["2026-07-18"], True)
+
+
+def test_alert_threshold_uses_unrounded_area():
+    fractions = {
+        name: {"flooded_ha": area * 100, "flooded_fraction": 0.01}
+        for name, area in [("below", 24.96), ("at", 25.0), ("above", 25.04)]
+    }
+    rows, flagged = district_km2_rows(fractions, alert_km2=25.0)
+    assert {r["flooded_km2"] for r in rows} == {25.0}
+    assert {r["district"] for r in flagged} == {"at", "above"}
+
+
 # --- district_km2_rows ----------------------------------------------------
 def test_district_km2_rows_sorts_and_flags():
     fractions = {

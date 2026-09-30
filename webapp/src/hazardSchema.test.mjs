@@ -34,6 +34,24 @@ function ens(p) {
   return o;
 }
 
+test('impossible calendar dates fail every hazard date consumer', () => {
+  for (const date of ['2026-02-31', '2026-02-29', '2026-04-31', '2026-00-01']) {
+    assert.equal(formatDate(date, 'en'), null);
+    assert.equal(issueAgeDays(date, Date.parse('2026-09-30T12:00:00Z')), null);
+    assert.deepEqual(horizonLabels(date, 'en'), ['+1', '+2', '+3', '+4', '+5']);
+    assert.equal(resolveHazardState(feed({issue_date: date})).state, 'unavailable');
+  }
+  assert.equal(formatDate('2024-02-29', 'en'), '29 Feb 2024');
+  assert.equal(formatBulletinAsOn('31-02-2026', '06:00', 'en'), null);
+});
+
+test('a future issue cannot appear as a fresh watch', () => {
+  const result = resolveHazardState(feed({issue_date: '2026-10-01'}), {
+    nowMs: Date.parse('2026-09-30T12:00:00Z'),
+  });
+  assert.equal(result.state, 'unavailable');
+});
+
 function feed(over = {}) {
   return {
     issue_date: '2026-09-19',

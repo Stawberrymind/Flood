@@ -29,8 +29,14 @@ def conformal_quantile(residuals, coverage: float) -> float:
     exceeds ``n`` (too few calibration points to guarantee the level), returns
     ``+inf`` — an honest "cannot certify a finite interval".
     """
+    if not np.isfinite(coverage) or not 0 < coverage < 1:
+        raise ValueError("coverage must be finite and strictly between 0 and 1")
     r = np.asarray(residuals, dtype=float)
-    r = np.sort(r[~np.isnan(r)])
+    if r.ndim != 1:
+        raise ValueError("residuals must be one-dimensional")
+    r = np.sort(r[np.isfinite(r)])
+    if np.any(r < 0):
+        raise ValueError("absolute residuals must not be negative")
     n = r.size
     if n == 0:
         return float("nan")

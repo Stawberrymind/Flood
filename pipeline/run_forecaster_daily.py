@@ -52,6 +52,8 @@ from sailaab.forecast_daily import (
     climatology_percentile,
     dry_at_issue,
     forward_event,
+    lagged_daily_values,
+    trailing_max,
     trailing_sums,
 )
 from sailaab.forecast_v2 import (
@@ -128,8 +130,10 @@ def build_frame(with_rain: bool = True) -> pd.DataFrame:
             rain[c] = np.nan
 
     boxes = pd.read_csv(BOXES, parse_dates=["date"]).sort_values("date")
-    for w in (1, 3, 7):
-        boxes[f"up_{w}d"] = boxes["upstream_mm"].rolling(w, min_periods=1).sum()
+    boxes = trailing_sums(
+        boxes.assign(_series="upstream"), windows=(1, 3, 7),
+        value_col="upstream_mm", key="_series", prefix="up",
+    )
 
     df = flood.merge(
         rain[["date", "district", "api_mm"] + RAIN_F + PCTL_F],
@@ -143,20 +147,19 @@ def build_frame(with_rain: bool = True) -> pd.DataFrame:
         columns={"day": "date"}
     )
     prog["obs_active_now"] = (prog["probe_px"] > 0).astype(float)
-    prog = prog.sort_values("date")
-    for w in (3, 7):
-        prog[f"obs_active_{w}d"] = (
-            prog["obs_active_now"].rolling(w, min_periods=1).sum()
-        )
+    prog = trailing_sums(
+        prog.assign(_series="acquisitions"), windows=(3, 7),
+        value_col="obs_active_now", key="_series", prefix="obs_active",
+    )
     df = df.merge(
         prog[["date"] + TIMING_F], on="date", how="left", validate="m:1"
     )
 
     df = df.sort_values(["district", "year", "date"]).reset_index(drop=True)
-    g = df.groupby(["district", "year"], sort=False)["fraction"]
     df["frac_now"] = df["fraction"]
-    df["frac_max3d"] = g.transform(lambda s: s.rolling(3, min_periods=1).max())
-    df["day_of_season"] = df.groupby(["district", "year"], sort=False).cumcount()
+    df["frac_max3d"] = trailing_max(df)
+    season_start = pd.to_datetime(df["year"].astype(str) + "-06-15")
+    df["day_of_season"] = (df["date"] - season_start).dt.days
     df["md"] = df["date"].dt.strftime("%m-%d")
     return df
 
@@ -264,9 +267,8 @@ def _candidates(
     dry = dry_at_issue(d, threshold, require_observed=require_observed)
     if not hysteresis:
         return d[dry]
-    g = d.groupby(["district", "year"], sort=False)["fraction"]
     recent_wet = pd.concat(
-        [g.shift(i) > threshold for i in (1, 2, 3)], axis=1
+        [lagged_daily_values(d, days=i) > threshold for i in (1, 2, 3)], axis=1
     ).fillna(False).astype(bool).any(axis=1)
     return d[dry & ~recent_wet]
 

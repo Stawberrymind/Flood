@@ -29,6 +29,45 @@ import numpy as np
 import pandas as pd
 
 
+def _positive_days(value, name):
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 1:
+        raise ValueError(f"{name} must be a positive integer")
+
+
+def _daily_frame(daily, keys, date_col):
+    d = daily.copy().reset_index(drop=True)
+    d[date_col] = pd.to_datetime(d[date_col])
+    if d[keys + [date_col]].isna().any().any():
+        raise ValueError("daily keys and dates must not be missing")
+    if not d[date_col].eq(d[date_col].dt.normalize()).all():
+        raise ValueError("daily dates must be calendar dates at midnight")
+    if d.duplicated(keys + [date_col]).any():
+        raise ValueError("duplicate daily keys and dates")
+    return d
+
+
+def trailing_max(daily, days=3, value_col="fraction", key="district", date_col="date"):
+    """Observed maximum in [t-days+1, t], aligned to the input row order."""
+    _positive_days(days, "days")
+    d = _daily_frame(daily, [key], date_col)
+    values = np.full(len(d), np.nan)
+    for _, grp in d.sort_values([key, date_col]).groupby(key, sort=False):
+        roll = grp.set_index(date_col)[value_col].rolling(f"{days}D", min_periods=1).max()
+        values[grp.index] = roll.to_numpy()
+    return pd.Series(values, index=daily.index)
+
+
+def lagged_daily_values(daily, days=1, value_col="fraction", key="district", date_col="date", season_col="year"):
+    """Value on exactly t-days, or NaN when that date was not recorded."""
+    _positive_days(days, "days")
+    keys = [key] + ([season_col] if season_col else [])
+    d = _daily_frame(daily, keys, date_col)
+    indexed = pd.Series(d[value_col].to_numpy(), index=pd.MultiIndex.from_frame(d[keys + [date_col]]))
+    past = d[keys + [date_col]].copy()
+    past[date_col] -= pd.Timedelta(days=days)
+    return pd.Series(indexed.reindex(pd.MultiIndex.from_frame(past)).to_numpy(), index=daily.index)
+
+
 def trailing_sums(
     daily: pd.DataFrame,
     windows=(1, 3, 7, 14),
@@ -40,16 +79,23 @@ def trailing_sums(
     """Per-key trailing sums ending on each row's own date, inclusive.
 
     ``rain_3d`` on day t sums days t-2, t-1 and t. The sums are causal by
-    construction: no value after t contributes.
+    construction: no value after t contributes. Omitted or unknown days inside
+    a window yield NaN; windows at the start of a record use the available days.
     """
-    d = daily.copy()
-    d[date_col] = pd.to_datetime(d[date_col])
+    d = _daily_frame(daily, [key], date_col)
     d = d.sort_values([key, date_col]).reset_index(drop=True)
-    g = d.groupby(key, sort=False)[value_col]
     for w in windows:
-        d[f"{prefix}_{w}d"] = g.transform(
-            lambda s, w=w: s.rolling(w, min_periods=1).sum()
-        )
+        _positive_days(w, "window")
+        col = f"{prefix}_{w}d"
+        d[col] = np.nan
+        for _, grp in d.groupby(key, sort=False):
+            values = grp.set_index(date_col)[value_col]
+            roll = values.rolling(f"{w}D", min_periods=1)
+            # Preserve partial windows at the start of the record, but never
+            # silently add across omitted or explicitly unknown days.
+            expected = np.minimum(w, (values.index - values.index[0]).days + 1)
+            sums = roll.sum().where(roll.count().to_numpy() == expected)
+            d.loc[grp.index, col] = sums.to_numpy()
     return d
 
 
@@ -153,16 +199,17 @@ def forward_event(
     monsoon cannot borrow the start of the next. Rows whose horizon runs past the
     end of the available record yield NaN rather than a spurious 0.
     """
-    d = daily.copy()
-    d[date_col] = pd.to_datetime(d[date_col])
+    _positive_days(horizon, "horizon")
     keys = [key] + ([season_col] if season_col else [])
-    d = d.sort_values(keys + [date_col])
-
+    d = _daily_frame(daily, keys, date_col)
     wet = (d[value_col] > threshold).astype(float)
     wet[d[value_col].isna()] = np.nan
-
-    g = wet.groupby([d[k] for k in keys])
-    shifted = [g.shift(-h) for h in range(1, horizon + 1)]
+    indexed = pd.Series(wet.to_numpy(), index=pd.MultiIndex.from_frame(d[keys + [date_col]]))
+    shifted = []
+    for h in range(1, horizon + 1):
+        future = d[keys + [date_col]].copy()
+        future[date_col] += pd.Timedelta(days=h)
+        shifted.append(pd.Series(indexed.reindex(pd.MultiIndex.from_frame(future)).to_numpy()))
     stack = pd.concat(shifted, axis=1)
     any_wet = stack.max(axis=1, skipna=True)
     # A negative is only earned when the WHOLE horizon was observed and none of
@@ -173,7 +220,7 @@ def forward_event(
     seen_wet = stack.max(axis=1, skipna=True) > 0
     any_missing = stack.isna().any(axis=1)
     any_wet = any_wet.where(seen_wet | ~any_missing, np.nan)
-    return any_wet.reindex(daily.index if len(daily) == len(any_wet) else any_wet.index)
+    return pd.Series(any_wet.to_numpy(), index=daily.index)
 
 
 def dry_at_issue(
@@ -236,22 +283,17 @@ def neighbour_water(
     from the flood being visible somewhere else already, not a restatement of
     the district's own state.
     """
-    d = daily.copy()
-    d[date_col] = pd.to_datetime(d[date_col])
-    d["_roll"] = (
-        d.sort_values([key, date_col])
-        .groupby(key, sort=False)[value_col]
-        .transform(lambda s: s.rolling(days, min_periods=1).max())
-    )
-    wide = d.pivot_table(index=date_col, columns=key, values="_roll")
+    _positive_days(days, "days")
+    d = _daily_frame(daily, [key], date_col)
+    wide = d.pivot(index=date_col, columns=key, values=value_col).sort_index()
+    wide = wide.rolling(f"{days}D", min_periods=1).max()
     out = pd.DataFrame(index=wide.index)
     for dist, nbrs in adjacency.items():
         cols = [n for n in nbrs if n in wide.columns]
         out[dist] = wide[cols].max(axis=1) if cols else np.nan
-    long = out.stack().rename("neighbour_water").reset_index()
-    long.columns = [date_col, key, "neighbour_water"]
-    merged = d.merge(long, on=[date_col, key], how="left")
-    return merged["neighbour_water"]
+    values = [out.loc[dt, dist] if dist in out.columns else np.nan
+              for dt, dist in zip(d[date_col], d[key])]
+    return pd.Series(values, index=daily.index, name="neighbour_water")
 
 
 def seasonal_onset_rate(

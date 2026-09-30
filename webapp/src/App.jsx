@@ -10,9 +10,7 @@ import {Divider} from '@astryxdesign/core/Divider';
 import {Link} from '@astryxdesign/core/Link';
 import {Badge} from '@astryxdesign/core/Badge';
 import {StatusDot} from '@astryxdesign/core/StatusDot';
-import {SegmentedControl} from '@astryxdesign/core/SegmentedControl';
-import {SegmentedControlItem} from '@astryxdesign/core/SegmentedControl';
-import {MediaTheme} from '@astryxdesign/core/theme';
+import {ScientificHeader, ScientificIntro} from './ScientificIntro';
 import HazardSection from './HazardSection';
 import AlertSection from './AlertSection';
 import ForecastSection from './ForecastSection';
@@ -23,10 +21,7 @@ import {fetchMonitorSnapshot} from './dataFeeds';
 const MapSection = React.lazy(() => import('./MapSection'));
 const ProofSection = React.lazy(() => import('./ProofSection'));
 
-// A full-bleed band holding one measure-width column, set hard to the left.
-// The old band centred every child box, which is what made a page of
-// evidence read like a pitch deck: nothing had a common left edge to scan
-// down. Everything on this page now hangs off one margin.
+// A common reading measure for the methods and supporting material.
 function Band({children, dividers, paddingBlock = 6, maxWidth = 1120, variant = 'transparent'}) {
   return (
     <Section variant={variant} padding={0} dividers={dividers}>
@@ -67,19 +62,8 @@ function StatBig({label, value}) {
   );
 }
 
-const LANGS = [
-  {code: 'en', label: 'EN'},
-  {code: 'hi', label: 'हिन्दी'},
-  {code: 'pa', label: 'ਪੰਜਾਬੀ'},
-];
-
 const T = {
   en: {
-    eyebrow: 'Punjab · open AI flood intelligence · live this monsoon',
-    h1: 'The flood forecast Punjab never had.',
-    lede: 'In August 2025 Punjab saw its worst flood since 1988. All 23 districts went under, about 3.55 lakh people were affected, and India’s flood-forecast network had zero stations in the state. Flood Watch rebuilds that capability in the open, and it is running right now.',
-    seeLive: 'See it live →',
-    source: 'Open source (MIT) · method',
     gap: 'flood-forecast stations in Punjab. 226 exist across 22 other states. That absence is the gap this project fills.',
     who1L: 'Built for',
     who1: 'District disaster and revenue officers, relief agencies, and flood-exposed residents who read Punjabi or Hindi.',
@@ -108,11 +92,6 @@ const T = {
     footer: 'FLOOD WATCH · RIVER-WATCH · built by a Punjab student during the 2026 monsoon · Code MIT · Maps & tables CC-BY-4.0 · Contains modified Copernicus Sentinel & CEMS-GFM data',
   },
   hi: {
-    eyebrow: 'पंजाब · खुली AI बाढ़ इंटेलिजेंस · इस मानसून लाइव',
-    h1: 'वह बाढ़ पूर्वानुमान जो पंजाब के पास कभी नहीं था।',
-    lede: 'अगस्त 2025 में पंजाब ने 1988 के बाद की सबसे भीषण बाढ़ झेली: सभी 23 ज़िले, ~3.55 लाख लोग प्रभावित, और भारत के बाढ़-पूर्वानुमान नेटवर्क में राज्य के शून्य स्टेशन। Flood Watch यह क्षमता खुले में फिर से बनाता है, और यह अभी चल रहा है।',
-    seeLive: 'लाइव देखें →',
-    source: 'ओपन सोर्स (MIT) · विधि',
     gap: 'पंजाब में बाढ़-पूर्वानुमान स्टेशन। 22 अन्य राज्यों में 226 मौजूद हैं। यही कमी यह परियोजना भरती है।',
     who1L: 'किसके लिए',
     who1: 'ज़िला आपदा व राजस्व अधिकारी, राहत एजेंसियाँ, और पंजाबी या हिन्दी पढ़ने वाले बाढ़-प्रभावित निवासी।',
@@ -141,11 +120,6 @@ const T = {
     footer: 'FLOOD WATCH · RIVER-WATCH · 2026 मानसून में एक पंजाबी छात्र द्वारा निर्मित · कोड MIT · नक्शे व तालिकाएँ CC-BY-4.0 · संशोधित Copernicus Sentinel व CEMS-GFM डेटा युक्त',
   },
   pa: {
-    eyebrow: 'ਪੰਜਾਬ · ਖੁੱਲ੍ਹੀ AI ਹੜ੍ਹ ਜਾਣਕਾਰੀ · ਇਸ ਮਾਨਸੂਨ ਲਾਈਵ',
-    h1: 'ਉਹ ਹੜ੍ਹ ਭਵਿੱਖਬਾਣੀ ਜੋ ਪੰਜਾਬ ਕੋਲ ਕਦੇ ਨਹੀਂ ਸੀ।',
-    lede: 'ਅਗਸਤ 2025 ਵਿੱਚ ਪੰਜਾਬ ਨੇ 1988 ਤੋਂ ਬਾਅਦ ਦਾ ਸਭ ਤੋਂ ਭਿਆਨਕ ਹੜ੍ਹ ਝੱਲਿਆ: ਸਾਰੇ 23 ਜ਼ਿਲ੍ਹੇ, ~3.55 ਲੱਖ ਲੋਕ ਪ੍ਰਭਾਵਿਤ, ਅਤੇ ਭਾਰਤ ਦੇ ਹੜ੍ਹ-ਭਵਿੱਖਬਾਣੀ ਨੈੱਟਵਰਕ ਵਿੱਚ ਸੂਬੇ ਦੇ ਜ਼ੀਰੋ ਸਟੇਸ਼ਨ। Flood Watch ਇਹ ਸਮਰੱਥਾ ਖੁੱਲ੍ਹੇ ਵਿੱਚ ਮੁੜ ਉਸਾਰਦਾ ਹੈ, ਅਤੇ ਇਹ ਹੁਣੇ ਚੱਲ ਰਿਹਾ ਹੈ।',
-    seeLive: 'ਲਾਈਵ ਵੇਖੋ →',
-    source: 'ਓਪਨ ਸੋਰਸ (MIT) · ਵਿਧੀ',
     gap: 'ਪੰਜਾਬ ਵਿੱਚ ਹੜ੍ਹ-ਭਵਿੱਖਬਾਣੀ ਸਟੇਸ਼ਨ। 22 ਹੋਰ ਸੂਬਿਆਂ ਵਿੱਚ 226 ਹਨ। ਇਹੀ ਘਾਟ ਇਹ ਪ੍ਰੋਜੈਕਟ ਪੂਰੀ ਕਰਦਾ ਹੈ।',
     who1L: 'ਕਿਸ ਲਈ',
     who1: 'ਜ਼ਿਲ੍ਹਾ ਆਫ਼ਤ ਤੇ ਮਾਲ ਅਧਿਕਾਰੀ, ਰਾਹਤ ਏਜੰਸੀਆਂ, ਅਤੇ ਪੰਜਾਬੀ ਜਾਂ ਹਿੰਦੀ ਪੜ੍ਹਨ ਵਾਲੇ ਹੜ੍ਹ-ਪ੍ਰਭਾਵਿਤ ਵਾਸੀ।',
@@ -208,9 +182,7 @@ const MODULES = [
   },
 ];
 
-// The live monitor: rendered as a deliberate dark console panel (Astryx dark
-// mode) so the dark radar image sits natively instead of clashing with the
-// warm page. This is the novel, working part, so it leads.
+// The radar image keeps its own scale within the same light instrument panel.
 function LiveSection({t}) {
   const [live, setLive] = useState(null);
   const [failed, setFailed] = useState(false);
@@ -230,54 +202,46 @@ function LiveSection({t}) {
   const totalKm2 = live ? numOrNull(live.total_flooded_km2) : null;
   const pct = covFrac === null ? '—' : Math.round(covFrac * 100) + '%';
   const km2 = totalKm2 === null ? '—' : totalKm2.toLocaleString() + ' km²';
-  // The single dark moment on a paper page. The radar frame is a greyscale
-  // photograph of the earth and it belongs on a dark mount, the way a plate
-  // sits in a printed report; mounting it on newsprint would fight it. The
-  // ground comes from MediaTheme rather than a hand-rolled dark block, so
-  // every control and rule inside it re-resolves to its dark token instead
-  // of being restyled by hand.
   return (
-    <MediaTheme mode="dark">
-      <Section variant="section" padding={0} dividers={['top', 'bottom']}>
-        <HStack justify="center" width="100%">
-          <VStack width="100%" maxWidth={1120} paddingInline={4} paddingBlock={8} gap={5} hAlign="start" id="live">
-            <HStack gap={3} vAlign="center" wrap="wrap">
-              <StatusDot variant={failed ? 'neutral' : 'accent'} label={failed ? t.liveUnavailable : 'live'} isPulsing={!failed} />
-              <Text type="label" color="secondary">{t.liveHead}</Text>
-            </HStack>
-            <HStack gap={4} vAlign="baseline" wrap="wrap">
-              <Text type="code" color="accent">04</Text>
-              <Heading level={2}>{t.liveTitle}</Heading>
-            </HStack>
-            <Grid columns={{minWidth: 340, max: 2}} gap={6} align="stretch" width="100%">
-              <VStack gap={3} width="100%">
-                {live && <img
-                  src={live.imageUrl}
-                  alt={t.liveAlt}
-                  loading="lazy"
-                  style={{
-                    width: '100%', height: 'auto', display: 'block',
-                    border: '1px solid var(--color-border-emphasized)',
-                    borderRadius: 'var(--radius-inner, 2px)',
-                    filter: 'saturate(1.05) contrast(1.03)',
-                  }}
-                />}
-                <Text type="supporting" color="secondary">{t.liveCap}</Text>
-              </VStack>
-              <VStack gap={0} justify="start">
-                <Divider />
-                <VStack paddingBlock={4}><StatBig label={t.liveLastL} value={live ? live.latest_pass : failed ? t.liveUnavailable : t.liveLoading} /></VStack>
-                <Divider />
-                <VStack paddingBlock={4}><StatBig label={t.liveCovL} value={pct} /></VStack>
-                <Divider />
-                <VStack paddingBlock={4}><StatBig label={t.liveFloodL} value={km2} /></VStack>
-                <Divider />
-              </VStack>
-            </Grid>
-          </VStack>
-        </HStack>
-      </Section>
-    </MediaTheme>
+    <Section variant="section" padding={0}>
+      <HStack justify="center" width="100%">
+        <VStack width="100%" maxWidth={1120} paddingInline={4} paddingBlock={8} gap={5} hAlign="start" id="live">
+          <HStack gap={3} vAlign="center" wrap="wrap">
+            <StatusDot variant={failed ? 'neutral' : 'accent'} label={failed ? t.liveUnavailable : 'live'} isPulsing={!failed} />
+            <Text type="label" color="secondary">{t.liveHead}</Text>
+          </HStack>
+          <HStack gap={4} vAlign="baseline" wrap="wrap">
+            <Text type="code" color="accent">04</Text>
+            <Heading level={2}>{t.liveTitle}</Heading>
+          </HStack>
+          <Grid columns={{minWidth: 340, max: 2}} gap={6} align="stretch" width="100%">
+            <VStack gap={3} width="100%">
+              {live && <img
+                src={live.imageUrl}
+                alt={t.liveAlt}
+                loading="lazy"
+                style={{
+                  width: '100%', height: 'auto', display: 'block',
+                  border: '1px solid var(--color-border-emphasized)',
+                  borderRadius: 'var(--radius-inner, 2px)',
+                  filter: 'saturate(1.05) contrast(1.03)',
+                }}
+              />}
+              <Text type="supporting" color="secondary">{t.liveCap}</Text>
+            </VStack>
+            <VStack gap={0} justify="start">
+              <Divider />
+              <VStack paddingBlock={4}><StatBig label={t.liveLastL} value={live ? live.latest_pass : failed ? t.liveUnavailable : t.liveLoading} /></VStack>
+              <Divider />
+              <VStack paddingBlock={4}><StatBig label={t.liveCovL} value={pct} /></VStack>
+              <Divider />
+              <VStack paddingBlock={4}><StatBig label={t.liveFloodL} value={km2} /></VStack>
+              <Divider />
+            </VStack>
+          </Grid>
+        </VStack>
+      </HStack>
+    </Section>
   );
 }
 
@@ -292,53 +256,23 @@ export default function App() {
 
   return (
     <AppShell height="auto" contentPadding={0} variant="surface">
-      {/* standing head: the masthead of a bulletin, not a product navbar */}
-      <Band dividers={['bottom']} paddingBlock={3}>
-        <HStack justify="between" vAlign="center" width="100%" gap={4} wrap="wrap">
-          <Text type="code" color="primary" weight="semibold">FLOOD WATCH</Text>
-          <SegmentedControl
-            label="Language"
-            size="sm"
-            value={lang}
-            onChange={setLang}
-          >
-            {LANGS.map((l) => (
-              <SegmentedControlItem key={l.code} value={l.code} label={l.label} lang={l.code} />
-            ))}
-          </SegmentedControl>
-        </HStack>
-      </Band>
-
-      {/* hero: kicker, headline, lede, and the two links that matter, all
-          hung on the same left margin the rest of the page uses */}
-      <Band paddingBlock={9} dividers={['bottom']}>
-        <VStack gap={5} maxWidth={860}>
-          <Text type="label" color="accent">{t.eyebrow}</Text>
-          <Heading level={1} type="display-1">{t.h1}</Heading>
-          <VStack maxWidth={660}>
-            <Text type="large" color="secondary">{t.lede}</Text>
-          </VStack>
-          <HStack gap={6} vAlign="center" wrap="wrap">
-            <Link href="#forecast" isStandalone>{t.seeLive}</Link>
-            <Link href={REPO} isStandalone>{t.source}</Link>
-          </HStack>
-        </VStack>
-      </Band>
+      <ScientificHeader lang={lang} onLanguageChange={setLang} />
+      <ScientificIntro lang={lang} />
 
       {/* the river watch leads: the dams and the rain above them decide the
           season; then the district prediction with its alert output, then
           the monitor and the record */}
-      <HazardSection lang={lang} />
-      <ForecastSection lang={lang} />
-      <AlertSection lang={lang} />
-      <LiveSection t={t} />
-      <React.Suspense fallback={null}><MapSection lang={lang} /></React.Suspense>
+      <div className="observatory-section"><HazardSection lang={lang} /></div>
+      <div className="observatory-section"><ForecastSection lang={lang} /></div>
+      <div className="observatory-section"><AlertSection lang={lang} /></div>
+      <div className="observatory-section"><LiveSection t={t} /></div>
+      <div className="observatory-section"><React.Suspense fallback={null}><MapSection lang={lang} /></React.Suspense></div>
 
       {/* how it is built: five modules as ruled rows, edge to edge, which is
           how a schedule in a report reads and not how a card grid reads */}
       <Band paddingBlock={8}>
         <VStack gap={6} width="100%">
-          <SectionHead no="06" title={t.sysTitle} />
+          <SectionHead no="06" title={t.sysTitle} id="methods" />
           <VStack maxWidth={660}>
             <Text type="large" color="secondary">{t.sysIntro}</Text>
           </VStack>
@@ -412,7 +346,7 @@ export default function App() {
       </Band>
 
       {/* proof, at the very end */}
-      <React.Suspense fallback={null}><ProofSection lang={lang} /></React.Suspense>
+      <div className="observatory-section"><React.Suspense fallback={null}><ProofSection lang={lang} /></React.Suspense></div>
 
       {/* colophon: the provenance line, set small in the data face the way a
           source note sits under a chart */}

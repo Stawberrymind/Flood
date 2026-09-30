@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import {Theme} from '@astryxdesign/core';
 import '@astryxdesign/core/reset.css';
 import '@astryxdesign/core/astryx.css';
+import './scientific.css';
 import {floodWatchTheme} from './theme';
 import App from './App';
 

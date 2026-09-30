@@ -35,6 +35,8 @@ eAadhaar_*.pdf
 webapp/dist/
 webapp/*.png
 webapp/*.jpg
+output/playwright/
+.playwright-cli/
 # local-only planning notes
 *-PLAN.md
 # Sachet capture scratch. The archive and the manifest under data/sachet/ ARE

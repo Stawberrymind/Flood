@@ -1,38 +1,25 @@
 import {defineTheme} from '@astryxdesign/core/theme';
 
-/* Flood Watch — a gazette, not a dashboard.
- *
- * The page is a light warm-paper document: an official record you could
- * print and hand to a district officer. The one dark moment is the live
- * radar monitor, mounted like a plate in a report, which is where the
- * instrument shows through. That contrast is the whole idea, and it is
- * built with the design system's own MediaTheme rather than against it.
- *
- * Type is three roles across three scripts (see public/fonts/faces.css):
- * a serif for headings, because a flood record should read like a record;
- * IBM Plex Sans for running text, which is the institutional-technical
- * register this subject actually occupies; and IBM Plex Mono for every
- * figure, timestamp and source line, so the numbers are visibly machine
- * output rather than prose.
- */
+/* Flood Watch observatory: warm paper, quiet sans-serif headings and
+ * tabular instrument readings. All three scripts use self-hosted fonts.
+ * Cyan is the interface accent; scientific ramps and severity colours
+ * retain their distinct meanings. */
 
 // One accent, and it is the colour of water. Links, section numerals and
 // the flood ramp all resolve to it, so nothing on the page is coloured
 // decoratively. Alert red and elevated ochre stay reserved for severity.
-const WATER = '#0B5563';
+const WATER = '#176B96';
 const WATER_ON_DARK = '#5FC2D2';
 
 export const floodWatchTheme = defineTheme({
   name: 'flood_watch',
   typography: {
     scale: {base: 16, ratio: 1.25},
-    // Each stack runs roman → Devanagari → Gurmukhi, so a Hindi or Punjabi
-    // heading picks up the matching Noto Serif instead of dropping to a
-    // system face halfway through the type system.
+    // Match the heading and body families in every supported script.
     heading: {
-      family: 'Flood Watch Serif',
-      fallbacks: '"Flood Watch Serif Deva", "Flood Watch Serif Guru", Georgia, "Times New Roman", serif',
-      weights: {1: 'semibold', 2: 'semibold', 3: 'semibold'},
+      family: 'Flood Watch Sans',
+      fallbacks: '"Flood Watch Sans Deva", "Flood Watch Sans Guru", -apple-system, "Segoe UI", sans-serif',
+      weights: {1: 'normal', 2: 'normal', 3: 'medium'},
     },
     body: {
       family: 'Flood Watch Sans',
@@ -47,35 +34,33 @@ export const floodWatchTheme = defineTheme({
       fallbacks: '"Flood Watch Sans Deva", "Flood Watch Sans Guru", ui-monospace, Menlo, Consolas, monospace',
     },
   },
-  // Near-square. A flood record does not have rounded corners; the only
-  // curvature on the page is the 2px softening on plates and chips.
-  radius: {base: 2, multiplier: 1},
+  radius: {base: 10, multiplier: 1},
   tokens: {
-    // ---- ground: warm newsprint, with plates sitting brighter on it ----
-    '--color-background-body': ['#F4F1EA', '#12140F'],
-    '--color-background-surface': ['#FBF9F4', '#1A1D17'],
+    // ---- warm neutral ground and white instrument panels ----
+    '--color-background-body': ['#FAFAF9', '#12140F'],
+    '--color-background-surface': ['#FAFAF9', '#1A1D17'],
     '--color-background-card': ['#FFFFFF', '#21241D'],
     '--color-background-popover': ['#FFFFFF', '#282C24'],
-    '--color-background-muted': ['#1A18120A', '#FFFFFF0A'],
-    '--color-background-inverted': ['#16150F', '#FBF9F4'],
+    '--color-background-muted': ['#F5F5F4', '#FFFFFF0A'],
+    '--color-background-inverted': ['#1C1917', '#FAFAF9'],
 
     // ---- ink: warm near-black, never pure #000 on paper ----
-    '--color-text-primary': ['#16150F', '#E9E7DE'],
-    '--color-text-secondary': ['#57534A', '#A9A69B'],
-    '--color-text-disabled': ['#8E897D', '#6C695F'],
+    '--color-text-primary': ['#0C0A09', '#E9E7DE'],
+    '--color-text-secondary': ['#57534E', '#A9A69B'],
+    '--color-text-disabled': ['#78716C', '#6C695F'],
     '--color-text-accent': [WATER, WATER_ON_DARK],
-    '--color-icon-primary': ['#16150F', '#E9E7DE'],
-    '--color-icon-secondary': ['#57534A', '#A9A69B'],
+    '--color-icon-primary': ['#0C0A09', '#E9E7DE'],
+    '--color-icon-secondary': ['#78716C', '#A9A69B'],
     '--color-icon-accent': [WATER, WATER_ON_DARK],
 
     // ---- hairlines: the page is ruled, so the rules must be quiet ----
-    '--color-border': ['#16150F1F', '#E9E7DE1F'],
-    '--color-border-emphasized': ['#16150F42', '#E9E7DE38'],
-    '--color-track': ['#DAD5C9', '#3A3E34'],
-    '--color-skeleton': ['#E4E0D5', '#33372C'],
+    '--color-border': ['#E8E6E5', '#E9E7DE1F'],
+    '--color-border-emphasized': ['#D6D3D1', '#E9E7DE38'],
+    '--color-track': ['#E8E6E5', '#3A3E34'],
+    '--color-skeleton': ['#E7E5E4', '#33372C'],
 
     '--color-accent': [WATER, WATER_ON_DARK],
-    '--color-accent-muted': ['#0B556322', '#5FC2D226'],
+    '--color-accent-muted': ['#C1E1F766', '#5FC2D226'],
     '--color-on-accent': ['#FFFFFF', '#12140F'],
     '--color-overlay-hover': ['#16150F0A', '#FFFFFF0D'],
     '--color-overlay-pressed': ['#16150F16', '#FFFFFF1A'],
@@ -104,12 +89,11 @@ export const floodWatchTheme = defineTheme({
     // than the stock blue, so the page never carries two unrelated blues.
     '--color-icon-blue': [WATER, WATER_ON_DARK],
     '--color-border-blue': [WATER, WATER_ON_DARK],
-    '--color-text-blue': ['#083E4A', '#B7E6EE'],
-    '--color-background-blue': ['#0B55631A', '#5FC2D21F'],
+    '--color-text-blue': ['#176B96', '#B7E6EE'],
+    '--color-background-blue': ['#C1E1F74D', '#5FC2D21F'],
   },
 
-  // On the dark radar plate the accent has to lift off a near-black
-  // ground; the default on-dark tokens keep the paper hues and go muddy.
+  // Keep dark-mode compatibility for reusable instrument components.
   onDark: {
     tokens: {
       '--color-accent': WATER_ON_DARK,
@@ -151,13 +135,10 @@ export const floodWatchTheme = defineTheme({
         fontWeight: 'var(--font-weight-normal)',
         lineHeight: '1.55',
       },
-      // 17px/1.62. Measured against the two public monitoring sites this page
-      // is trying to sit beside: NASA Earth Observatory runs 17.6px on a 29px
-      // line over a ~708px measure, and USGS Water Data uses the same near
-      // black on white. 16px was a screen-UI default, not a reading size.
+      // Keep long scientific descriptions readable beside compact tables.
       'type:body': {
-        fontSize: '1.0625rem',
-        lineHeight: '1.62',
+        fontSize: '1rem',
+        lineHeight: '1.64',
       },
       // Figures, ratios and km² readings. Tabular by default so a column
       // of numbers lines up without every call site asking for it.
@@ -181,25 +162,25 @@ export const floodWatchTheme = defineTheme({
     },
     heading: {
       base: {
-        letterSpacing: '-0.012em',
+        letterSpacing: '-0.025em',
         textWrap: 'balance',
       },
       // The display sizes are re-stated here because the generated
       // display-* rules lose to the level-* rules on this build, so a
       // `type="display-1"` hero was silently rendering at heading-1 size.
       // Stating them also lets the hero scale with the viewport, which a
-      // fixed token step cannot do: 38px on a phone, 61px on a desktop.
+      // fixed token step cannot do.
       'type:display-1': {
-        fontSize: 'clamp(2.375rem, 1.15rem + 4.6vw, 3.8125rem)',
-        lineHeight: '1.08',
+        fontSize: 'clamp(2.25rem, 1.15rem + 4vw, 3.25rem)',
+        lineHeight: '1.12',
         letterSpacing: '-0.022em',
-        fontWeight: 'var(--font-weight-semibold)',
+        fontWeight: 'var(--font-weight-normal)',
       },
       'type:display-2': {
         fontSize: 'clamp(1.9375rem, 1.2rem + 2.9vw, 3.0625rem)',
         lineHeight: '1.12',
         letterSpacing: '-0.018em',
-        fontWeight: 'var(--font-weight-semibold)',
+        fontWeight: 'var(--font-weight-normal)',
       },
       'type:display-3': {
         fontSize: 'clamp(1.5625rem, 1.1rem + 1.9vw, 2.4375rem)',
@@ -208,14 +189,14 @@ export const floodWatchTheme = defineTheme({
         fontWeight: 'var(--font-weight-normal)',
       },
     },
-    // Plates, not cards: a hairline and a flat ground, no lift.
+    // A fine border and a restrained lift from the paper.
     card: {
       base: {
-        borderRadius: '2px',
+        borderRadius: '10px',
         borderWidth: '1px',
         borderStyle: 'solid',
-        borderColor: 'var(--color-border-emphasized)',
-        boxShadow: 'none',
+        borderColor: 'var(--color-border)',
+        boxShadow: '0 4px 16px rgba(28, 25, 23, 0.03)',
       },
     },
     // The language switch and the map layer switch are the only chrome on
@@ -232,14 +213,14 @@ export const floodWatchTheme = defineTheme({
         fontFamily: 'var(--font-family-code)',
         letterSpacing: '0.06em',
         textTransform: 'uppercase',
-        borderRadius: '2px',
+        borderRadius: '999px',
       },
     },
     button: {
-      base: {borderRadius: '2px'},
+      base: {borderRadius: '999px'},
     },
     banner: {
-      base: {borderRadius: '2px'},
+      base: {borderRadius: '10px'},
     },
   },
 });

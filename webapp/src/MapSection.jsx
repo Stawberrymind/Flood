@@ -272,17 +272,16 @@ export default function MapSection({lang}) {
               beside it, which is also where a reader's eye already is after
               clicking a district. */}
           <Grid columns={{minWidth: 360, max: 2}} gap={6} align="start" width="100%">
-            <div style={{height: 600, border: '1px solid var(--color-border-emphasized)', borderRadius: 'var(--radius-inner, 2px)', overflow: 'hidden', background: 'var(--color-background-surface)'}}>
+            <div className="scientific-map" style={{border: '1px solid var(--color-border-emphasized)', borderRadius: '10px', overflow: 'hidden', background: 'var(--color-background-surface)'}}>
               {/* zoomSnap 0 lets fitBounds land on a fractional zoom.
                   Leaflet's default integer snap was throwing away up to half
                   the plate, which is why the state sat small in the middle of
                   its own frame. */}
               {ready && (
                 <MapContainer center={[31.05, 75.4]} zoom={7} zoomSnap={0} zoomDelta={0.5} scrollWheelZoom={false} style={{height: '100%', width: '100%', background: 'transparent'}}>
-                  {/* A pale basemap so the choropleth carries the colour and
-                      the terrain stays reference, which is the way every
-                      newsroom draws a district map. */}
-                  <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" subdomains="abcd" attribution='&copy; OpenStreetMap &copy; CARTO' />
+                  {/* Standard browser-cached OSM tiles; only the basemap is
+                      desaturated, so the scientific overlays keep their ramps. */}
+                  <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' />
                   <NoDataHatch />
                   <FitToState geo={geo} />
                   <GeoJSON key={layer + year + Object.keys(byYear).length + Object.keys(now).length} data={geo} style={styleFn} onEachFeature={onEach} />

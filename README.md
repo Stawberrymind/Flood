@@ -10,6 +10,8 @@
 
 The website displays the latest available products with observation and issue dates. Missing coverage, incomplete inputs, stale forecasts, and unavailable feeds have explicit states. A successful workflow alone does not establish that a product is current.
 
+The interface follows a scientific observatory style: warm paper, white instrument panels, quiet sans-serif headings, and monospaced measurements. Cyan guides navigation; map ramps and warning colors encode data. The opening map is explicitly labeled as a historical 2025 model output. All three language editions use self-hosted fonts and responsive layouts.
+
 ## What the project does
 
 | System | Inputs and methods | Outputs |

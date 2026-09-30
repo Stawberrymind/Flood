@@ -14287,14 +14287,12 @@
     }
   },
   "replay": {
-    "changed_dates": [
-      "2026-09-28"
-    ],
+    "changed_dates": [],
     "mode": "incremental",
     "reason": "no revision before checkpoint",
-    "start": "2026-09-14"
+    "start": "2026-09-15"
   },
   "schema_version": 1,
   "state_version": "bhakra-snowpack-v1",
-  "updated_utc": "2026-09-30T09:17:21+00:00"
+  "updated_utc": "2026-09-30T12:06:52+00:00"
 }

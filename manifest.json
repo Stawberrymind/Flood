@@ -1183,7 +1183,7 @@
     ],
     "last_failure": null,
     "last_request": {
-      "at_utc": "2026-09-30T09:17:15+00:00",
+      "at_utc": "2026-09-30T12:06:45+00:00",
       "estimated_weight": 1,
       "point_id": "33.0000,78.7500",
       "span": "2026-09-22..2026-09-28",
@@ -2024,17 +2024,15 @@
     "archive_last_complete_date": "2026-09-28",
     "path": "state/bhakra_snowpack.json",
     "replay": {
-      "changed_dates": [
-        "2026-09-28"
-      ],
+      "changed_dates": [],
       "mode": "incremental",
       "reason": "no revision before checkpoint",
-      "start": "2026-09-14"
+      "start": "2026-09-15"
     },
     "status": "ready",
-    "updated_utc": "2026-09-30T09:17:21+00:00"
+    "updated_utc": "2026-09-30T12:06:52+00:00"
   },
-  "updated_utc": "2026-09-30T09:17:21+00:00",
+  "updated_utc": "2026-09-30T12:06:52+00:00",
   "weather": {
     "archive_start": "2014-01-01",
     "correction_overlap_days": 7,

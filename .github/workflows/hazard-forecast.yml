@@ -49,9 +49,9 @@ jobs:
           key: hazard-openmeteo-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             hazard-openmeteo-${{ runner.os }}-
-      # The bulletin fetch can fail from a foreign runner (bbmb.gov.in has an incomplete TLS
-      # chain and is not always reachable from outside India). A failed cycle is recorded in
-      # the job log, while the durable weather progress is still committed below.
+      # The BBMB client supplies the server's missing intermediate with full TLS
+      # verification. Unreachable or invalid sources still fail the cycle, while
+      # durable weather progress is committed below.
       - name: forecast cycle (required fresh product)
         id: forecast
         run: python -m river_watch.cli forecast

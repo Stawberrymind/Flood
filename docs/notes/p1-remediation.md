@@ -25,11 +25,14 @@ No such labels were manufactured here, and the historical model, data files and
 benchmark exports are preserved for audit. Public legacy metrics are marked as
 withdrawn, and do not apply to a future observation-aware retrain.
 
-A read-only certificate-verified request on September 30, 2026 failed with
-`unable to get local issuer certificate` in the test environment. BBMB ingestion
-therefore fails safely until the source supplies a verifiable chain or an
-independently reviewed CA configuration is provided. Disabling verification
-accepts untrusted certificates and hostname mismatches; see the
+A read-only certificate-verified request on September 30, 2026 initially failed
+with `unable to get local issuer certificate`. BBMB sends only its leaf certificate.
+The client now supplies the missing GoDaddy G2 intermediate from the issuer's
+verified HTTPS repository, with its published SHA-256 checked. This adapter applies
+only to BBMB and still requires a full chain to a normal public root, with hostname
+and expiry verification. Offline TLS handshakes cover missing-chain recovery and
+rejection of wrong hostnames, expired certificates and absent trusted roots.
+Disabling verification accepts untrusted certificates and hostname mismatches; see the
 [Requests TLS documentation](https://requests.readthedocs.io/en/latest/user/advanced/#ssl-cert-verification).
 
 Satellite alerts say what the processed pass detected, not that conditions are

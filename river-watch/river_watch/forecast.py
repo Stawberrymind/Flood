@@ -20,7 +20,7 @@ import pandas as pd
 import requests
 
 from river_watch import constants as C
-from river_watch import hei, inflow, rain, reservoirs, routing, snow
+from river_watch import bbmb_tls, hei, inflow, rain, reservoirs, routing, snow
 from river_watch import weather as wx
 from river_watch.catchments import Catchment
 from river_watch.imdrain import IMD_WEIGHT_COL, covered_area_km2
@@ -93,14 +93,14 @@ def fetch_bulletin(
     ``raw_dir/bulletins.jsonl`` (BBMB overwrites the file daily and keeps no archive)."""
     import pypdfium2 as pdfium
 
-    sess = session or requests.Session()
+    sess = session or bbmb_tls.session()
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
         "Accept": "application/pdf,*/*",
     }
-    # TLS authenticates the source; PDF parsing cannot substitute for it. A
-    # broken certificate chain must fail closed rather than accept altered data.
+    # The BBMB-only adapter supplies its missing GoDaddy intermediate. TLS
+    # still verifies the hostname, validity and chain to the public root store.
     r = sess.get(BBMB_URL, headers=headers, timeout=timeout, verify=True)
     r.raise_for_status()
     content = r.content

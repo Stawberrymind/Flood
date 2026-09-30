@@ -1,7 +1,7 @@
 # Sailaab: Punjab Flood Intelligence
 
-[![sailaab-monitor](https://github.com/bakathefish/Flood/actions/workflows/monitor.yml/badge.svg)](https://github.com/bakathefish/Flood/actions/workflows/monitor.yml)
-**Live:** [bakathefish.github.io/Flood](https://bakathefish.github.io/Flood/) · **Synopsis:** [PDF](docs/SAILAAB-synopsis.pdf) · **District briefs:** [20 PDFs](briefs/) · MIT + CC-BY-4.0
+[![sailaab-monitor](https://github.com/Stawberrymind/Flood/actions/workflows/monitor.yml/badge.svg)](https://github.com/Stawberrymind/Flood/actions/workflows/monitor.yml)
+**Live:** [stawberrymind.github.io/Flood](https://stawberrymind.github.io/Flood/) · **Synopsis:** [PDF](docs/SAILAAB-synopsis.pdf) · **District briefs:** [20 PDFs](briefs/) · MIT + CC-BY-4.0
 
 Open SAR flood mapping, a decade hazard atlas, damage analytics, district flood-risk ranking, and a live trilingual monitor for Punjab, India. Every number is reproducible with zero logins.
 
@@ -29,7 +29,7 @@ Himalayan rain fill Bhakra and Pong when they are already near full in late Augu
 spillway gates open, and the wave reaches the plains on a published clock (Bhakra to
 Harike 52 hours, Pong to Harike 72 hours). The [`punjabflood/`](punjabflood/) package
 forecasts that chain each day and the live site prints the result in its
-[river watch](https://bakathefish.github.io/Flood/#rivers).
+[river watch](https://stawberrymind.github.io/Flood/#rivers).
 
 Each morning it reads the BBMB bulletin (level, inflow, outflow at Bhakra and Pong), the
 rain that fell over the eight catchments from IMD's real-time grid, and the rain forecasts

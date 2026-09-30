@@ -124,7 +124,7 @@ in the tens of thousands: a seasonal modulation of the base flow.
 
 ## Where it lives
 
-- Live: the river watch section of [bakathefish.github.io/Flood](https://bakathefish.github.io/Flood/#rivers),
+- Live: the river watch section of [stawberrymind.github.io/Flood](https://stawberrymind.github.io/Flood/#rivers),
   reading `outputs/forecast/latest.json`, which a daily GitHub Action rewrites; the dated
   records beside it are never rewritten, and a same-day rerun gets its own file.
 - Code, tests and data: [`punjabflood/`](../) in the Sailaab repository, MIT.

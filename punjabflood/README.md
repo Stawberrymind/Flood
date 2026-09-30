@@ -54,7 +54,7 @@ Not an official warning. The Punjab WRD, CWC, BBMB and IMD issue those. This is 
 watch on physical quantities, published with its verification.
 
 The live site prints the newest product in its river watch section
-(`https://bakathefish.github.io/Flood/#rivers`), read from `outputs/forecast/latest.json`.
+(`https://stawberrymind.github.io/Flood/#rivers`), read from `outputs/forecast/latest.json`.
 A ten-minute read of what the watch does and how it did, with the figures:
 `docs/presentation.md`.
 

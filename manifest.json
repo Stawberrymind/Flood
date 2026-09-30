@@ -1744,7 +1744,7 @@
     ],
     "signature": "525c8fc5f7fcd4813d82a04bf15a364097665262aab9ba1a888b3f9f0bf7b8bd"
   },
-  "kind": "punjabflood-forecast-data",
+  "kind": "river_watch-forecast-data",
   "model": {
     "degree_day_melt_mm_per_degree_day": 4.0,
     "point_weight_column": "weight_km2",

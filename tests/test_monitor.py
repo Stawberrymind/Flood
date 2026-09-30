@@ -1,7 +1,7 @@
 # tests/test_monitor.py
 import json
 
-from sailaab.monitor import new_scenes, load_state, save_state
+from flood_watch.monitor import new_scenes, load_state, save_state
 
 
 def test_new_scenes_after_watermark():

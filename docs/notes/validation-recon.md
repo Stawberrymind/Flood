@@ -1,7 +1,7 @@
-# Validation data recon + festival re-verification
+# Validation data reconnaissance
 
-Recon date: 2026-07-21. Scope: independent flood-outline sources to validate the sailaab Punjab-2025
-maps, plus a fresh re-check of the India AI Impact Festival submission facts. Keyless fetches only
+Recon date: 2026-07-21. Scope: independent flood-outline sources to validate the flood_watch Punjab-2025
+maps. Keyless fetches only
 (`curl` + browser UA; `r.jina.ai` for JS-heavy pages). Downloaded map/vector artifacts live under
 `data/` and are **not** committed (government map products stay uncommitted; `data/gfm/` is gitignored).
 
@@ -57,7 +57,7 @@ aggregated flood inundated area).
 **Downloaded to `data/ndem/` (uncommitted):** the four 2025 `_map.pdf`, plus one 2023 `_map.pdf`
 (`12072023_0600hrs`) and one 2023 `_report.pdf` (`11072023_1000hrs`) as samples. All verified
 `PDF-1.7`, 1 page. **Verdict:** the two 2025 cumulative sheets (`1608_05092025`, `1608_17092025`) are
-the primary NRSC ground-truth for validating the sailaab 2025 extent; per-acquisition 16/19-Aug sheets
+the primary NRSC ground-truth for validating the flood_watch 2025 extent; per-acquisition 16/19-Aug sheets
 give the mid-event snapshots.
 
 ---
@@ -107,50 +107,6 @@ behind a login on the 2026 mapping portal; the legacy `list-of-components/EMSR83
 Only the activation-level metadata above is keyless. **No EMS vectors were downloaded** (no login was
 attempted, per instructions). If EMSR838 vectors are needed, they require a free CEMS account — but see
 §4: the GFM WMS gives an equivalent independent outline keyless.
-
----
-
-## 3. India AI Impact Festival — fresh re-verification (2026-07-21)
-
-Sources fetched today via `r.jina.ai`: homepage and `/faq`; the two "Resources" Google-Drive PDFs
-pulled directly (`drive.google.com/uc?export=download&id=…`). Diffed against the local Jul-20 cache.
-
-**Deadline banner — VERBATIM (unchanged since Jul 20):**
-> Submission Deadline Extended till - July 26, 2026
-
-**Student category — VERBATIM:** category **"AI Impact Creators"**, target audience "Students in K-12 /
-higher education / equivalent ecosystems". Two sub-categories / age brackets:
-> - Students in the 13-17 years age group
-> - Students 18 years & above
-
-**Team size / entry limits — VERBATIM (FAQ):**
-> AI Impact Creators may submit up to two (2) projects per email ID (including participation on another
-> Creator's team, which counts toward that limit). Shapers, Nurturers, and Catalysts may submit one (1)
-> entry each. … Once submitted, a project cannot be edited or deleted.
-
-No **numeric maximum team size** is stated anywhere public (teams are referenced but not sized).
-
-**Submission mechanics (synopsis format/pages, video length, upload-vs-link):**
-**NOT specified on any public surface.** Checked: homepage, `/faq`, the "Guidelines" Drive PDF (which
-is actually *"Guidelines on ethical and responsible AI"* — Intel's responsible-AI principles, not a
-format spec), and the "Evaluation rubrics" Drive PDF (a scoring sheet: points for "usage of emerged
-AI", open-sourced link, audience fit, validation — no synopsis/video specs). The FAQ only says "submit
-projects according to your category guidelines" and to prepare "your write-up, demo links, and pitch
-materials." Concrete synopsis page-count and video-length/upload rules live behind the **Login /
-dashboard**, which was not entered.
-
-**Changes since Jul 20:** none material. Deadline, four categories, and age brackets are identical. The
-only homepage delta: the **"Evaluation rubrics" link changed** from a Google-Drive URL
-(`…id=1w3Q3ubJT4sAkO8peJrgptevpt55UEmgs`) to a dead placeholder `#` (the Drive file itself still
-downloads directly). Minor carousel/nav rendering differences only.
-
-**Flags vs the working assumption "deadline Jul 26, synopsis PDF + ≤2-min video":**
-- Deadline **Jul 26 2026 — CONFIRMED** (verbatim banner, unchanged).
-- "Synopsis PDF + ≤2-min video" — **UNVERIFIABLE from public pages** (neither confirmed nor
-  contradicted). No public page states a synopsis format or a 2-minute video limit. Recommend
-  confirming inside the registration dashboard before relying on those numbers.
-- Guidelines resource: `drive.google.com/file/d/1VSeOPfRUMUBFPe41iWP2hUN7c5x3_crC/view` (ethics).
-- Support: `support@digitalreadiness.org`.
 
 ---
 

@@ -2,7 +2,7 @@
 
 The single "why the flood happened" chart. Regenerated deterministically from
 committed CSVs by `pipeline/make_causal_figure.py` (pure matplotlib; same input →
-byte-identical PNG). Testable data transforms live in `sailaab/causal.py`
+byte-identical PNG). Testable data transforms live in `flood_watch/causal.py`
 (`tests/test_causal.py`, 9 tests).
 
 ```
@@ -57,7 +57,7 @@ sits directly above effect:
 - **Sparse annotation.** Two consolidated callouts (reservoir state; forced
   releases), one peak callout, a handful of direct labels — never a number on
   every point.
-- **Bilingual.** English title + Gurmukhi subtitle "ਸੈਲਾਬ 2025 — ਹੜ੍ਹ ਕਿਉਂ ਆਇਆ",
+- **Bilingual.** English title + Gurmukhi subtitle "Flood Watch 2025 — ਹੜ੍ਹ ਕਿਉਂ ਆਇਆ",
   rendered with **Nirmala UI** (verified rendering — real glyphs, not tofu). If
   that face is absent the script falls back to a transliterated English subtitle
   automatically.
@@ -73,7 +73,7 @@ sits directly above effect:
 | Pong "over its 1,390 ft brim, 1,393 ft (26 Aug)" | 1,393 ft > FRL 1,390 ft | `reservoirs_2025_flood_supplement.csv` 2025-08-26 Pong (SANDRP) |
 | Ranjit Sagar release "1.73 lakh cusecs (27 Aug)" | 173,000 cusecs | `docs/notes/reservoirs.md` anchor table / route 5 (SANDRP) — outflow, no CSV flow column |
 | Bhakra release "~85,000 cusecs (4 Sep)" | ~85,000 cusecs peak | `docs/notes/reservoirs.md` anchor table (SANDRP, 4–5 Sep) |
-| Live capacities (for %) | 6.229 / 6.157 / 2.344 BCM | `docs/notes/reservoirs.md` (CWC `Live_capacity_FRL`) → `sailaab/causal.LIVE_CAPACITY_BCM` |
+| Live capacities (for %) | 6.229 / 6.157 / 2.344 BCM | `docs/notes/reservoirs.md` (CWC `Live_capacity_FRL`) → `flood_watch/causal.LIVE_CAPACITY_BCM` |
 | "worst since 1988" | — | press (SANDRP / Down To Earth); stated as press-reported in the caption |
 
 ### Note on the Bhakra ~1,668.6 ft / 25 Aug target

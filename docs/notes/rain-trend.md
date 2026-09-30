@@ -12,7 +12,7 @@ null result ("no significant long-term trend; 2025 is a rank-1 outlier in an
 otherwise stationary record") is reported as faithfully as a positive one.
 
 Written before computing. Implementation: pure index/stat math in
-`sailaab/climatology.py` (TDD, synthetic-series tests first); orchestration in
+`flood_watch/climatology.py` (TDD, synthetic-series tests first); orchestration in
 `pipeline/make_rain_trend.py`; long-record daily extraction in
 `pipeline/fetch_rain_longrecord.py`.
 

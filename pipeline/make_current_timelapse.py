@@ -6,7 +6,7 @@ product). For every day from 1 June of the current year up to today (India
 Standard Time), it asks the keyless Copernicus GFM WMS whether a Sentinel-1 pass
 imaged the Punjab bounding box that day (the S1 footprint layer) and, if so,
 pulls that day's observed-flood-extent tile and decodes it to a boolean mask
-(``sailaab.gfm``). Days with no S1 pass are skipped. Each frame shows THAT
+(``flood_watch.gfm``). Days with no S1 pass are skipped. Each frame shows THAT
 DAY'S observed water (not a growing union: water that drains between passes
 disappears from the next frame, and June's transplant-paddy signal does not
 haunt September), in the dark-cartography style of the 2025 timelapse: cyan
@@ -21,7 +21,7 @@ line, and a season-peak hold card. The driver writes:
                                            peak_km2, peak_day)
 
 All pure logic (IST season-day enumeration, km^2 from pixel counts, the signed
-change and season-peak labels) lives in ``sailaab/nowlapse.py`` and is unit-tested;
+change and season-peak labels) lives in ``flood_watch/nowlapse.py`` and is unit-tested;
 the WMS fetch reuses ``pipeline/fetch_gfm`` (retries + polite pacing), and the
 rendering reuses ``pipeline/make_timelapse`` primitives unchanged. Decoded daily
 masks are cached under ``data/gfm/current/`` (git-ignored), so a rerun only
@@ -66,7 +66,7 @@ from pipeline.fetch_gfm import (  # noqa: E402  (retries + pacing + bbox reused)
 
 # Rendering primitives + palette from the 2025 product, reused UNCHANGED so the
 # current-season clip is visually identical. Only the label strings differ (they
-# come from sailaab.nowlapse, which is dash-free).
+# come from flood_watch.nowlapse, which is dash-free).
 from pipeline.make_timelapse import (  # noqa: E402
     BRIGHT,
     CANVAS_H,
@@ -88,8 +88,8 @@ from pipeline.make_timelapse import (  # noqa: E402
     district_polylines_px,
     save_gif,
 )
-from sailaab import nowlapse  # noqa: E402
-from sailaab.gfm import flood_mask, ref_water_mask, web_mercator_area_km2  # noqa: E402
+from flood_watch import nowlapse  # noqa: E402
+from flood_watch.gfm import flood_mask, ref_water_mask, web_mercator_area_km2  # noqa: E402
 
 ROOT = Path(_REPO_ROOT)
 CACHE_DIR = ROOT / "data" / "gfm" / "current"
@@ -269,7 +269,7 @@ def _render_day(rgb, origin, polylines, fonts, iso, year, area_day, delta, progr
     _text(
         draw,
         (LEFT_X, CANVAS_H - 30),
-        "SAILAAB · Sentinel-1 / Copernicus GFM",
+        "FLOOD WATCH · Sentinel-1 / Copernicus GFM",
         fonts["credit"],
         CREDIT,
         "lm",
@@ -311,7 +311,7 @@ def _render_hold(rgb, origin, polylines, fonts, year, peak_iso, peak_km2,
     _text(
         draw,
         (LEFT_X, CANVAS_H - 30),
-        "SAILAAB · Sentinel-1 / Copernicus GFM",
+        "FLOOD WATCH · Sentinel-1 / Copernicus GFM",
         fonts["credit"],
         CREDIT,
         "lm",

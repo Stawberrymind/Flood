@@ -1,5 +1,5 @@
 # tests/test_nowcast.py
-"""Pure-logic tests for the live nowcast (sailaab/nowcast.py).
+"""Pure-logic tests for the live nowcast (flood_watch/nowcast.py).
 
 No network / model IO — window resolution, the exact-16 feature assembly, the
 cos²(lat) mask -> per-district reduction, and the locked JSON shaping.
@@ -11,8 +11,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab import nowcast
-from sailaab.gfm import web_mercator_area_km2
+from flood_watch import nowcast
+from flood_watch.gfm import web_mercator_area_km2
 
 # Punjab bbox in EPSG:3857 metres (matches pipeline.fetch_gfm.bbox_3857()).
 PUNJAB_BOUNDS_3857 = (

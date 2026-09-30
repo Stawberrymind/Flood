@@ -11,7 +11,7 @@ apples-to-apples on the identical 1540-row core-season frame:
   * ``build_dataset`` / ``hindcast_2025`` and the flag constants
     (FLAG_TOPN, FLAG_PROB, EVENT_WINDOWS_2025, EARLY_WARN_MD, NAMED_2025,
     F1_THRESHOLD) from ``pipeline.run_forecaster``;
-  * ``loyo_splits`` from ``sailaab.model``;
+  * ``loyo_splits`` from ``flood_watch.model``;
   * the private ``_mk_clf`` classifier factory from ``pipeline.run_forecaster``
     (imported within-repo, by design — the ablation MUST use the identical
     classifier construction so the ``full`` variant reproduces the shipped
@@ -19,8 +19,8 @@ apples-to-apples on the identical 1540-row core-season frame:
 
 Classifier only — the fraction regressor is NOT part of this ablation. The only
 degree of freedom across variants is the feature list
-(``sailaab.ablation.variant_features``); ``persistence`` skips the fit entirely
-and scores by antecedent_fraction (``sailaab.ablation.persistence_scores``),
+(``flood_watch.ablation.variant_features``); ``persistence`` skips the fit entirely
+and scores by antecedent_fraction (``flood_watch.ablation.persistence_scores``),
 applying the SAME flag formula (the P>=0.50 criterion simply will not trigger on
 raw fractions).
 
@@ -52,9 +52,9 @@ from pipeline.run_forecaster import (
     build_dataset,
     hindcast_2025,
 )
-from sailaab.ablation import ablation_row, persistence_scores, variant_features
-from sailaab.forecast_features import classification_metrics
-from sailaab.model import loyo_splits
+from flood_watch.ablation import ablation_row, persistence_scores, variant_features
+from flood_watch.forecast_features import classification_metrics
+from flood_watch.model import loyo_splits
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"

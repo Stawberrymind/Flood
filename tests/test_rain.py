@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.rain import window_sum, window_with_lags, window_table, anomaly_stats
+from flood_watch.rain import window_sum, window_with_lags, window_table, anomaly_stats
 
 
 def _daily(value_p=1.0, value_u=2.0, start="2020-05-01", days=180):

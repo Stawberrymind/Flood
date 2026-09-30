@@ -1,145 +1,177 @@
-# Sailaab: Punjab Flood Intelligence
+# flood_river_watch
 
-[![sailaab-monitor](https://github.com/Stawberrymind/Flood/actions/workflows/monitor.yml/badge.svg)](https://github.com/Stawberrymind/Flood/actions/workflows/monitor.yml)
-**Live:** [stawberrymind.github.io/Flood](https://stawberrymind.github.io/Flood/) · **Synopsis:** [PDF](docs/SAILAAB-synopsis.pdf) · **District briefs:** [20 PDFs](briefs/) · MIT + CC-BY-4.0
+**Flood Watch** monitors satellite-observed flooding and district exposure. **River-Watch** forecasts reservoir pressure and downstream river conditions. Together they provide an open flood monitoring and research platform for Punjab, with a shared website in English, Hindi, and Punjabi.
 
-Open SAR flood mapping, a decade hazard atlas, damage analytics, district flood-risk ranking, and a live trilingual monitor for Punjab, India. Every number is reproducible with zero logins.
+[![Build](https://github.com/Stawberrymind/flood_river_watch/actions/workflows/build.yml/badge.svg)](https://github.com/Stawberrymind/flood_river_watch/actions/workflows/build.yml)
+[![Flood Watch monitor](https://github.com/Stawberrymind/flood_river_watch/actions/workflows/monitor.yml/badge.svg)](https://github.com/Stawberrymind/flood_river_watch/actions/workflows/monitor.yml)
+[![River-Watch forecast](https://github.com/Stawberrymind/flood_river_watch/actions/workflows/hazard-forecast.yml/badge.svg)](https://github.com/Stawberrymind/flood_river_watch/actions/workflows/hazard-forecast.yml)
 
-*11 monsoons · 467 flood days · 105,183 ha mapped (2025) · 91 tehsils scored · ρ = 0.72 vs the government girdawari · 3 alert languages · 0 CWC flood-forecast stations in Punjab · 0 logins required.*
+[Website](https://stawberrymind.github.io/flood_river_watch/) · [Synopsis](docs/FLOOD_WATCH-synopsis.pdf) · [District briefs](briefs/) · [Deployment guide](docs/FORK_SETUP.md)
 
-In August and September 2025 Punjab had its worst flood since 1988: all 23 districts, about 3.55 lakh people, 1.48 to 1.75 lakh hectares of crops (official range). India's flood-forecast network had zero stations in the state (CWC's own table; see `docs/notes/cwc-gap.md`), and the satellite maps that could have guided relief existed only as locked PDFs. Sailaab rebuilds that capability in the open. The code is public, the data is open, and the monitor is running this monsoon.
+The website displays the latest available products with observation and issue dates. Missing coverage, incomplete inputs, stale forecasts, and unavailable feeds have explicit states. A successful workflow alone does not establish that a product is current.
 
-## What it does
+## What the project does
 
-| Module | Output |
-|---|---|
-| **2025 Flood Atlas** | Sentinel-1 SAR flood masks (physics change-detection baseline + Random Forest), per-district statistics, per-pixel submergence duration, a before/after swipe, a date-stamped timelapse |
-| **Decade Hazard Atlas** | Every monsoon 2015 to 2025 mapped the same way. Punjab's first public flood-frequency map, recurrence zones, 91 tehsils scored, and a named "repeat victims" table |
-| **Impact engine** | Crop-flooded hectares, the ₹351 to ₹523 crore paddy damage band (duration-weighted and at-risk, on DES district yields), population exposure (GHSL), the dam headroom counterfactual, and the rain, dams and releases causal chart |
-| **Forecaster** | XGBoost district flood-risk model trained on the pipeline's own 2,420 SAR-derived labels. Leave-one-year-out validation, SHAP attributions, conformal uncertainty, and an ablation stress test |
-| **Live monitor** | A 6-hourly secretless GitHub Action: new Sentinel-1 pass in, district flood km² out, written to `monitor/latest.json` with ਪੰਜਾਬੀ, हिन्दी and English alerts plus live model risk in `monitor/nowcast.json` |
-| **River watch** | A daily dam-release hazard forecast (`punjabflood/`): BBMB bulletin in, IMD real-time rain and four weather models in, the chance each spillway is forced over the next five days and the routed river class at five control points out, with a weather watch per catchment; verified on the 2025 flood with the forecasts issued at the time |
+| System | Inputs and methods | Outputs |
+| --- | --- | --- |
+| Flood Watch satellite monitor | Sentinel-1 radar through Planetary Computer, baseline change detection, permanent-water exclusions, and coverage checks | Observed flood extent, district summaries, imagery, and multilingual messages |
+| Flood Watch historical atlas | Radar flood masks, Copernicus GFM, district and tehsil boundaries, land cover, and population | 2025 maps, historical frequency, duration, exposure estimates, comparison figures, and district briefs |
+| Flood Watch district research | Satellite observation history, calendar-aligned features, acquisition-aware labels, and season-separated evaluation | Ranking experiments, ablations, and verification tables; the legacy live classifier is withdrawn |
+| River-Watch | BBMB bulletins, CWC storage records, catchment rain, weather forecasts, snowmelt, reservoir balance, and published routing rules | One-to-five-day reservoir scenarios, weather watches, downstream classes, and dated forecast records |
+| Shared website | React, Vite, Leaflet, and Recharts | River-Watch, official alert archive, district forecasts, satellite monitoring, maps, and evidence in three languages |
 
-The public site (built in React with Meta's Astryx design system, trilingual in Punjabi, Hindi and English) is interactive: the live district-risk forecast, the live satellite monitor, an every-district map you can scrub through any monsoon from 2015 to now with decade-recurrence and rupee-impact layers, per-district panels, auto-generated trilingual alerts, and the held-out 2025 validation. Every figure loads from version-controlled data in this repo.
+Satellite extent describes what was observed on a pass. District research ranks future satellite flood activity. River-Watch estimates physical reservoir and river scenarios. Keep each product's dates, coverage, and uncertainty when interpreting them together.
 
-## The river watch: a daily dam-release hazard forecast (`punjabflood/`)
+## River-Watch
 
-Punjab's large river floods (1988, 1995, 2023, 2025) start upstream. Several days of
-Himalayan rain fill Bhakra and Pong when they are already near full in late August, the
-spillway gates open, and the wave reaches the plains on a published clock (Bhakra to
-Harike 52 hours, Pong to Harike 72 hours). The [`punjabflood/`](punjabflood/) package
-forecasts that chain each day and the live site prints the result in its
-[river watch](https://stawberrymind.github.io/Flood/#rivers).
+The river system lives in [`river-watch/`](river-watch/), with Python package `river_watch` and command `river-watch`.
 
-Each morning it reads the BBMB bulletin (level, inflow, outflow at Bhakra and Pong), the
-rain that fell over the eight catchments from IMD's real-time grid, and the rain forecasts
-of four named weather models (ECMWF AIFS, ECMWF IFS, GFS, ICON) with the 51-member ECMWF ensemble, all through keyless services. A
-runoff model calibrated on measured storage changes turns rain into inflow, with a
-degree-day snowmelt term at Bhakra for the half of its catchment above the rain grid. For
-each dam and each of the next five days it computes how much of the forecast inflow a full
-reservoir cannot hold, so must spill, and prints the chance the spillway is forced under
-three widening error budgets. The forced release is then routed to Ropar, Phillaur, Harike,
-Dhilwan and Ferozepur on the Water Resources Department's travel times and classed against
-its Low, Medium and High thresholds. A weather watch sits beside it: what fell, what the
-models say, where the next three days sit in 65 years of monsoon three-day totals, and a
-level (quiet, watch, alert) from rules fixed before any season was scored.
+Its daily cycle combines reservoir observations with area-weighted catchment rainfall and weather forecasts, estimates inflow and available storage, and routes release scenarios to Punjab control points. At Bhakra, a snowmelt term uses persisted catchment snowpack. Alternative operating assumptions and model-error scenarios describe uncertainty in reservoir behavior.
 
-**How it did on the 2025 flood, using only the forecasts issued at the time.** BBMB's gate
-log is not public, so the reference is the model's own run under the rain that fell. Run
-day by day over the archived as-issued forecasts, the watch first flagged a forced Pong
-spill on 17 August 2025, ten days before that reference run first spills (27 August) and
-fourteen days before the dated Dhilwan peak of 31 August; the observed-rain run confirmed
-all 23 issue days it flagged, none false by that test. The weather watch reached watch level over the Bhakra catchment on 9 August, ten
-days before the 19 August gate opening, and alert on the 10th. Over 1,029 scored issue
-days across 2024 to 2026 the false alarms are counted too: over the Bhakra catchment
-23 of the 119 issue days of 2024 and 20 of the 105 of 2026 sat at watch or above with no
-dam event that year. At Bhakra, where BBMB opened the gates on 19 August at 1,665 ft,
-below the level the 2019 filling schedule in the package allows for that day, the
-watch's first flag came eleven days after the opening.
+The public `forecast-data` branch stores resumable weather inputs and snowpack checkpoints. Preparation runs are bounded by a request budget. The live cycle checks completeness and freshness before publication; Actions caches accelerate downloads while the durable branch holds required input state.
 
-**How it is doing live.** Against the 2026 bulletins the one-day Pong inflow prediction
-has a mean absolute error of 5,904 cusecs with r = 0.86, where carrying today's figure
-forward gives 12,135 cusecs and r = 0.37; at Bhakra the two are close (4,040 against
-4,148 cusecs). The known limit is at flood scale: the model's volumes over the 2025 flood
-periods came to 0.78 to 1.13 of what BBMB reported, but its largest day was 0.58 of the
-stated peak, because lag weights fitted on ordinary days spread a flood over more days
-than the river does.
+The website reads `river-watch/outputs/forecast/latest.json`. Dated JSON and Markdown records, including separately named reruns, live in `river-watch/outputs/forecast/`. Branding updates preserve historical issue dates.
 
-The package renders the whole record from its outputs; nobody types a number:
-[`punjabflood/docs/verification.md`](punjabflood/docs/verification.md). A ten-minute
-read with the figures: [`punjabflood/docs/presentation.md`](punjabflood/docs/presentation.md).
-A daily GitHub Action commits a dated prospective record to `punjabflood/outputs/forecast/`
-and rewrites `latest.json` there for the site. It is a hazard watch on physical quantities,
-published with its verification, not an official warning; the Punjab WRD, CWC, BBMB and
-IMD issue those.
+Read the [package guide](river-watch/README.md), [design](river-watch/docs/design.md), [data sources](river-watch/docs/data-sources.md), and [verification report](river-watch/docs/verification.md) before interpreting the probabilities or river classes. Retrospective component evaluations and prospective records have different evidential limits.
 
-## Headline results
+## Flood Watch
 
-- **2025 mapping.** 105,183 ha statewide SAR-flooded area (Tier-A change detection, 90 m, full coverage). The RF map adds about 52k ha in-district. The three-method envelope against Copernicus GFM is published: Tier-A 34k < RF 52k < GFM 86k in-district.
-- **Forecasting, three days out — withheld.** The legacy model and its benchmark treated unobserved satellite days as dry. Those figures are archived, not evidence of validated forecast skill. The observation-aware daily record currently supplies only three positive three-day onset labels and no confirmed negatives. Training fails closed and live scoring rejects the old artifact until independent verified labels support training and past-only validation. Satellite observations and the separate river watch remain available subject to their own quality gates. See `docs/notes/p1-remediation.md`.
-- **The ground survey agrees.** Our satellite damage ranking matched the Revenue Department's Special Girdawari table at ρ = 0.72 across all 20 districts (0.56 over the 16 named), with 5 of the top 6 identical. The divergences sit in the Ghaggar basin, outside our SAR windows, and are documented.
-- **Damage.** 36,195 ha of cropland flooded in the peak snapshot. That is ₹523 crore of paddy at risk (v2, on DES district yields), refined to ₹351 crore once duration is weighted in: 51,202 ha stayed under water for 7 days or more. The official cumulative-season figure (1.48 to 1.75 lakh ha) is stated alongside, and the gap (snapshot vs season, recession bias) is explained rather than hidden.
-- **Relief targeting.** 91 tehsils scored. The repeat victims have names: Khadur Sahib flooded in 6 of 11 seasons, Sultanpur Lodhi in 5 (`data/tehsil_repeat_victims.csv`). One printable brief per district lives in `briefs/`.
-- **Population exposure.** 0.76 to 1.78 lakh people lived inside the mapped water (GHSL, conservation-checked), against 3.55 lakh officially "affected". The gap is low-density cropland: 146 to 206 people/km² in the flooded zone versus a state mean near 550.
-- **Dam headroom (pre-declared).** At surge-eve, Pong sat 1.01 BCM above its own median operating curve and Ranjit Sagar 0.45 BCM. Bhakra's margin was 0.22 BCM, which we report as negligible. The total, about 1.68 BCM, is one to four days of peak release (`docs/notes/headroom.md`).
-- **Climate context.** Pre-registered Mann-Kendall tests on 65 years of IMD grids: total monsoon loading is largely stationary, but extreme-wet-day frequency over the upstream Himalayan box is rising (p = 0.017). The 2025 Aug 20 to Sep 5 burst was +9.7σ, rank 1 of the record.
-- **The gap, quantified.** Punjab has zero CWC flood-forecast stations. It is absent from the 226-station national table (CWC's latest published station list, dated Jan 2018) and from CWC's current lists, and the one historical Ravi site is defunct (`docs/notes/cwc-gap.md`).
+The satellite and district logic lives in [`flood_watch/`](flood_watch/). Thin scripts under [`pipeline/`](pipeline/) handle remote services, raster processing, training, figures, and publication. Earth Engine examples remain under [`gee/`](gee/); the scheduled monitor uses the anonymous Planetary Computer path.
 
-## Validated four independent ways
+The monitor separates observation coverage from flood detection. An unobserved district is unknown, and a low observed extent is not an all-clear. The district model requires calendar-aligned observations and sufficient coverage. A previous classifier trained without confirmed negatives was withdrawn from live use; the site discloses this limitation, and an acquisition-aware training frame supports further research.
 
-| Check | Against | Result |
-|---|---|---|
-| Fresh-point confusion matrices | Copernicus GFM (different algorithm; also the label seed, so compared on fresh held-out points) | OA 0.983; F1 and the full envelope published |
-| 237 optical truth points | Sentinel-2 NDWI (different sensor, different physics) | 81.7% of RF flood pixels confirmed; the pre-declared gate was 60%, and every precision/recall ordering held |
-| Visual map-sheet comparison | ISRO NDEM 2025 (RISAT-1A) | The Beas-doab and Sutlej-Harike patterns correspond; registration is approximate and says so on the image |
-| District damage ranking | Punjab Revenue Dept Special Girdawari (ground survey) | ρ = 0.72 across all 20 districts, 5 of the top 6 identical |
+Historical products use distinct masks, dates, and assumptions. Exposure and crop-value figures are estimates tied to those definitions. Read them alongside the [method](docs/METHOD.md), [data-source registry](docs/DATA-SOURCES.md), [verification log](docs/VERIFICATION-LOG.md), and [component notes](docs/notes/).
 
-We also benchmarked an imported deep-learning U-Net (Sen1Floods11, test IoU 0.63). On Punjab it under-segments badly (recall 0.24 vs GFM). The simpler stack won, and that table ships as it came out (`docs/notes/unet.md`).
+## Repository layout
 
-## Architecture
-
-All decision logic lives in the pure-Python package `sailaab/`, written test-first; `tests/` mirrors it 1:1 with 450+ tests. Satellite and cloud side effects stay in thin scripts: `gee/` for Code Editor JS, `pipeline/` for CLIs. Every cloud step is gated by a pre-declared numeric checkpoint in `docs/VERIFICATION-LOG.md`. The expected band is written down before the run, then the actual, then PASS or FAIL. Failures ship.
-
-```
-sailaab/    pure, tested core (masks, stats, dataset, model, alerts, monitor, validation, eos04 …)
-gee/        Wave-1 interactive GEE scripts (JS)
-pipeline/   batch CLIs (decade runs, forecaster, ablation, briefs, live monitor, EOS-04 comparison)
-tests/      pytest, every sailaab/ module covered (450+ tests)
-data/       small CSVs + GeoJSON only (committed); bulk rasters stay local
-atlas/      output maps and figures (incl. atlas/web/ swipe + timelapse assets)
-briefs/     20 designed per-district A4 PDFs
-monitor/    live state written by CI every 6 h (latest.json, nowcast.json)
-webapp/     React + Astryx front-end source (built into docs/)
-punjabflood/ the river watch: its own package, tests, data/reference, docs/ and outputs/ (forecast records, figures)
-docs/       built site (index.html + assets/) · METHOD.md · DATA-SOURCES.md · VERIFICATION-LOG.md · SYNOPSIS.md ·
-            SAILAAB-synopsis.pdf · SAILAAB-business-plan.pdf · notes/ (pre-declarations per component)
+```text
+flood_river_watch/
+├── flood_watch/             Satellite monitoring and district-analysis package
+├── pipeline/                Data, model, raster, figure, and publication scripts
+├── gee/                     Earth Engine examples
+├── tests/                   Satellite, pipeline, website, and CI regression tests
+├── river-watch/
+│   ├── river_watch/         River forecasting package and CLI
+│   ├── tests/               River regression tests
+│   ├── data/reference/      Constants, catchments, and source records
+│   ├── scripts/             Input preparation and figure utilities
+│   ├── outputs/             Forecast records, verification, and figures
+│   └── docs/                River design, evidence, and development notes
+├── webapp/                  React/Vite source and npm lockfile
+├── docs/                    Committed Pages website, notes, and public PDFs
+├── atlas/                   Figures and timelapses
+├── briefs/                  District PDFs
+├── monitor/                 Latest satellite, nowcast, and timelapse products
+├── data/                    Tables, models, boundaries, and provenance
+├── .github/workflows/       Build, monitoring, forecast, and preparation jobs
+├── pyproject.toml           Installable flood_river_watch project
+├── requirements.txt         Combined Python dependency inputs
+├── requirements.lock        Universal, hash-pinned Python dependency lock
+└── requirements/            Lock-generation metadata
 ```
 
-## Run it
+Large raw rasters and download caches are excluded from Git. A clone contains published evidence and selected reference inputs, rather than every download needed to regenerate the historical atlas.
+
+## Local setup
+
+Use **Python 3.13** for the combined locked environment and **Node.js 22** for the website, matching CI. The standalone River-Watch package supports Python 3.11 and later; the combined project and lock target Python 3.13.
 
 ```bash
-pip install -r requirements.txt
-python -m pytest -q          # 450+ tests; Earth-Engine-marked tests excluded by default
+git clone https://github.com/Stawberrymind/flood_river_watch.git
+cd flood_river_watch
+python -m venv .venv
 ```
 
-The CSV and analytics figures regenerate from the committed inputs via the `pipeline/` CLIs, deterministically and with no accounts; the SAR and raster maps re-fetch open imagery (still no login) or use the local bulk rasters. The live monitor runs from `.github/workflows/monitor.yml` on a public runner with zero secrets.
+Activate on Windows PowerShell with `.\.venv\Scripts\Activate.ps1`, or on Linux/macOS with `source .venv/bin/activate`. Then install the locked dependencies and local packages:
 
-## Data sources
+```bash
+python -m pip install --require-hashes -r requirements.lock
+python -m pip install --no-deps --no-build-isolation -e .
+python -m pip install --no-deps --no-build-isolation -e "./river-watch[dev]"
+cd webapp
+npm ci
+npm run dev
+```
 
-Sentinel-1/2 (Copernicus, via anonymous Planetary Computer STAC), Copernicus GFM (keyless WMS), IMD gridded rainfall, CWC/BBMB reservoir records, the CWC flood-forecast station table and 70-year damage records (data.gov.in, GODL), FAO GAUL and Census-2011 boundaries, JRC Global Surface Water, Copernicus DEM GLO-30, ESA WorldCover, GHSL population, DES district paddy yields, and ISRO NDEM map sheets for validation. The full registry with URLs, licenses and access dates is in `docs/DATA-SOURCES.md`.
+Vite serves the application under `/flood_river_watch/`. Its live feeds read the public repository configured in [`webapp/src/repository.js`](webapp/src/repository.js), even when the page runs locally.
 
-## Honesty rules
+## Run and verify
 
-Training labels are bootstrapped from method agreement and labeled as such. Both spatial-CV folds are reported, including the near-separable strata artifact. Every headline number sits next to the official figure it should be compared with. The June and July "floods" that are actually rice transplanting are documented and excluded from training. We ran an ablation on ourselves: delete the dam features and the 2025 flags do not move. Then we audited the evaluation itself, found a leak of our own making, and published the fix and the null it produced. Then we rebuilt the forecaster at daily resolution and audited that too, which cost us a headline: an early claim of 96% alert precision turned out to come from setting the alert threshold on the model's own training scores, and recomputed out-of-fold it is about a third. Rainfall, which should help, measurably does not. Every one of those corrections is in the repo rather than quietly dropped (`docs/notes/ablation.md`, `docs/notes/forecaster.md`, `docs/notes/forecaster-v2.md`). An EOS-04 (ISRO SAR) pixel-level cross-validation is pre-declared with acceptance bands, committed before any scene was downloaded (`docs/notes/eos04.md`). Known limits (urban double-bounce, radar shadow, recession bias) are documented too.
+From the repository root:
 
-## Documents
+```bash
+python -m pytest -q
+node --test webapp/src/forecastSchema.test.mjs webapp/src/hazardSchema.test.mjs webapp/src/dataFeeds.test.mjs webapp/src/alertSchema.test.mjs
+```
 
-[Synopsis (PDF)](docs/SAILAAB-synopsis.pdf) · [Method paper](docs/METHOD.md) · [Data-source registry](docs/DATA-SOURCES.md) · [Verification log](docs/VERIFICATION-LOG.md) · [Sustainability & deployment plan (PDF)](docs/SAILAAB-business-plan.pdf) · [District briefs](briefs/)
+The default root suite excludes authenticated Earth Engine tests. It also checks publication consistency, served assets, model claims, PDF parity, and workflow wiring.
 
-River watch: [presentation](punjabflood/docs/presentation.md) · [verification report](punjabflood/docs/verification.md) · [design](punjabflood/docs/design.md) · [data sources](punjabflood/docs/data-sources.md) · [roadmap](punjabflood/docs/roadmap.md)
+Run the river suite and inspect its CLI from the package directory, since its data/output paths are relative to the working directory:
 
-Built by a Punjab student during the 2026 monsoon. India AI Impact Festival 2026 entry.
+```bash
+cd river-watch
+python -m pytest -q -m "not network"
+river-watch --help
+```
 
-## License
+Build and lint the website from `webapp/`:
 
-Code: [MIT](LICENSE). Generated maps, rasters and tables: CC-BY-4.0. Use them, credit "Sailaab / Punjab Flood Intelligence". Contains modified Copernicus Sentinel and CEMS-GFM data.
+```bash
+npm run lint
+npm run build
+```
+
+Vite writes `webapp/dist/`; Pages serves committed `docs/`. For publication, copy the built files into `docs/` and remove superseded hashed JavaScript/CSS chunks, preserving the method notes, PDFs, and other documentation.
+
+Producer commands from the repository root include:
+
+```bash
+python -m pipeline.live_monitor
+python -m pipeline.nowcast
+python -m pipeline.build_daily_observability
+python -m pipeline.make_district_briefs
+python -m pipeline.render_pdfs
+python -m pipeline.make_web_assets
+```
+
+These author data or artifacts. Some contact public services or require local rasters. Consult each script and component note before rebuilding data or training models; an offline test run does not execute those producers.
+
+For a river live cycle, first attach the durable input store from the repository root:
+
+```bash
+git fetch origin forecast-data
+git worktree add --detach forecast-data origin/forecast-data
+cd river-watch
+river-watch forecast
+```
+
+An incomplete store needs bounded preparation using `river-watch bootstrap-forecast-data`; inspect `--help` for dates and budget options. Both commands accept `--data-dir` to override the default `../forecast-data` location relative to `river-watch/`. Public-service quotas or outages can defer a fresh forecast.
+
+## Automation and deployment
+
+| Workflow | Trigger | Purpose |
+| --- | --- | --- |
+| `flood-watch-build` | Push to `master`, pull request, or manual | Locked installs, frontend build, feed gates, and both Python suites |
+| `flood-watch-monitor` | Every six hours: 05:30, 11:30, 17:30, and 23:30 IST | Satellite observation, district nowcast, official alerts, and optional timelapse |
+| `river-watch-hazard-forecast` | Daily at 08:30 IST, or manual | Fresh reservoir/river product and dated record; durable preparation progress survives an incomplete cycle |
+| `river-watch-forecast-data-bootstrap` | Manual | Bounded, resumable archive and snowpack preparation |
+
+GitHub Pages publishes `master:/docs` at [the project website](https://stawberrymind.github.io/flood_river_watch/). Data-producing jobs need workflow write permissions. The [deployment guide](docs/FORK_SETUP.md) covers Pages, optional authenticated paths, input preparation, and failure behavior.
+
+For another deployment, set `VITE_GITHUB_REPOSITORY` and `VITE_GITHUB_BRANCH`, and update the Vite base to match the hosting path. `VITE_*` values are public browser configuration and must never contain credentials. `RIVER_WATCH_IMD_DIR` selects a local rainfall archive for river preparation.
+
+Dependency versions are recorded in npm and Python lockfiles. When intentionally changing Python dependencies, regenerate the hash lock using the command at the top of `requirements.lock`, then validate installation and both suites. A branding update does not require dependency upgrades or model retraining.
+
+## Documentation
+
+- [Synopsis PDF](docs/FLOOD_WATCH-synopsis.pdf) and [source](docs/SYNOPSIS.md)
+- [Sustainability and deployment plan](docs/FLOOD_WATCH-business-plan.pdf)
+- [Method](docs/METHOD.md), [data sources](docs/DATA-SOURCES.md), and [verification log](docs/VERIFICATION-LOG.md)
+- [District briefs](briefs/) and [generation notes](docs/notes/briefs.md)
+- River-Watch [presentation](river-watch/docs/presentation.md), [verification](river-watch/docs/verification.md), [design](river-watch/docs/design.md), and [roadmap](river-watch/docs/roadmap.md)
+
+## Interpretation and licensing
+
+This is a monitoring and research project, not an official warning service. Follow advisories from Punjab WRD, CWC, BBMB, IMD, and disaster-management authorities. Published evidence explains model errors, incomplete coverage, observation timing, and assumptions; missing or stale data must not be read as a safe condition.
+
+Code is licensed under [MIT](LICENSE), with original authorship retained. Project-generated maps, rasters, and tables are offered under CC-BY-4.0; credit **Flood Watch / River-Watch** and retain source attributions. The project contains modified Copernicus Sentinel and CEMS-GFM data. Third-party datasets and bundled fonts retain their own licenses and attribution requirements.

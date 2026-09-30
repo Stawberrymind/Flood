@@ -13,7 +13,7 @@ throughout: with three event seasons the sample cannot settle it either way.
 
 Driver: `pipeline/run_forecaster_v2.py` (variant comparison),
 `pipeline/run_forecaster_selection.py` (honest in-fold selection). Pure helpers
-and their tests: `sailaab/rain_districts.py`, `sailaab/forecast_v2.py`.
+and their tests: `flood_watch/rain_districts.py`, `flood_watch/forecast_v2.py`.
 
 ## 1. Why v1 could not beat persistence
 
@@ -38,7 +38,7 @@ almost no district-specific weather to learn from.
 
 ## 2. District-level rainfall series
 
-From the IMD 0.25 degree daily grid, Sailaab now derives district-level rainfall
+From the IMD 0.25 degree daily grid, Flood Watch now derives district-level rainfall
 series for all 20 districts in the project's Punjab boundary layer, for 1961 to
 2025. These series show district-level variation within 98.7% of the defined
 monsoon windows, whereas the previous two-box statewide predictors provide none. **This is a data and

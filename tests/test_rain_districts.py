@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.rain_districts import (
+from flood_watch.rain_districts import (
     build_cell_weights,
     apply_weights,
     district_daily_frame,

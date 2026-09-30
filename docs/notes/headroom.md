@@ -82,7 +82,7 @@ BCM figure on it. Prior-work credit is theirs; this note supplies the number.
      **~100,000 cusecs** (from Aug 29). Basin-scale Sutlej cumulative ≈ 2.6 lakh
      (260,000) cusecs is reported for context only.
 
-Constants (live capacity, FRL) are **reused** from `sailaab/causal.py`
+Constants (live capacity, FRL) are **reused** from `flood_watch/causal.py`
 (`LIVE_CAPACITY_BCM`, `FRL_FT`, `FRL_M`), themselves sourced from
 `docs/notes/reservoirs.md`: Bhakra 6.229 BCM / 1 680 ft, Pong 6.157 BCM /
 1 390 ft, Ranjit Sagar 2.344 BCM / 527.91 m.
@@ -113,7 +113,7 @@ to reporting the band-relative position, not only the median difference.
 
 ## Method / reproduce
 
-Pure math in `sailaab/headroom.py` (median-curve builder, day-of-season index,
+Pure math in `flood_watch/headroom.py` (median-curve builder, day-of-season index,
 no-extrapolation interpolation, deficit calc, cusec→BCM/day, absorbable-days),
 TDD-tested in `tests/test_headroom.py` on synthetic data. Figure + CSV built by:
 

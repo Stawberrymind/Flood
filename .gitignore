@@ -1,4 +1,6 @@
 node_modules/
+.venv/
+*.egg-info/
 .planning/
 __pycache__/
 .pytest_cache/

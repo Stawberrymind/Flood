@@ -4,7 +4,7 @@ satellite seeing flooding within three days, using the committed daily
 forecaster and keyless live inputs, and write ``monitor/nowcast.json`` (the
 locked schema the site is wired against).
 
-Flow: resolve the current monsoon window from today's date (``sailaab.nowcast``)
+Flow: resolve the current monsoon window from today's date (``flood_watch.nowcast``)
 -> pull live GFM observed extent plus recent history (``pipeline.fetch_live_inputs``)
 -> assemble the EXACT 10 training features, all derived from satellite flood
 observations; rain and reservoirs are fetched as page context only and are not
@@ -30,7 +30,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from sailaab import forecast_live, nowcast
+from flood_watch import forecast_live, nowcast
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -69,7 +69,7 @@ def load_priors() -> dict:
 def load_bundle():
     """The deployed daily forecaster and everything inference needs with it."""
     import joblib
-    from sailaab.observations import has_training_contract
+    from flood_watch.observations import has_training_contract
 
     # Reject the legacy all-days-observed artifact before deserializing it.
     # If either half of a two-file publication failed, the hash also fails shut.
@@ -92,7 +92,7 @@ def load_bundle():
 
 def _fallback_districts():
     try:
-        from sailaab.districts import load_districts
+        from flood_watch.districts import load_districts
 
         return [n for n, _ in load_districts(canonicalize=True)]
     except Exception:
@@ -103,7 +103,7 @@ def _fallback_districts():
 
 
 def _write(payload) -> None:
-    from sailaab.io import atomic_write_text
+    from flood_watch.io import atomic_write_text
     atomic_write_text(OUT, json.dumps(payload, ensure_ascii=False, indent=1, allow_nan=False))
 
 

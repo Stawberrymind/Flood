@@ -1,7 +1,7 @@
 # Running this fork
 
-Repository: https://github.com/Stawberrymind/Flood  
-Website: https://stawberrymind.github.io/Flood/
+Repository: https://github.com/Stawberrymind/flood_river_watch
+Website: https://stawberrymind.github.io/flood_river_watch/
 
 This fork preserves the original project's committed code, data, models and
 Git history. The original repository remains at `bakathefish/Flood`; its authors
@@ -13,10 +13,10 @@ that were never committed.
 
 | Workflow | Schedule | What it updates |
 | --- | --- | --- |
-| `sailaab-monitor` | 00:00, 06:00, 12:00, 18:00 UTC (05:30, 11:30, 17:30, 23:30 IST) | Satellite monitor, district nowcast, Sachet archive and current timelapse |
-| `punjabflood-hazard-forecast` | 03:00 UTC (08:30 IST) daily | Reservoir and river forecast records |
-| `sailaab-build` | Push to `master`, pull request or manual run | Frontend build and test gates |
-| `punjabflood-forecast-data-bootstrap` | Manual, bounded windows | Resumable public archive preparation on `forecast-data` |
+| `flood-watch-monitor` | 00:00, 06:00, 12:00, 18:00 UTC (05:30, 11:30, 17:30, 23:30 IST) | Satellite monitor, district nowcast, Sachet archive and current timelapse |
+| `river-watch-hazard-forecast` | 03:00 UTC (08:30 IST) daily | Reservoir and river forecast records |
+| `flood-watch-build` | Push to `master`, pull request or manual run | Frontend build and test gates |
+| `river-watch-forecast-data-bootstrap` | Manual, bounded windows | Resumable public archive preparation on `forecast-data` |
 
 **No personal API keys, GitHub PAT or Earth Engine account are required by the
 current scheduled workflows.** They fetch public data. GitHub supplies a
@@ -25,9 +25,9 @@ workflows declare `permissions: contents: write` and use checkout's token to
 push to this repository, including the separate `forecast-data` branch. Automatic commits are attributed to
 `github-actions[bot]`; that author label is separate from authentication.
 
-Actions: https://github.com/Stawberrymind/Flood/actions  
-Actions settings: https://github.com/Stawberrymind/Flood/settings/actions  
-Pages settings: https://github.com/Stawberrymind/Flood/settings/pages
+Actions: https://github.com/Stawberrymind/flood_river_watch/actions
+Actions settings: https://github.com/Stawberrymind/flood_river_watch/settings/actions
+Pages settings: https://github.com/Stawberrymind/flood_river_watch/settings/pages
 
 Actions must be enabled for the repository and for its scheduled workflows.
 Forked workflows can start disabled. A manual run can be started from the
@@ -45,7 +45,7 @@ The river forecast's public weather inputs and snowpack checkpoint live in the
 - `state/bhakra_snowpack.json`: each Bhakra point's pack, last complete archive date, and replay window;
 - `manifest.json`: grid/model/provider provenance, coverage, request spans, safe cost diagnostics and failures.
 
-Run **punjabflood-forecast-data-bootstrap** manually to advance one bounded
+Run **river-watch-forecast-data-bootstrap** manually to advance one bounded
 historical window. A quota or timeout leaves completed shards and the manifest
 on the branch, and the next run requests only missing ranges. The first complete
 bootstrap covers the fitted 2014 spin-up, 2015–2025 history, 2026 through the
@@ -65,7 +65,7 @@ research reports and PDFs are retained, including their original attribution.
 ## Where optional credentials go
 
 Repository secrets belong at:
-https://github.com/Stawberrymind/Flood/settings/secrets/actions
+https://github.com/Stawberrymind/flood_river_watch/settings/secrets/actions
 
 Choose **New repository secret**, enter the variable name and paste the value
 directly into GitHub. Do not put credentials in source files, commits, screenshots
@@ -85,7 +85,7 @@ create a secret with that exact name and wire it to that step:
 
 For a local invocation, supply `DATA_GOV_IN_KEY` through the process environment.
 The current code does not automatically load a `.env` file. The nested
-`punjabflood.cwc` client also accepts an `api_key` argument; its documented
+`river_watch.cwc` client also accepts an `api_key` argument; its documented
 override is not currently wired to an environment variable.
 
 `pipeline/legacy_ee_monitor.py` is retained for reference and is **not** called
@@ -99,9 +99,9 @@ does not need it.
 
 The public configuration is centralized in `webapp/src/repository.js`:
 
-- `VITE_GITHUB_REPOSITORY`: defaults to `Stawberrymind/Flood`.
+- `VITE_GITHUB_REPOSITORY`: defaults to `Stawberrymind/flood_river_watch`.
 - `VITE_GITHUB_BRANCH`: defaults to `master`.
-- `webapp/vite.config.js`: Pages base path `/Flood/`.
+- `webapp/vite.config.js`: Pages base path `/flood_river_watch/`.
 
 These Vite variables are embedded in browser JavaScript. They are public URLs,
 never a place for API keys. The build workflow supplies the repository and

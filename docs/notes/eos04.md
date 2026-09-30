@@ -6,7 +6,7 @@ in a later commit once data is in hand.**
 
 ## Why
 
-Every SAR product in Sailaab descends from Sentinel-1. EOS-04 is ISRO's C-band
+Every SAR product in Flood Watch descends from Sentinel-1. EOS-04 is ISRO's C-band
 (5.4 GHz) radar — a genuinely independent *sensor and agency* with compatible
 physics: our water-detection thresholds transfer. NRSC's own NDEM 2025 Punjab
 flood sheets were produced from RISAT-1A MRS acquisitions spanning
@@ -65,7 +65,7 @@ reverts to "documented access path" — no synthetic substitute.
 
 ## Implementation (built ahead of data — TDD on synthetic rasters)
 
-Pure logic in `sailaab/eos04.py` (numpy only: dB conversion with floor, both
+Pure logic in `flood_watch/eos04.py` (numpy only: dB conversion with floor, both
 water-mask modes, confusion/agreement metrics, per-district aggregation over a
 label raster), tests in `tests/test_eos04.py` with exact-count synthetic cases.
 Driver `pipeline/compare_eos04.py`: reads `data/eos04/*.tif` + local Tier-A/RF

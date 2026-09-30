@@ -38,9 +38,9 @@ from matplotlib import font_manager  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patheffects import withStroke  # noqa: E402
 
-from sailaab import causal  # noqa: E402
-from sailaab import figstyle  # noqa: E402
-from sailaab.reservoirs import normalize  # noqa: E402
+from flood_watch import causal  # noqa: E402
+from flood_watch import figstyle  # noqa: E402
+from flood_watch.reservoirs import normalize  # noqa: E402
 
 DATA = ROOT / "data"
 OUT = ROOT / "atlas" / "causal_2025.png"
@@ -449,7 +449,7 @@ def build(rain, daily, supp):
         va="top",
         fontfamily=figstyle.FONT_DISPLAY,
     )
-    sub = "ਸੈਲਾਬ 2025: ਹੜ੍ਹ ਕਿਉਂ ਆਇਆ" if GUR else "Sailaab 2025: why the flood came"
+    sub = "Flood Watch 2025: ਹੜ੍ਹ ਕਿਉਂ ਆਇਆ" if GUR else "Flood Watch 2025: why the flood came"
     fig.text(
         0.085,
         0.918,

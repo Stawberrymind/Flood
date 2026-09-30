@@ -6,12 +6,12 @@ of this year to today, India Standard Time), the live sibling of the fixed 2025
 pass; the cumulative union grows in the same dark-cartography style (cyan
 flood-to-date, brighter fresh-today wavefront, permanent water underneath, a
 running km² counter beyond permanent water). Built by
-`pipeline/make_current_timelapse.py`, pure logic in `sailaab/nowlapse.py`
+`pipeline/make_current_timelapse.py`, pure logic in `flood_watch/nowlapse.py`
 (`tests/test_nowlapse.py`).
 
 - **Source / layer.** Copernicus Global Flood Monitoring (GFM) observed flood
   extent via the keyless GloFAS WMS (`ows.globalfloods.eu`), decoded with
-  `sailaab.gfm`. Days imaged by S1 are found via the `gfm_sentinel_1_footprint`
+  `flood_watch.gfm`. Days imaged by S1 are found via the `gfm_sentinel_1_footprint`
   layer; days with no pass are skipped (no frame), so the clip is honest about
   where the satellite actually looked.
 - **Refresh cadence.** Regenerated every monitor CI cycle (6-hourly). Decoded

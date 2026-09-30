@@ -1,9 +1,9 @@
-name: punjabflood-hazard-forecast
+name: river-watch-hazard-forecast
 
 # One prospective hazard-watch cycle a day, committed with the runner's timestamp so the
 # record cannot be edited after the outcome is known. Runs after BBMB's 06:00 IST bulletin
 # is normally on the site. Public data only, no secrets: the BBMB bulletin, the CWC seed
-# record and fitted parameters committed under punjabflood/data/reference/, and keyless
+# record and fitted parameters committed under river-watch/data/reference/, and keyless
 # Open-Meteo forecasts. The run must never rewrite an earlier day's record.
 
 on:
@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 45
     defaults:
       run:
-        working-directory: punjabflood
+        working-directory: river-watch
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v4
         continue-on-error: true
         with:
-          path: punjabflood/data/cache/openmeteo
+          path: river-watch/data/cache/openmeteo
           key: hazard-openmeteo-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             hazard-openmeteo-${{ runner.os }}-
@@ -54,7 +54,7 @@ jobs:
       # the job log, while the durable weather progress is still committed below.
       - name: forecast cycle (required fresh product)
         id: forecast
-        run: python -m punjabflood.cli forecast
+        run: python -m river_watch.cli forecast
         timeout-minutes: 35
       - name: persist forecast-data progress
         if: always()

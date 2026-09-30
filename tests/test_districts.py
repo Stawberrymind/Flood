@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 from rasterio.transform import from_bounds
 
-from sailaab import config
-from sailaab.districts import (
+from flood_watch import config
+from flood_watch.districts import (
     NAME_ALIASES,
     canonical_name,
     district_fractions,

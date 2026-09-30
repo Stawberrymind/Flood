@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # pipeline/make_ndem_panel.py
-"""Render ``atlas/ndem_vs_sailaab.png`` - the founding-argument side-by-side.
+"""Render ``atlas/ndem_vs_flood_watch.png`` - the founding-argument side-by-side.
 
 The single image that states the project's premise in one glance:
 
     LEFT   ISRO's rapid-mapping flood sheet for the 19 Aug 2025 Beas flood in
            Kapurthala / Tarn Taran - a locked, static A0 PDF ("For Official Use").
-    RIGHT  the SAILAAB open flood mask over the *same approximate extent*, dark
+    RIGHT  the FLOOD WATCH open flood mask over the *same approximate extent*, dark
            cartography (ink ground, cyan inundation, hairline district borders):
            the same flood, but open, interactive and reproducible.
 
@@ -59,10 +59,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from sailaab import figstyle  # noqa: E402
+from flood_watch import figstyle  # noqa: E402
 
 DATA = ROOT / "data"
-OUT = ROOT / "atlas" / "ndem_vs_sailaab.png"
+OUT = ROOT / "atlas" / "ndem_vs_flood_watch.png"
 
 # --- inputs ----------------------------------------------------------------- #
 NDEM_PDF = DATA / "ndem" / "pbflood50dsc19082025_1100hrs_map.pdf"
@@ -78,12 +78,12 @@ NDEM_CROP_FRAC = (0.0456, 0.1141, 0.8213, 0.8504)
 RF_TIF = DATA / "rasters" / "rf_flood_2025.tif"
 DISTRICTS = DATA / "punjab_districts.geojson"
 
-# SAILAAB (right) window in lon/lat (EPSG:4326): the Beas-Sutlej doab across
+# FLOOD WATCH (right) window in lon/lat (EPSG:4326): the Beas-Sutlej doab across
 # Tarn Taran / Kapurthala / N-Firozpur / W-Jalandhar - the approximate footprint
 # of the NDEM sheet and where the RF mask carries strong signal. The box is
 # expanded to the NDEM crop's aspect at render time so the two halves match.
 RIGHT_WINDOW = (74.40, 30.78, 75.64, 31.50)  # lon0, lat0, lon1, lat1
-UTM = "EPSG:32643"  # UTM 43N - native CRS of every SAILAAB raster
+UTM = "EPSG:32643"  # UTM 43N - native CRS of every FLOOD WATCH raster
 
 # District name labels to echo on the right panel (mirrors the NDEM sheet).
 RIGHT_LABELS = ("Tarn Taran", "Kapurthala", "Jalandhar", "Firozpur", "Amritsar")
@@ -124,7 +124,7 @@ def render_ndem_crop():
 
 
 # --------------------------------------------------------------------------- #
-# right: SAILAAB dark mask panel
+# right: FLOOD WATCH dark mask panel
 # --------------------------------------------------------------------------- #
 def _to_utm_transformer():
     return Transformer.from_crs("EPSG:4326", UTM, always_xy=True)
@@ -166,7 +166,7 @@ def _load_districts_utm():
 
 
 def build_right_panel(ax, target_aspect):
-    """Draw the SAILAAB flood mask + district hairlines on ``ax`` (UTM 43N)."""
+    """Draw the FLOOD WATCH flood mask + district hairlines on ``ax`` (UTM 43N)."""
     left, bottom, right, top = _window_utm_bbox(RIGHT_WINDOW, target_aspect)
     with rasterio.open(RF_TIF) as ds:
         win = from_bounds(left, bottom, right, top, ds.transform)
@@ -313,7 +313,7 @@ def compose(ndem_rgb):
     ftext(
         W - m,
         40,
-        "SAILAAB",
+        "FLOOD WATCH",
         fontsize=15,
         weight="bold",
         color=CYAN_TXT,
@@ -354,7 +354,7 @@ def compose(ndem_rgb):
     ftext(
         rx,
         ly,
-        "SAILAAB  ·  same flood  ·  open, interactive, reproducible",
+        "FLOOD WATCH  ·  same flood  ·  open, interactive, reproducible",
         fontsize=13.5,
         weight="bold",
         color=CYAN_TXT,
@@ -385,7 +385,7 @@ def compose(ndem_rgb):
     ftext(
         rx,
         panel_top + panel_h + 22,
-        "SAILAAB RF flood mask (rf_flood_2025.tif) over Punjab district polygons "
+        "FLOOD WATCH RF flood mask (rf_flood_2025.tif) over Punjab district polygons "
         "(datameet, ODbL). Cyan = inundation.",
         fontsize=8.6,
         color=FAINT,
@@ -430,7 +430,7 @@ def compose(ndem_rgb):
     ftext(
         m,
         fy + 96,
-        "Right: SAILAAB flood-2025 RF mask, Beas–Sutlej doab window "
+        "Right: FLOOD WATCH flood-2025 RF mask, Beas–Sutlej doab window "
         "lon[74.40, 75.64] × lat[30.78, 31.50].",
         fontsize=9.2,
         color=FAINT,

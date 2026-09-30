@@ -1,5 +1,5 @@
 # tests/test_nowlapse.py
-"""Pure-logic tests for the current-season timelapse (sailaab/nowlapse.py).
+"""Pure-logic tests for the current-season timelapse (flood_watch/nowlapse.py).
 
 No network / IO: IST season-day enumeration, the cumulative-mask update, km^2
 from pixel counts, and dash-free frame labels -- all against synthetic arrays
@@ -11,7 +11,7 @@ from datetime import date, datetime, timezone
 import numpy as np
 import pytest
 
-from sailaab import nowlapse
+from flood_watch import nowlapse
 
 
 # --------------------------------------------------------------------------- #

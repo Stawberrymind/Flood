@@ -37,9 +37,9 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
 
-from sailaab import config
-from sailaab.forecast_features import PADDY_CUTOFF_MD
-from sailaab.forecast_v2 import (
+from flood_watch import config
+from flood_watch.forecast_features import PADDY_CUTOFF_MD
+from flood_watch.forecast_v2 import (
     block_bootstrap_ci,
     brier_skill,
     fold_safe_prior,
@@ -198,7 +198,7 @@ def build_frame() -> pd.DataFrame:
     dist = pd.read_csv(RAIN_DIST)
     res = pd.read_csv(RES)
 
-    from sailaab.forecast_features import pivot_reservoirs
+    from flood_watch.forecast_features import pivot_reservoirs
 
     resw = pivot_reservoirs(res)
 

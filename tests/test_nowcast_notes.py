@@ -13,7 +13,7 @@ overstating skill, so it is guarded here rather than left to review.
 """
 
 import pipeline.nowcast as pn
-from sailaab import forecast_live
+from flood_watch import forecast_live
 
 
 def _notes(rain_source="open-meteo", res_source="unavailable", **gfm):

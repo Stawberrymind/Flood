@@ -1,5 +1,5 @@
 # tests/test_windows.py
-from sailaab.windows import monsoon_windows
+from flood_watch.windows import monsoon_windows
 
 
 def test_first_window_starts_on_season_start():

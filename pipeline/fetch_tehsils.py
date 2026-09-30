@@ -10,15 +10,15 @@ intersection** with the 20 datameet district polygons in
 ``data/punjab_districts.geojson`` — exactly the keyless, name-join-free route the
 notes prescribe.
 
-Pipeline (all pure geometry reused from :mod:`sailaab.tehsils`):
+Pipeline (all pure geometry reused from :mod:`flood_watch.tehsils`):
 
 1. download the all-India ADM3 layer (6,824 features) — or read a local ``--src``;
 2. keep every tehsil whose area lies **>= 50 % inside** the Punjab state union
    (union of the 20 districts) — the "is this a Punjab tehsil?" test;
 3. assign each kept tehsil to its **max-overlap** district (canonical GAUL
-   spelling via :func:`sailaab.districts.canonical_name`);
+   spelling via :func:`flood_watch.districts.canonical_name`);
 4. **clip** the tehsil to the Punjab union so area + flood stay within-state;
-5. normalise the ``shapeName`` (:func:`sailaab.tehsils.normalize_tehsil_name`);
+5. normalise the ``shapeName`` (:func:`flood_watch.tehsils.normalize_tehsil_name`);
 6. emit a tidy FeatureCollection with only ``tehsil`` + ``district`` properties,
    sorted by ``(district, tehsil)`` for stable rasterize labels.
 
@@ -42,9 +42,9 @@ from shapely.geometry import mapping, shape
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
 
-from sailaab.districts import DEFAULT_GEOJSON as DEFAULT_DISTRICTS
-from sailaab.districts import canonical_name, load_districts
-from sailaab.tehsils import assign_district, normalize_tehsil_name, overlap_fraction
+from flood_watch.districts import DEFAULT_GEOJSON as DEFAULT_DISTRICTS
+from flood_watch.districts import canonical_name, load_districts
+from flood_watch.tehsils import assign_district, normalize_tehsil_name, overlap_fraction
 
 # geoBoundaries gbOpen IND ADM3, pinned release commit (from the /api metadata).
 SOURCE_URL = (
@@ -58,7 +58,7 @@ OUT = Path(__file__).resolve().parents[1] / "data" / "punjab_tehsils.geojson"
 def fetch_adm3(src: str | None) -> dict:
     if src:
         return json.loads(Path(src).read_text(encoding="utf-8"))
-    req = urllib.request.Request(SOURCE_URL, headers={"User-Agent": "sailaab/1.0"})
+    req = urllib.request.Request(SOURCE_URL, headers={"User-Agent": "flood_watch/1.0"})
     ctx = ssl.create_default_context()
     with urllib.request.urlopen(req, timeout=180, context=ctx) as resp:
         return json.loads(resp.read())

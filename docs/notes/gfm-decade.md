@@ -10,7 +10,7 @@ Products:
 - `atlas/frequency_2015_2025.png` — committed quicklook of the frequency raster.
 - `data/flood_frequency_districts.csv` — "repeat victims" per-district recurrence table.
 
-Pure logic: `sailaab/frequency.py` (window assignment, season-union frequency count, repeat-victim
+Pure logic: `flood_watch/frequency.py` (window assignment, season-union frequency count, repeat-victim
 summary) — unit-tested. IO / WMS: `pipeline/fetch_gfm_decade.py`.
 
 ## Fetch design (why a flood-probe gate, not a footprint gate)

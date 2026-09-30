@@ -46,7 +46,7 @@ from pipeline.run_forecaster_daily import (
     require_evaluable,
 )
 from pipeline.run_forecaster_daily_audit import _recall_at_k, onset_events
-from sailaab.forecast_daily import forward_event, lagged_daily_values, neighbour_water
+from flood_watch.forecast_daily import forward_event, lagged_daily_values, neighbour_water
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"

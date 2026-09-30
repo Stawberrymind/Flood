@@ -2,9 +2,9 @@
 """Satellite vs Special Girdawari: rank comparison figure.
 
 Official district crop-damage (Revenue Dept, 2025-09-13, cumulative season,
-modern 23-district vintage) vs Sailaab RF crop-flooded snapshot (Census-2011
+modern 23-district vintage) vs Flood Watch RF crop-flooded snapshot (Census-2011
 vintage). Modern districts are merged into their 2011 parents before comparing.
-Deterministic output: atlas/official_vs_sailaab.png
+Deterministic output: atlas/official_vs_flood_watch.png
 """
 
 import sys
@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from sailaab import figstyle  # noqa: E402
+from flood_watch import figstyle  # noqa: E402
 
 INK = "#0a1014"
 LINE = "#28394a"
@@ -80,7 +80,7 @@ def main() -> None:
 
     ax.set_xlabel("Official Special Girdawari crop damage (ha, cumulative season): Revenue Dept, 13 Sep 2025",
                   color=DIM, fontsize=9.5)
-    ax.set_ylabel("Sailaab RF flooded area (ha, SAR snapshot)", color=DIM, fontsize=9.5)
+    ax.set_ylabel("Flood Watch RF flooded area (ha, SAR snapshot)", color=DIM, fontsize=9.5)
     ax.set_title(figstyle.clean("The satellite agrees with the ground survey") + "\n",
                  color=PAPER, fontsize=15, fontfamily=figstyle.FONT_DISPLAY, loc="left")
     ax.text(0.0, 1.02, f"Spearman rank correlation ρ = {rho_named:.2f} (named districts) · ρ = {rho_all:.2f} (all 20) · "
@@ -92,7 +92,7 @@ def main() -> None:
             transform=ax.transAxes, color=DIM, fontsize=8.5, fontfamily=figstyle.FONT_BODY, va="top")
 
     fig.tight_layout()
-    fig.savefig("atlas/official_vs_sailaab.png", facecolor=INK, bbox_inches="tight")
+    fig.savefig("atlas/official_vs_flood_watch.png", facecolor=INK, bbox_inches="tight")
     print(f"rho_named={rho_named:.3f} rho_all20={rho_all:.3f} n_named={len(named)}")
 
 

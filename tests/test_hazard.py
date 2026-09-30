@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.hazard import (
+from flood_watch.hazard import (
     FirthLogistic,
     contingency_scores,
     excitation_features,

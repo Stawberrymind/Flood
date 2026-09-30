@@ -1,5 +1,5 @@
 # tests/test_figstyle.py
-"""Pure tests for sailaab.figstyle (no rendering).
+"""Pure tests for flood_watch.figstyle (no rendering).
 
 Covers: the bundled fonts register with matplotlib when the files exist, the
 public family-name constants, apply() wiring rcParams, and clean()'s dash
@@ -14,7 +14,7 @@ import matplotlib
 import pytest
 from matplotlib import font_manager
 
-from sailaab import figstyle
+from flood_watch import figstyle
 
 
 def test_family_name_constants():

@@ -1,5 +1,5 @@
 // Validator for the river hazard watch feed
-// (punjabflood/outputs/forecast/latest.json, written by the daily Action).
+// (river-watch/outputs/forecast/latest.json, written by the daily Action).
 //
 // Same discipline as forecastSchema.js: one place decides what the section
 // renders, a malformed field is shown as unknown and never as a calm number,

@@ -1,6 +1,6 @@
-# Sailaab: Punjab Flood Intelligence
+# Flood Watch: Flood Intelligence for Punjab
 **Open SAR flood mapping · decade hazard atlas · impact analytics · district flood forecasting · live monitoring**
-India AI Impact Festival 2026 · AI Impact Creators (student) · https://bakathefish.github.io/Flood/ · github.com/bakathefish/Flood
+https://stawberrymind.github.io/flood_river_watch/ · github.com/Stawberrymind/flood_river_watch
 
 ## 1. The problem
 
@@ -11,7 +11,7 @@ In August and September 2025 Punjab suffered its worst flood since 1988: all 23 
 - **Nobody knew the recurrence.** Punjab has no public flood-frequency atlas (NRSC published them for Assam and Bihar). Villages that flooded four times in a decade were treated as first-time surprises. Even the public damage record is sparse milestones rather than a series (`atlas/punjab_flood_history.png`).
 - **Relief ran on foot.** Compensation (girdawari) required weeks of manual crop surveys while satellite data that could target it sat unused.
 
-## 2. What Sailaab is
+## 2. What Flood Watch is
 
 A five-module open pipeline that turns free satellite radar into flood intelligence a district officer can act on. I built it in Punjab during the 2026 monsoon, and it is running live today.
 
@@ -39,7 +39,7 @@ The analysis goes below district level. **All 91 tehsils are individually scored
 
 **The audits we ran on ourselves, including the ones that cost us headlines.** The dam ablation was pre-declared and both expectations failed, shipped verbatim in `docs/notes/ablation.md`: SHAP ranked Bhakra storage #3 in attribution, yet deleting all six reservoir features left the 2025 hindcast unchanged, so the dam signature was attribution rather than load-bearing skill, and the dam story lives where the evidence supports it, in the headroom analysis. Rebuilding at daily resolution cost two more. An early claim of **96% alert precision at four alerts a season was withdrawn**: the threshold had been set on the model's own training scores, which it had already fitted, and recomputed out-of-fold it is about a third. A claim that the model **beat every baseline in every flood season was withdrawn** as simply false, as the season table above shows. A label bug that scored partially-observed horizons as negatives, crediting the model for floods the satellite never looked for, was found and censored. Every one of those corrections is in the repository rather than quietly dropped (`docs/notes/forecaster.md`).
 
-**Positioning vs Google Flood Hub.** Flood Hub forecasts river stages with an LSTM trained across thousands of gauges; it under-models dam-*regulated* rivers and does not output district crop risk. That architecture is not available to us at this sample size, and the note says so rather than dismissing it: with 96 recorded onsets, the self-exciting formulation is what the data supports. Sailaab is impact-native (it predicts flooded fraction, crops, ₹) and regulation-aware in its analytics through the dam-headroom quantification. Complementary, not competing.
+**Positioning vs Google Flood Hub.** Flood Hub forecasts river stages with an LSTM trained across thousands of gauges; it under-models dam-*regulated* rivers and does not output district crop risk. That architecture is not available to us at this sample size, and the note says so rather than dismissing it: with 96 recorded onsets, the self-exciting formulation is what the data supports. Flood Watch is impact-native (it predicts flooded fraction, crops, ₹) and regulation-aware in its analytics through the dam-headroom quantification. Complementary, not competing.
 
 *Note on this document (updated 6 Aug 2026).* The forecaster described above was rebuilt after the submitted synopsis was written. The submitted text describes the earlier model: district × 10-day window, rainfall and reservoir predictors, leave-one-year-out validation. That model was superseded for three reasons, all documented in `docs/notes/forecaster.md`: leave-one-year-out lets a model train on seasons that had not happened yet at issue time, 10-day windows discarded daily satellite masks that were already on disk, and its rainfall and reservoir features did not carry the skill attributed to them. The submitted document stands as submitted; this repository carries the system that is actually running, and the retractions are published alongside it.
 
@@ -53,7 +53,7 @@ Every satellite step is gated by a **pre-declared checkpoint**: the expected num
 
 ## 5. Running right now
 
-The public app (bakathefish.github.io/Flood) is interactive: an every-district map with three switchable layers (2025 flood extent, decade flood frequency, 2025 forecast risk), click-through per-district panels (flooded hectares, crop loss, ₹ value-at-risk, recurrence, peak walk-forward ranking score), a before/after satellite swipe of the flood, and the live monitor feed. Every figure loads from version-controlled CSVs anyone can audit.
+The public app (stawberrymind.github.io/flood_river_watch) is interactive: an every-district map with three switchable layers (2025 flood extent, decade flood frequency, 2025 forecast risk), click-through per-district panels (flooded hectares, crop loss, ₹ value-at-risk, recurrence, peak walk-forward ranking score), a before/after satellite swipe of the flood, and the live monitor feed. Every figure loads from version-controlled CSVs anyone can audit.
 
 The live monitor is not a plan. It executed during this build: on a GitHub CI runner with **zero secrets and zero accounts**, it detected the most recent Sentinel-1 pass over Punjab (20 July 2026), computed district flood areas (a quiet 2.4 km² day, reported as such), and committed the state. It now does this automatically every six hours, generating alerts in ਪੰਜਾਬੀ, हिन्दी and English whenever any district crosses the alert floor. The landing page reads this feed live.
 
@@ -68,7 +68,7 @@ The live monitor is not a plan. It executed during this build: on a GitHub CI ru
 
 ## 7. Originality
 
-(1) First open ML-ready flood mapping of Indian-Punjab 2025 (the published RF precedent covered the Pakistani side). (2) **Punjab's first public flood-frequency atlas.** (3) A self-labeling SAR-to-ML loop that manufactures its own decade of training data, with the paddy-transplant contamination discovery published. (4) A daily district forecaster validated walk-forward at 8.1 times the base rate, **with the headline numbers it failed to survive published as retractions**. (5) An end-to-end account-free architecture: reproducibility as a design principle rather than a promise. (6) The quantified forecast gap: Punjab is absent from CWC's own flood-forecast station network, and Sailaab is the district-level layer that gap leaves open.
+(1) First open ML-ready flood mapping of Indian-Punjab 2025 (the published RF precedent covered the Pakistani side). (2) **Punjab's first public flood-frequency atlas.** (3) A self-labeling SAR-to-ML loop that manufactures its own decade of training data, with the paddy-transplant contamination discovery published. (4) A daily district forecaster validated walk-forward at 8.1 times the base rate, **with the headline numbers it failed to survive published as retractions**. (5) An end-to-end account-free architecture: reproducibility as a design principle rather than a promise. (6) The quantified forecast gap: Punjab is absent from CWC's own flood-forecast station network, and Flood Watch is the district-level layer that gap leaves open.
 
 ## 8. Roadmap
 
@@ -76,6 +76,6 @@ Multi-state scale-out (the pipeline is a bbox plus a district file), village-cir
 
 ## 9. Open source
 
-MIT (code) + CC-BY-4.0 (maps/tables). 450+ automated tests. Method paper, data-source registry (every dataset: URL, license, access date), and the full verification log: **github.com/bakathefish/Flood** · live: **bakathefish.github.io/Flood**
+MIT (code) + CC-BY-4.0 (maps/tables). 450+ automated tests. Method paper, data-source registry (every dataset: URL, license, access date), and the full verification log: **github.com/Stawberrymind/flood_river_watch** · live: **stawberrymind.github.io/flood_river_watch**
 
 *11 monsoons · 467 flood days · 105,183 ha mapped · 91 tehsils scored · ρ=0.72 vs govt girdawari · 3 languages · 0 CWC forecast stations in Punjab · 0 logins required.*

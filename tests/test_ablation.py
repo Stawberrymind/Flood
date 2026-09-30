@@ -1,7 +1,7 @@
 # tests/test_ablation.py
 """Unit tests for the reservoir-feature ablation pure helpers.
 
-Covers the three helpers owned by ``sailaab.ablation`` — exact variant feature
+Covers the three helpers owned by ``flood_watch.ablation`` — exact variant feature
 lists (16 / 10 / 9), the persistence antecedent-fraction passthrough, and the
 per-variant row assembly (schema, 2025 flag metrics, deltas vs full). Flag
 metrics are checked against the SAME constants the driver uses, imported from
@@ -12,7 +12,7 @@ import pandas as pd
 import pytest
 
 from pipeline.run_forecaster import FLAG_TOPN, NAMED_2025
-from sailaab.ablation import ablation_row, persistence_scores, variant_features
+from flood_watch.ablation import ablation_row, persistence_scores, variant_features
 
 # The shipped 16-feature list order (pipeline.run_forecaster.build_dataset).
 FULL_16 = [

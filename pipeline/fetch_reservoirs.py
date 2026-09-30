@@ -67,7 +67,7 @@ FIELDS = [
 def _get(params, tries=8, base_delay=1.0):
     """GET the API with exponential backoff on 429/transient errors."""
     url = API + "?" + urllib.parse.urlencode(params)
-    req = urllib.request.Request(url, headers={"User-Agent": "sailaab-reservoirs/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "flood_watch-reservoirs/1.0"})
     delay = base_delay
     for attempt in range(tries):
         try:
@@ -149,7 +149,7 @@ def _row_from_record(rec, label):
 
 
 def _write(out, seen):
-    from sailaab.io import atomic_path
+    from flood_watch.io import atomic_path
     with atomic_path(out) as temporary, temporary.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=FIELDS)
         w.writeheader()

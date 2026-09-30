@@ -29,7 +29,7 @@ Champion feature vector = 16 columns: 6 rain (`punjab_mm`, `upstream_mm`, each
 
 Both the classification improvement **and** the regression/robustness floor must
 hold. The challenger REPLACES the champion **iff ALL THREE** of the following are
-true, measured on the **identical** core-season LOYO harness (`sailaab.model`
+true, measured on the **identical** core-season LOYO harness (`flood_watch.model`
 folds, same XGBoost config, same 1540-row core-season frame):
 
 1. **ROC-AUC gain** — pooled LOYO ROC-AUC improves by **≥ +0.005** over the
@@ -76,7 +76,7 @@ core-season scoping (`window_start` month-day ≥ `07-25`), same folds, same con
 Split-conformal prediction intervals for the **regression head** (flooded
 `fraction`), calibrated on **leave-one-year-out out-of-fold residuals** so the
 intervals inherit the same honesty as the LOYO point estimates. Implemented in a
-new TDD'd `sailaab/conformal.py` (synthetic coverage test written first).
+new TDD'd `flood_watch/conformal.py` (synthetic coverage test written first).
 
 - **Nonconformity score:** absolute OOF residual `|y − ŷ|` from the LOYO
   regression head (`XGBRegressor` on `flooded_fraction`, the champion 16 features).
@@ -94,7 +94,7 @@ new TDD'd `sailaab/conformal.py` (synthetic coverage test written first).
   `year, window, district, pred, lo80, hi80, lo95, hi95` for every champion core row.
 
 Deliverables: `data/rain_intensity_windows.csv`, `data/forecaster_conformal.csv`,
-`sailaab/conformal.py` + `tests/test_conformal.py`, `pipeline/fetch_era5_intensity.py`,
+`flood_watch/conformal.py` + `tests/test_conformal.py`, `pipeline/fetch_era5_intensity.py`,
 `pipeline/run_challenger.py`, and the RESULTS section below.
 
 ---
@@ -168,7 +168,7 @@ added to its live feature assembly, plus a live hourly-ERA5 fetch in
 
 ### Champion conformal — split-conformal intervals for flooded `fraction`
 
-LOYO-honest split-conformal (`sailaab.conformal`, TDD'd in `tests/test_conformal.py`),
+LOYO-honest split-conformal (`flood_watch.conformal`, TDD'd in `tests/test_conformal.py`),
 absolute OOF residuals, symmetric intervals clamped to `[0, 1]`. Committed per-row
 to `data/forecaster_conformal.csv` (1540 rows: year, window, district, pred, lo80,
 hi80, lo95, hi95). Median interval half-widths are tiny because fractions are tiny:

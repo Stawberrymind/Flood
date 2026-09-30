@@ -1,8 +1,8 @@
 # pipeline/run_forecaster.py
 """District flood-risk forecaster: assemble -> LOYO -> 2025 hindcast -> SHAP.
 
-Reuses `sailaab.dataset` (assemble/label_events), `sailaab.model`
-(loyo_splits/fit_eval), and `sailaab.forecast_features` (reservoir pivot,
+Reuses `flood_watch.dataset` (assemble/label_events), `flood_watch.model`
+(loyo_splits/fit_eval), and `flood_watch.forecast_features` (reservoir pivot,
 core-season mask, district prior, metric wrappers). All inputs are committed
 CSVs (no network). See `docs/notes/forecaster.md` for the pre-declared bands and
 the paddy-contamination decision that scopes modelling to core-season windows.
@@ -26,9 +26,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from sailaab import config
-from sailaab.dataset import assemble, label_events
-from sailaab.forecast_features import (
+from flood_watch import config
+from flood_watch.dataset import assemble, label_events
+from flood_watch.forecast_features import (
     PADDY_CUTOFF_MD,
     add_district_prior,
     classification_metrics,
@@ -36,7 +36,7 @@ from sailaab.forecast_features import (
     pivot_reservoirs,
     regression_metrics,
 )
-from sailaab.model import fit_eval, loyo_splits
+from flood_watch.model import fit_eval, loyo_splits
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -62,7 +62,7 @@ FLAG_PROB = 0.50
 
 
 def _mk_clf():
-    """XGBoost classifier mirroring sailaab.model._make_model."""
+    """XGBoost classifier mirroring flood_watch.model._make_model."""
     from xgboost import XGBClassifier
 
     return XGBClassifier(
@@ -117,7 +117,7 @@ def build_dataset() -> tuple[pd.DataFrame, list[str]]:
 
 def loyo_oof(core: pd.DataFrame, features: list[str]) -> pd.DataFrame:
     """Leave-one-year-out out-of-fold predictions (classifier prob + regressor
-    fraction) for every core-season row, using sailaab.model.loyo_splits folds."""
+    fraction) for every core-season row, using flood_watch.model.loyo_splits folds."""
     years = sorted(core["year"].unique())
     oof = core[
         ["year", "district", "window_md", "flood_event", "flooded_fraction"]
@@ -239,7 +239,7 @@ def shap_summary(model, train_feats: pd.DataFrame, features: list[str], out_png:
     import matplotlib.pyplot as plt
     import shap
 
-    from sailaab import figstyle
+    from flood_watch import figstyle
 
     expl = shap.TreeExplainer(model)
     sv = expl.shap_values(train_feats[features])
@@ -314,7 +314,7 @@ def main():
     metrics = loyo_metrics_table(oof)
     metrics.to_csv(DATA / "forecaster_loyo_metrics.csv", index=False)
 
-    # cross-check against sailaab.model.fit_eval canonical per-year ROC-AUC
+    # cross-check against flood_watch.model.fit_eval canonical per-year ROC-AUC
     fe = fit_eval(core, features, "flood_event")
     fe_auc = {int(r["year"]): r.get("auc") for r in fe["per_year"]}
 

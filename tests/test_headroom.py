@@ -1,6 +1,6 @@
 # tests/test_headroom.py
 """Tests for the pure math behind the dam-headroom analysis
-(``sailaab.headroom``): day-of-season indexing, the 2015-2024 median filling
+(``flood_watch.headroom``): day-of-season indexing, the 2015-2024 median filling
 curve (with honest per-day ``n_years`` reporting and an IQR band), the
 no-extrapolation 2025-curve interpolation, the headroom-deficit arithmetic, the
 level->storage hypsometric rating (Ranjit Sagar), and the cusec->BCM/day surge
@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.headroom import (
+from flood_watch.headroom import (
     CUSEC_TO_BCM_PER_DAY,
     absorbable_days,
     cusecs_to_bcm_per_day,

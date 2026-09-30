@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from sailaab.frequency import (
+from flood_watch.frequency import (
     window_index,
     frequency_count,
     classify_frequency,

@@ -3,11 +3,11 @@
 
 Queries the anonymous MPC STAC for Sentinel-1 RTC scenes over Punjab in the last
 ``LOOKBACK_DAYS`` days, advances the ``monitor/state.json`` watermark
-(:mod:`sailaab.monitor`), and for each genuinely new acquisition date builds a
+(:mod:`flood_watch.monitor`), and for each genuinely new acquisition date builds a
 coarse (150 m) VV composite of just that pass, diffs it against the committed
 pre-monsoon reference composite (``monitor/reference_vv_150m.tif``), applies the
-Tier-A rule (:mod:`sailaab.sar_local`), reduces the mask to per-district flooded
-km² (:mod:`sailaab.districts`), and writes ``monitor/latest.json`` +
+Tier-A rule (:mod:`flood_watch.sar_local`), reduces the mask to per-district flooded
+km² (:mod:`flood_watch.districts`), and writes ``monitor/latest.json`` +
 ``monitor/latest.png`` (plus a compressed ``latest.jpg`` twin the site
 loads). No new scenes -> print and exit 0.
 
@@ -15,7 +15,7 @@ No Earth Engine, no service account, no subscription key: MPC asset signing is
 anonymous. The legacy EE path is preserved verbatim in
 ``pipeline/legacy_ee_monitor.py``. Heavy STAC/COG IO is reused by import from
 ``pipeline.local_tier_a`` (unchanged); pure grouping/shaping/codec logic is in
-``sailaab.monitor_pc`` (unit-tested).
+``flood_watch.monitor_pc`` (unit-tested).
 
 Runtime is kept under the runner budget by: coarse 150 m grid, reading only the
 new pass's scenes (a swath, not the whole archive), and processing the oldest
@@ -37,11 +37,11 @@ from pipeline.local_tier_a import (
     open_client,
     search_window,
 )
-from sailaab import figstyle
-from sailaab.io import atomic_path, atomic_write_text
-from sailaab.districts import district_fractions, load_districts, rasterize_districts
-from sailaab.monitor import EPOCH, load_state, new_scenes, save_state
-from sailaab.monitor_pc import (
+from flood_watch import figstyle
+from flood_watch.io import atomic_path, atomic_write_text
+from flood_watch.districts import district_fractions, load_districts, rasterize_districts
+from flood_watch.monitor import EPOCH, load_state, new_scenes, save_state
+from flood_watch.monitor_pc import (
     build_alerts,
     district_km2_rows,
     group_by_date,
@@ -49,7 +49,7 @@ from sailaab.monitor_pc import (
     plan_passes,
     reproject_geoms,
 )
-from sailaab.sar_local import sieve_mask, tier_a_mask
+from flood_watch.sar_local import sieve_mask, tier_a_mask
 
 PUNJAB_BBOX = (73.85, 29.53, 76.95, 32.60)
 COLLECTION = "sentinel-1-rtc"
@@ -74,7 +74,7 @@ def _district_labels(transform, width, height, crs):
     """Rasterize the 20 Punjab districts onto the SAR UTM grid.
 
     Polygons ship in lon/lat; they are reprojected to the reference CRS and burnt
-    with :func:`sailaab.districts.rasterize_districts` (label i+1 for the i-th
+    with :func:`flood_watch.districts.rasterize_districts` (label i+1 for the i-th
     district, background 0). Returns ``(labels, names)`` with GAUL spellings.
     """
     districts = load_districts(canonicalize=True)  # [(gaul_name, lonlat_geom)]
@@ -89,7 +89,7 @@ def process_pass(items, ref_db, transform, width, height, labels, names, px_area
     """Composite one acquisition date's scenes and reduce to per-district km².
 
     ΔVV = VV_pass - VV_reference on the shared grid; Tier-A mask + speckle sieve;
-    then :func:`sailaab.districts.district_fractions`. Returns the VV dB field,
+    then :func:`flood_watch.districts.district_fractions`. Returns the VV dB field,
     the mask, sorted district rows, flagged rows, statewide total km², and the
     fraction of Punjab this pass actually imaged.
     """

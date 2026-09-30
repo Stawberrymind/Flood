@@ -12,7 +12,7 @@ fail-open: an omission published a district as observed when nobody knew
 whether it was.
 """
 
-from sailaab import nowcast
+from flood_watch import nowcast
 
 
 def _payload(observed, p_event, extras=None):
@@ -128,7 +128,7 @@ def test_no_acquisition_covers_nothing_even_with_full_district_rasters():
     """
     import numpy as np
 
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     size = 8
     labels = np.zeros((size, size), dtype=int)
@@ -162,7 +162,7 @@ def test_no_acquisition_information_means_no_coverage():
     """The fallback that granted coverage from a bare mask is gone."""
     import numpy as np
 
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     labels = np.ones((4, 4), dtype=int)
     mask = np.zeros((4, 4), dtype=bool)
@@ -182,7 +182,7 @@ def test_imaged_but_flood_product_missing_is_unresolved_not_dry():
     """
     import numpy as np
 
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     labels, names = _strip_labels()
     bounds = (8220944.0, 3443277.0, 8566034.0, 3842330.0)
@@ -207,7 +207,7 @@ def test_partial_coverage_no_longer_certifies_a_district_wide_zero():
     """A district must be nearly fully imaged before it counts as observed."""
     import numpy as np
 
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     labels, names = _strip_labels(size=20)
     footprint = np.zeros(labels.shape, dtype=bool)
@@ -240,7 +240,7 @@ def test_footprint_covering_one_district_leaves_the_other_not_observed():
     """
     import numpy as np
 
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     labels, names = _strip_labels()
     footprint = np.zeros(labels.shape, dtype=bool)
@@ -257,7 +257,7 @@ def test_partial_acquisition_is_its_own_state_not_rounded_to_observed():
     """Half a district imaged cannot stand behind a district-wide number."""
     import numpy as np
 
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     labels, names = _strip_labels(size=20)
     footprint = np.zeros(labels.shape, dtype=bool)
@@ -271,7 +271,7 @@ def test_partial_acquisition_is_its_own_state_not_rounded_to_observed():
 
 def test_unavailable_footprint_is_unknown_for_everyone_not_not_observed():
     """Failing to fetch the layer is different from knowing nothing was imaged."""
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     labels, names = _strip_labels()
     acq = nc.district_acquisition(labels, names, None)
@@ -284,7 +284,7 @@ def test_an_unimaged_district_gets_no_flood_number_even_from_a_clean_mask():
     """The whole point: an empty mask over an unimaged district is not zero."""
     import numpy as np
 
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     labels, names = _strip_labels()
     bounds = (8220944.0, 3443277.0, 8566034.0, 3842330.0)

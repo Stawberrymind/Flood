@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.forecast_live import (
+from flood_watch.forecast_live import (
     FEATURE_ORDER,
     build_live_features,
     rank_and_tier,
@@ -241,7 +241,7 @@ def test_no_imagery_means_unknown_not_all_clear():
     failed or empty satellite fetch scoring priors and climatology alone, then
     publishing that nothing is above the alert threshold. Absence of imagery is
     absence of knowledge, never an all-clear."""
-    from sailaab.forecast_live import forecast_is_publishable
+    from flood_watch.forecast_live import forecast_is_publishable
 
     empty = pd.DataFrame(columns=["date", "district", "fraction"])
     ok, reason = forecast_is_publishable(empty, "2026-08-14", DISTRICTS)
@@ -263,7 +263,7 @@ def test_full_imagery_is_publishable():
 
 
 def forecast_is_publishable_helper(recent, issue, districts):
-    from sailaab.forecast_live import forecast_is_publishable
+    from flood_watch.forecast_live import forecast_is_publishable
 
     return forecast_is_publishable(recent, issue, districts)
 
@@ -271,7 +271,7 @@ def forecast_is_publishable_helper(recent, issue, districts):
 def test_stale_imagery_is_not_publishable():
     """Imagery that stops days before the issue date cannot support a forecast
     made today, however complete it was when it arrived."""
-    from sailaab.forecast_live import forecast_is_publishable
+    from flood_watch.forecast_live import forecast_is_publishable
 
     recent = _recent({("2026-08-01", d): 0.0 for d in DISTRICTS})
     ok, reason = forecast_is_publishable(recent, "2026-08-14", DISTRICTS)

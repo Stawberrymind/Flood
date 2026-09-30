@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // GitHub Pages serves this repo's docs/ at /Flood/
-  base: '/Flood/',
+  // GitHub Pages serves this repo's docs/ at /flood_river_watch/
+  base: '/flood_river_watch/',
   plugins: [react(), {
     name: 'neutral-translator-notes',
     apply: 'build',

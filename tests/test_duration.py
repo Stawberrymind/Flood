@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from sailaab.duration import (
+from flood_watch.duration import (
     day_offsets,
     filter_window,
     days_observed_wet,

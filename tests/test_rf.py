@@ -1,12 +1,12 @@
 # tests/test_rf.py
 """Pure-array RF helper logic, developed test-first with small synthetic arrays.
 No network, no sklearn — just the deterministic feature/label/sample machinery in
-sailaab/rf.py that the RF training pipeline is built on."""
+flood_watch/rf.py that the RF training pipeline is built on."""
 
 import numpy as np
 import pytest
 
-from sailaab.rf import (
+from flood_watch.rf import (
     slope_degrees,
     agreement_labels,
     sample_features,

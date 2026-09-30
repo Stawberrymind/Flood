@@ -6,7 +6,7 @@ Source: India Meteorological Department 0.25 deg gridded rainfall, pulled with
 `imdlib` straight from imdpune.gov.in (no login). See docs/notes/imd-rain.md.
 
 This is the only xarray/imdlib-touching code in the repo; the pure aggregation
-logic lives in sailaab/rain.py (tested). The .grd rasters live under
+logic lives in flood_watch/rain.py (tested). The .grd rasters live under
 data/rasters/imd/rain/*.grd and are NOT committed (~25 MB/yr).
 
 Usage:
@@ -24,8 +24,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from sailaab import config
-from sailaab.rain import window_table, window_sum, anomaly_stats
+from flood_watch import config
+from flood_watch.rain import window_table, window_sum, anomaly_stats
 
 # --- Approximate AOI boxes (deliberate bounding-box approximations, not basin
 #     polygons; documented in docs/notes/imd-rain.md). lon E, lat N. ---

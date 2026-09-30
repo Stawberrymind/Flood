@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.forecast_v2 import (
+from flood_watch.forecast_v2 import (
     block_bootstrap_ci,
     brier_skill,
     fold_safe_prior,

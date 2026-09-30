@@ -1,6 +1,6 @@
 # tests/test_causal.py
 """Tests for the pure helpers behind the Wave-3 causal figure
-(``sailaab.causal``): %-of-live-capacity math and the same-calendar-day
+(``flood_watch.causal``): %-of-live-capacity math and the same-calendar-day
 climatology band. Rendering (``pipeline/make_causal_figure.py``) is not tested
 here - only the deterministic data transforms it depends on."""
 
@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.causal import (
+from flood_watch.causal import (
     FRL_FT,
     LIVE_CAPACITY_BCM,
     pct_of_live_capacity,

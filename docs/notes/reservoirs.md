@@ -11,8 +11,8 @@ Punjab flood: **Bhakra** (Gobind Sagar, Sutlej), **Pong** (Beas), and
 |------|------|--------------------|
 | `data/reservoirs_2015_2025.csv` | CWC daily level+storage via data.gov.in | daily, 2015-2025 monsoon (Jun-Sep); these 3 dams end **2025-07-11** |
 | `data/reservoirs_2025_flood_supplement.csv` | Aug-Sep 2025 flood window from BBMB/press (the gap the API cannot cover) | ~weekly, Aug 1 - Sep 6 2025 |
-| `data/reservoir_windows.csv` | per (year, monsoon-window, dam) mean_storage + delta_storage | 10-day windows from `sailaab.windows` |
-| `sailaab/reservoirs.py` | parse/normalize + window features (pure pandas) | — |
+| `data/reservoir_windows.csv` | per (year, monsoon-window, dam) mean_storage + delta_storage | 10-day windows from `flood_watch.windows` |
+| `flood_watch/reservoirs.py` | parse/normalize + window features (pure pandas) | — |
 | `pipeline/fetch_reservoirs.py` | fetch/paginate the API into the CSV | — |
 
 **New dependencies: none.** Fetch script uses the stdlib (`urllib`); the module
@@ -106,5 +106,5 @@ outflow 9k (Aug 24) → 24k (Aug 25) → 77k (Aug 26) → 173k (Aug 27) cusecs;
 python pipeline/fetch_reservoirs.py                 # all dams, 2015-2025 -> data/reservoirs_2015_2025.csv
 python -m pytest tests/test_reservoirs.py -q
 ```
-`sailaab.reservoirs.load_frames([...])` concatenates the API CSV and the flood
+`flood_watch.reservoirs.load_frames([...])` concatenates the API CSV and the flood
 supplement, then `window_features(df, years)` builds `reservoir_windows.csv`.

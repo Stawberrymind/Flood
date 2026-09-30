@@ -22,7 +22,7 @@ read** in native coordinates (a 2x2 10 m block -> 20 m, no reprojection), which
 keeps bandwidth tiny and transparently skips no-data / partial-granule pixels.
 
 Pure array logic (NDWI, harmonisation, water decision rule, sampling) lives in
-``sailaab/s2.py`` (unit-tested test-first); this is the thin IO / STAC runner,
+``flood_watch/s2.py`` (unit-tested test-first); this is the thin IO / STAC runner,
 mirroring ``pipeline/local_tier_a.py`` and ``pipeline/rf_aux_layers.py``.
 
 Run:  ``python -m pipeline.fetch_s2_truth``
@@ -56,8 +56,8 @@ from rasterio.warp import transform_bounds, transform_geom
 from shapely.geometry import Point, shape
 
 from pipeline.local_tier_a import AOIS, DST_CRS, target_grid
-from sailaab.districts import canonical_name, load_districts, rasterize_districts
-from sailaab.s2 import (
+from flood_watch.districts import canonical_name, load_districts, rasterize_districts
+from flood_watch.s2 import (
     CLOUD_SCL,
     DRY,
     WATER,
@@ -68,7 +68,7 @@ from sailaab.s2 import (
     ndwi,
     precision_recall,
 )
-from sailaab.validation import binary_metrics
+from flood_watch.validation import binary_metrics
 
 STAC_URL = "https://planetarycomputer.microsoft.com/api/stac/v1"
 COLLECTION = "sentinel-2-l2a"

@@ -1,4 +1,4 @@
-name: punjabflood-forecast-data-bootstrap
+name: river-watch-forecast-data-bootstrap
 
 # One bounded, resumable historical archive window. Every successful response is committed
 # to the fork's public forecast-data branch, so a later run resumes from the first missing
@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 35
     defaults:
       run:
-        working-directory: punjabflood
+        working-directory: river-watch
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/cache@v4
         continue-on-error: true
         with:
-          path: punjabflood/data/cache/openmeteo
+          path: river-watch/data/cache/openmeteo
           key: forecast-data-bootstrap-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             hazard-openmeteo-${{ runner.os }}-
@@ -55,7 +55,7 @@ jobs:
         id: bootstrap
         continue-on-error: true
         run: >-
-          python -m punjabflood.cli bootstrap-forecast-data
+          python -m river_watch.cli bootstrap-forecast-data
           --data-dir ../forecast-data
           --issue-date "${{ inputs.issue_date }}"
           --max-archive-weight "${{ inputs.max_archive_weight }}"

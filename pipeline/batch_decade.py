@@ -2,14 +2,14 @@
 """Wave 2 runner. Usage:
     python pipeline/batch_decade.py 2023        # one year (anchor first!)
     python pipeline/batch_decade.py             # all years
-Exports land in Drive/sailaab; monitor with `earthengine task list`."""
+Exports land in Drive/flood_watch; monitor with `earthengine task list`."""
 
 import sys
 
 import ee
 
-from sailaab.decade import run_manifest
-from sailaab.ee_graphs import (
+from flood_watch.decade import run_manifest
+from flood_watch.ee_graphs import (
     punjab_districts,
     flood_mask_for_window,
     district_flood_stats,
@@ -34,8 +34,8 @@ def main():
         merged = ee.FeatureCollection(fcs).flatten()
         ee.batch.Export.table.toDrive(
             collection=merged,
-            description=f"sailaab_decade_{year}",
-            folder="sailaab",
+            description=f"flood_watch_decade_{year}",
+            folder="flood_watch",
             fileFormat="CSV",
         ).start()
         print(f"queued {year}")

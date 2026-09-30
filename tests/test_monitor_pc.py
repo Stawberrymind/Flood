@@ -6,7 +6,7 @@ lives in pipeline/live_monitor.py and is exercised by the end-to-end run."""
 import numpy as np
 import pytest
 
-from sailaab.monitor_pc import (
+from flood_watch.monitor_pc import (
     QUANT_NODATA,
     build_alerts,
     dequantize_db,

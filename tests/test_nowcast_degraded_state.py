@@ -13,7 +13,7 @@ inferred from an omission.
 """
 
 import pipeline.nowcast as pn
-from sailaab import nowcast
+from flood_watch import nowcast
 
 
 def _degraded(today="2026-08-06", reason="RuntimeError: upstream down"):

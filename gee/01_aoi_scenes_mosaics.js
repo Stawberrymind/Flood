@@ -1,4 +1,4 @@
-// Sailaab — Script 01: AOI, Sentinel-1 scene enumeration, pre/post mosaics, masks
+// Flood Watch — Script 01: AOI, Sentinel-1 scene enumeration, pre/post mosaics, masks
 // Paste into code.earthengine.google.com Code Editor and Run.
 // Output: printed scene inventory + visual sanity check of pre/post mosaics and masks.
 

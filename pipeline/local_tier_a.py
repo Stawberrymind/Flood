@@ -6,9 +6,9 @@ No Google Earth Engine, no accounts, no subscription key. Signs assets with
 ``sentinel-1-rtc`` (terrain-corrected gamma0, linear power), picks the orbit
 geometry best covered in BOTH the pre and flood windows, median-composites VV on
 that geometry via windowed / overview COG reads, computes ΔVV and the Tier-A mask
-(see ``sailaab.sar_local``), then writes quicklook PNGs and a GeoTIFF.
+(see ``flood_watch.sar_local``), then writes quicklook PNGs and a GeoTIFF.
 
-Array logic lives in ``sailaab/sar_local.py`` (unit-tested); this module is the
+Array logic lives in ``flood_watch/sar_local.py`` (unit-tested); this module is the
 thin IO / STAC runner, mirroring the style of the other ``pipeline/*.py`` CLIs.
 
 Examples
@@ -41,8 +41,8 @@ from rasterio.transform import from_origin
 from rasterio.vrt import WarpedVRT
 from rasterio.warp import transform_bounds
 
-from sailaab.config import FLOOD_2025, PRE_2025
-from sailaab.sar_local import (
+from flood_watch.config import FLOOD_2025, PRE_2025
+from flood_watch.sar_local import (
     best_common_orbit,
     flooded_hectares,
     median_composite,
@@ -57,7 +57,7 @@ FALLBACK_COLLECTION = "sentinel-1-grd"
 NODATA_IN = -32768.0  # RTC gamma0 nodata (verified from asset metadata)
 DST_CRS = "EPSG:32643"  # UTM 43N — all of Punjab sits in this zone; RTC is native here
 
-# AOI bounding boxes in lon/lat (EPSG:4326), mirroring sailaab/config.py comments.
+# AOI bounding boxes in lon/lat (EPSG:4326), mirroring flood_watch/config.py comments.
 AOIS = {
     "kapurthala": (75.05, 31.07, 75.70, 31.66),
     "punjab": (73.85, 29.53, 76.95, 32.60),

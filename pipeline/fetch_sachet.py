@@ -83,8 +83,8 @@ from pathlib import Path
 
 ENDPOINT = "https://sachet.ndma.gov.in/cap_public_website/FetchAllAlertDetails"
 UA = (
-    "Mozilla/5.0 (compatible; sailaab/1.0; +https://github.com/"
-    + os.environ.get("GITHUB_REPOSITORY", "Stawberrymind/Flood") + ")"
+    "Mozilla/5.0 (compatible; flood_watch/1.0; +https://github.com/"
+    + os.environ.get("GITHUB_REPOSITORY", "Stawberrymind/flood_river_watch") + ")"
 )
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "sachet" / "alerts.jsonl"

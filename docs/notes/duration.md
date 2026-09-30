@@ -12,7 +12,7 @@ days under `data/gfm/2025/gfm_punjab_<YYYYMMDD>.tif`, each a binary 0/1 uint8 ma
 ~100 m EPSG:3857 grid (3451 × 3991 px). Reference (permanent) water is
 `data/gfm/gfm_punjab_refwater.tif` on the same grid.
 
-Pure logic: `sailaab/duration.py` (censored-duration estimators, class binning) —
+Pure logic: `flood_watch/duration.py` (censored-duration estimators, class binning) —
 unit-tested in `tests/test_duration.py`. IO / raster / products:
 `pipeline/duration_2025.py`.
 
@@ -115,7 +115,7 @@ conservative fractional yield-loss bands, clearly an estimate:
 ```
 
 Damage-weighted paddy loss = Σ (cropland ha in class × loss fraction × value/ha), reusing
-the repo paddy valuation `sailaab.stats.crop_value_at_risk` (6.5 t/ha × ₹23,200/t =
+the repo paddy valuation `flood_watch.stats.crop_value_at_risk` (6.5 t/ha × ₹23,200/t =
 ₹150,800/ha). Reported next to the naive "all flooded cropland × full value" figure to
 show the duration weighting.
 
@@ -148,7 +148,7 @@ A checkpoint FAILS if the actual lands outside its band.
 ## ACTUALS + verdicts (compute run 2026-07-22)
 
 24 event-window observation days (2025-08-15 … 2025-09-28), gaps ∈ {1, 2, 4}, all ≤ G = 4.
-Streamed rasters cross-checked pixel-for-pixel against `sailaab.duration` (6 random pixels).
+Streamed rasters cross-checked pixel-for-pixel against `flood_watch.duration` (6 random pixels).
 
 Headline (lower bound = `days_observed_wet` unless noted):
 

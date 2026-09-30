@@ -181,7 +181,7 @@ test('an uncovered row omitting a key is not the same as nulling it', () => {
 
 test('the producer-shaped uncovered row is accepted', () => {
   // The strictness above is worthless if it also rejects the real feed. This is
-  // the shape sailaab/nowcast.py actually emits for a district nobody imaged.
+  // the shape flood_watch/nowcast.py actually emits for a district nobody imaged.
   assert.equal(districtsAreValid([uncoveredRow()]), true);
 });
 

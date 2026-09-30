@@ -1,6 +1,6 @@
 # pipeline/compute_pop_exposure.py
 """Population exposure: people living inside the 2025 Punjab flood extent, per
-district, for BOTH independent flood masks (GFM union and Sailaab RF).
+district, for BOTH independent flood masks (GFM union and Flood Watch RF).
 
 This is the third independent validation headline, cross-checked against the
 official ~3.55 lakh (355,000) "affected" figure. It answers a narrower question
@@ -19,7 +19,7 @@ Population raster (keyless, CC-BY):
       https://data.worldpop.org/GIS/Population/Global_2000_2020_1km_UNadj/2020/IND/
         ind_ppp_2020_1km_Aggregated_UNadj.tif
 
-Method (head-count conserving; the pure math is in sailaab.exposure, unit-tested):
+Method (head-count conserving; the pure math is in flood_watch.exposure, unit-tested):
     counts -> density (people/m^2, GHSL is equal-area so 1e6 m^2/px)
     -> reproject density onto each flood-mask grid (bilinear; density is intensive)
     -> density * target ground-pixel-area -> counts on the flood grid
@@ -45,9 +45,9 @@ import rasterio
 from rasterio.merge import merge
 from rasterio.warp import Resampling, reproject, transform_geom
 
-from sailaab import districts as D
-from sailaab.config import OFFICIAL_POP_AFFECTED
-from sailaab.exposure import (
+from flood_watch import districts as D
+from flood_watch.config import OFFICIAL_POP_AFFECTED
+from flood_watch.exposure import (
     counts_to_density,
     density_to_counts,
     population_in_mask_by_district,

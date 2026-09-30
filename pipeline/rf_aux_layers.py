@@ -30,7 +30,7 @@ from rasterio.warp import reproject
 
 import pipeline.local_tier_a as lta
 from pipeline.local_tier_a import AOIS, DST_CRS, target_grid
-from sailaab.rf import slope_degrees
+from flood_watch.rf import slope_degrees
 
 STAC_URL = "https://planetarycomputer.microsoft.com/api/stac/v1"
 RASTER_DIR = Path("data/rasters")

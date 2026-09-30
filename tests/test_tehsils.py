@@ -1,5 +1,5 @@
 # tests/test_tehsils.py
-"""Test-first spec for sailaab.tehsils (tehsil = ADM3 sub-district level).
+"""Test-first spec for flood_watch.tehsils (tehsil = ADM3 sub-district level).
 
 Pure-logic tests (normalize / overlap / assign) are classic red->green. The
 committed-artifact tests exercise the real ``data/punjab_tehsils.geojson`` built
@@ -12,8 +12,8 @@ from pathlib import Path
 import pytest
 from shapely.geometry import box, shape
 
-from sailaab.districts import load_districts
-from sailaab.tehsils import (
+from flood_watch.districts import load_districts
+from flood_watch.tehsils import (
     assign_district,
     load_tehsils,
     normalize_tehsil_name,

@@ -1,4 +1,4 @@
-// Sailaab — Script 02: Tier A flood map (change detection + Otsu) + district stats
+// Flood Watch — Script 02: Tier A flood map (change detection + Otsu) + district stats
 // Depends on the same constants as 01. Output: flood mask layer + CSV export of
 // flooded km^2 and flooded-cropland ha per district. This is the guaranteed baseline.
 
@@ -102,11 +102,11 @@ print('Per-district stats (first 5):', stats.limit(5));
 
 // Exports (start from the Tasks tab):
 Export.table.toDrive({
-  collection: stats, description: 'sailaab_tierA_district_stats_2025',
+  collection: stats, description: 'flood_watch_tierA_district_stats_2025',
   fileFormat: 'CSV'
 });
 Export.image.toDrive({
-  image: flood.unmask(0).byte(), description: 'sailaab_tierA_floodmask_2025',
+  image: flood.unmask(0).byte(), description: 'flood_watch_tierA_floodmask_2025',
   region: aoi, scale: 20, maxPixels: 1e10
 });
 

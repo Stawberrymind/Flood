@@ -1,4 +1,4 @@
-# The Sailaab flood forecaster
+# The Flood Watch flood forecaster
 
 > Withdrawn from operational use (September 2026): the model and numerical
 > benchmarks below assumed unobserved days were dry. They are historical
@@ -92,7 +92,7 @@ training predictions, which it had already fitted and therefore scores too
 highly. Recomputed from out-of-fold scores the figure is about a third, and the
 lower number is the one that stands.
 
-Code: `sailaab/hazard.py`, `sailaab/forecast_daily.py`, `sailaab/forecast_live.py`.
+Code: `flood_watch/hazard.py`, `flood_watch/forecast_daily.py`, `flood_watch/forecast_live.py`.
 Evaluation: `pipeline/run_forecaster_benchmark.py` (the architecture bake-off),
 `pipeline/run_forecaster_walkforward.py`, `pipeline/run_forecaster_daily_audit*.py`.
 Training: `pipeline/train_daily_forecaster.py`. Live: `pipeline/nowcast.py`.
@@ -129,7 +129,7 @@ instead of a learned branching structure.
 
 **Rare-event corrections, kept as tested diagnostics.** Firth's penalised
 likelihood and the King and Zeng prior correction are implemented in
-`sailaab/hazard.py` with tests, including the classic check that Firth stays
+`flood_watch/hazard.py` with tests, including the classic check that Firth stays
 finite under perfect separation. Firth improved the linear model, both still lost
 to boosting, so neither is in production and neither is claimed to make the
 scores quotable as probabilities. That would require a calibration assessment

@@ -121,7 +121,7 @@ def test_river_watch_ships_with_its_caveats():
     fact that Ranjit Sagar has no dam row, and the two other languages. The
     disclaimer itself comes from the feed at run time."""
     joined = "\n".join(body for _, body in _chunks())
-    assert "punjabflood/outputs/forecast/latest.json" in joined, "river watch not wired to the feed"
+    assert "river-watch/outputs/forecast/latest.json" in joined, "river watch not wired to the feed"
     assert "Chance the spillway is forced" in joined
     assert "not an all-clear" in joined
     assert "Ranjit Sagar has no public daily bulletin" in joined

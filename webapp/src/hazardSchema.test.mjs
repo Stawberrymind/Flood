@@ -26,7 +26,7 @@ import {
 } from './hazardSchema.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const FEED = join(HERE, '..', '..', 'punjabflood', 'outputs', 'forecast', 'latest.json');
+const FEED = join(HERE, '..', '..', 'river-watch', 'outputs', 'forecast', 'latest.json');
 
 function ens(p) {
   const o = {};

@@ -2,7 +2,7 @@
 import pandas as pd
 import pytest
 
-from sailaab.dataset import add_lags, label_events, assemble
+from flood_watch.dataset import add_lags, label_events, assemble
 
 
 def _frame():

@@ -2,17 +2,17 @@
 
 District boundaries for Punjab (India) plus the tested module every downstream
 district statistic depends on: flood fractions per district, the spatial-CV
-folds, and the per-district tables. Polygons feed `sailaab.districts`
+folds, and the per-district tables. Polygons feed `flood_watch.districts`
 (load → rasterize → reduce a SAR flood mask to per-district ha/fraction) and the
 name crosswalk that reconciles our polygon spellings with the GAUL-2015
-`ADM2_NAME` spellings the GEE side and `sailaab.config` use.
+`ADM2_NAME` spellings the GEE side and `flood_watch.config` use.
 
 ## Files produced
 
 | File | What | Notes |
 |------|------|-------|
 | `data/punjab_districts.geojson` | 20 Punjab district polygons | datameet Census-2011, ODbL; one `district` property; 388 KB |
-| `sailaab/districts.py` | load / rasterize / district_fractions / fold_of + `NAME_ALIASES` | pure numpy + `rasterio.features`; no I/O beyond reading the geojson |
+| `flood_watch/districts.py` | load / rasterize / district_fractions / fold_of + `NAME_ALIASES` | pure numpy + `rasterio.features`; no I/O beyond reading the geojson |
 | `pipeline/fetch_districts.py` | fetch + filter the datameet all-India file → the geojson | stdlib `urllib`, keyless |
 | `tests/test_districts.py` | 19 tests (red→green) | includes a pyproj area-sanity guard |
 
@@ -58,7 +58,7 @@ Patiala are MultiPolygons). **Area sanity check** (geodesic, WGS84 ellipsoid via
 
 ## Name reconciliation (datameet → GAUL-2015 `ADM2_NAME`)
 
-The geojson stores the **datameet** spelling in `district`. `sailaab.districts`
+The geojson stores the **datameet** spelling in `district`. `flood_watch.districts`
 owns the crosswalk: `NAME_ALIASES` + `canonical_name()` map datameet (and common
 GEE/press) spellings onto the GAUL/`config` spellings, and `fold_of()` uses it.
 Call `load_districts(canonicalize=True)` to get GAUL-spelled names directly.
@@ -115,7 +115,7 @@ Malerkotla/Pathankot/Fazilka separately (e.g. geoBoundaries), map them back to
 Sangrur/Gurdaspur/Firozpur respectively before joining to `config`. `NAME_ALIASES`
 is the place to add such mappings; no change to `config.py` is needed.
 
-## Module API (`sailaab.districts`)
+## Module API (`flood_watch.districts`)
 
 ```python
 load_districts(path=DEFAULT_GEOJSON, canonicalize=False)
@@ -134,7 +134,7 @@ fold_of(name) -> 'ravi_beas' | 'sutlej' | None
 always excluded. Labels from `rasterize_districts` line up with the order of
 `load_districts`, so pass `names=[n for n, _ in load_districts()]` to key the
 result by district name (or `canonicalize=True` for GAUL-spelled keys that join
-to the GEE `reduceRegions` exports and `sailaab.stats`).
+to the GEE `reduceRegions` exports and `flood_watch.stats`).
 
 ## Reproduce
 ```

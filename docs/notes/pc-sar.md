@@ -31,7 +31,7 @@ GET. Signing endpoint used: `https://planetarycomputer.microsoft.com/api/sas/v1/
   `GDAL_HTTP_MULTIRANGE=YES`, `GDAL_HTTP_MERGE_CONSECUTIVE_RANGES=YES`, `VSI_CACHE=TRUE`.
 
 ## Scene inventory — Kapurthala bbox (75.05, 31.07, 75.70, 31.66)
-Windows mirror `sailaab/config.py`: PRE = 2025-07-01..08-10, FLOOD = 2025-08-25..09-06.
+Windows mirror `flood_watch/config.py`: PRE = 2025-07-01..08-10, FLOOD = 2025-08-25..09-06.
 
 | Window | Total items | by (orbit_state, relative_orbit) |
 |---|---|---|
@@ -43,12 +43,12 @@ Orbits present in BOTH windows: ascending/27, descending/34, ascending/100
 **covered area** in both windows (coarse probe), not merely scene count.
 
 ## Architecture (repo convention)
-- Pure array logic: `sailaab/sar_local.py` — `to_db`, `median_composite`,
+- Pure array logic: `flood_watch/sar_local.py` — `to_db`, `median_composite`,
   `tier_a_mask`, `sieve_mask`, `flooded_hectares`, `best_common_orbit`.
   Test-first in `tests/test_sar_local.py` (16 synthetic-array tests).
 - IO / STAC runner: `pipeline/local_tier_a.py` (thin CLI, mirrors other
   `pipeline/*.py`). `--aoi kapurthala|punjab --res 30 --orbit-mode single|state`.
-- Tier-A rule (from `sailaab/config.py`, identical to `gee/02`):
+- Tier-A rule (from `flood_watch/config.py`, identical to `gee/02`):
   `flood = (ΔVV < -3 dB) & (VV_flood < -15 dB) & (VV_pre >= -15 dB)`, then sieve
   connected components < 10 px (8-connectivity). ΔVV = flood − pre, median composites.
 

@@ -11,7 +11,7 @@ if the SAR masks and the optical water points agree, the agreement is not an
 artefact of one instrument.
 
 Architecture mirrors the repo: pure array logic (NDWI, water decision rule,
-stratified sampling) in `sailaab/s2.py`, unit-tested test-first in
+stratified sampling) in `flood_watch/s2.py`, unit-tested test-first in
 `tests/test_s2.py`; all STAC / rasterio IO in `pipeline/fetch_s2_truth.py`.
 
 ---
@@ -49,7 +49,7 @@ validator, and we state exactly how before looking at a single pixel:
 
 Scoring is split so the strong and weak directions never contaminate each other.
 For each mask `m ∈ {RF, Tier-A, GFM-union}`, with `pred = m says flood` and
-`ref = S2 says water`, computed with `sailaab.validation.binary_metrics`:
+`ref = S2 says water`, computed with `flood_watch.validation.binary_metrics`:
 
 - **On S2-water points (strong):** recall_water = TP/(TP+FN) = of independently
   confirmed standing-water points, the fraction the mask caught. A mask that
@@ -160,7 +160,7 @@ at three anchor sets (cloud-free pixels only):
 Dry cropland is confidently negative (p98 = **−0.27**); turbid Punjab flood water
 and the Harike wetland straddle **0** (sediment load and aquatic vegetation
 suppress NDWI — an honest, event-specific fact). Chosen rule (McFeeters,
-documented in `sailaab.s2`): **t_water = 0.0, t_dry = −0.20**, dead-band
+documented in `flood_watch.s2`): **t_water = 0.0, t_dry = −0.20**, dead-band
 (−0.20, 0.0) dropped as uncertain. Verification on the anchors: **99.4 %** of
 dry-land is ≤ t_dry and **51.8 %** of independent SCL-water is ≥ t_water, so the
 thresholds sit in the observed gap and were **not** tuned to any mask score.
@@ -177,7 +177,7 @@ Classified by district: Firozpur 152, Kapurthala 52, Tarn Taran 33.
 ## 4. ACTUALS vs pre-declared bands (runs of 2026-07-22, appended after the fact)
 
 Confusion is `pred = mask says flood`, `ref = S2 says water`, over the 237
-classified points (`sailaab.validation.binary_metrics`):
+classified points (`flood_watch.validation.binary_metrics`):
 
 | Mask | flood pts | TP | FP | FN | TN | **precision on water** | recall on water | recession-explained frac |
 |---|---|---|---|---|---|---|---|---|

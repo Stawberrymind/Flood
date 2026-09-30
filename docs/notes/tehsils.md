@@ -4,9 +4,9 @@ Takes the district flood analysis down one administrative level, to **tehsil**
 (ADM3 sub-district). The relief-tooling headline is a **named list of tehsils
 that flooded repeatedly, 2015–2025** (late-monsoon, river-flood climatology) plus
 each tehsil's **2025 crop-loss**. Everything reuses the tested district machinery
-— `sailaab.districts.rasterize_districts` / `district_fractions`,
-`sailaab.frequency.summarize_repeat_victims`, the decade per-row cos²-lat area
-helpers in `pipeline/fetch_gfm_decade.py`, and `sailaab.stats.crop_value_at_risk`
+— `flood_watch.districts.rasterize_districts` / `district_fractions`,
+`flood_watch.frequency.summarize_repeat_victims`, the decade per-row cos²-lat area
+helpers in `pipeline/fetch_gfm_decade.py`, and `flood_watch.stats.crop_value_at_risk`
 — on the same two on-disk grids, so no new WMS pulls and no new area physics.
 
 ## Files produced
@@ -14,8 +14,8 @@ helpers in `pipeline/fetch_gfm_decade.py`, and `sailaab.stats.crop_value_at_risk
 | File | What | Notes |
 |------|------|-------|
 | `data/punjab_tehsils.geojson` | 91 tehsil polygons, props `tehsil`,`district` | geoBoundaries gbOpen IND ADM3 (2018), CC-BY 4.0; clipped to Punjab; 1.25 MB |
-| `sailaab/tehsils.py` | `normalize_tehsil_name` / `overlap_fraction` / `assign_district` / `load_tehsils` | pure logic; `shapely` for the two geometric primitives |
-| `pipeline/fetch_tehsils.py` | build the geojson (download ADM3 → filter → assign → clip) | keyless `urllib`; reuses `sailaab.tehsils` + `sailaab.districts` |
+| `flood_watch/tehsils.py` | `normalize_tehsil_name` / `overlap_fraction` / `assign_district` / `load_tehsils` | pure logic; `shapely` for the two geometric primitives |
+| `pipeline/fetch_tehsils.py` | build the geojson (download ADM3 → filter → assign → clip) | keyless `urllib`; reuses `flood_watch.tehsils` + `flood_watch.districts` |
 | `pipeline/tehsil_stats.py` | the two flood products + atlas figure from on-disk tifs | no network; `--gfm-dir` / `--raster-dir` inputs |
 | `data/tehsil_season_fractions.csv` | per-tehsil late-season flooded ha/fraction × 11 seasons | 1,001 rows (91 × 11) |
 | `data/tehsil_repeat_victims.csv` | the headline recurrence table | sorted by `seasons_gt1pct` desc |
@@ -159,7 +159,7 @@ error: the district product (datameet polygons) stays the authoritative statewid
 total; the tehsil product is its within-state disaggregation, each tehsil's own
 ha/fraction exact for its clipped area.
 
-## Module API (`sailaab.tehsils`)
+## Module API (`flood_watch.tehsils`)
 
 ```python
 normalize_tehsil_name(name) -> str          # tidy shapeName; -I/-II kept distinct

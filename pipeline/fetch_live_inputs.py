@@ -2,7 +2,7 @@
 """Keyless live inputs for the district flood-risk nowcast.
 
 Three fetchers, all no-login / no-secret, returning plain dicts. The deployed
-forecaster reads ten satellite-only features (``sailaab.forecast_live``); the
+forecaster reads ten satellite-only features (``flood_watch.forecast_live``); the
 rain and reservoir fetchers below supply page context, not model inputs.
 
 * :func:`fetch_rain` — Open-Meteo ERA5 **archive** + **forecast** APIs
@@ -15,14 +15,14 @@ rain and reservoir fetchers below supply page context, not model inputs.
   (``docs/notes/reservoirs.md``); when 2026 rows are absent (the expected case)
   the 6 storage/delta features stay ``NaN`` (XGBoost-native).
 * :func:`fetch_gfm_observed` — Copernicus GFM observed flood extent from the
-  keyless GloFAS WMS (recipe in ``sailaab.gfm`` / ``pipeline.fetch_gfm``): daily
+  keyless GloFAS WMS (recipe in ``flood_watch.gfm`` / ``pipeline.fetch_gfm``): daily
   masks for the current window's days-so-far and the whole antecedent window,
   unioned, permanent water removed, reduced to per-district observed fraction/km²
   and the antecedent fraction. Kept to a single coarse WMS tile per day so a run
   stays well under ~25 requests.
 
 All array logic (colour decode, cos²lat area, per-district reduction) lives in
-``sailaab.gfm`` / ``sailaab.nowcast`` and is unit-tested; this module is IO only.
+``flood_watch.gfm`` / ``flood_watch.nowcast`` and is unit-tested; this module is IO only.
 """
 
 from __future__ import annotations
@@ -46,11 +46,11 @@ from pipeline.fetch_gfm import (
     _getmap_params,
     bbox_3857,
 )
-from sailaab import nowcast
-from sailaab.districts import load_districts, rasterize_districts
-from sailaab.gfm import flood_mask, ref_water_mask, validate_wms_rgba
+from flood_watch import nowcast
+from flood_watch.districts import load_districts, rasterize_districts
+from flood_watch.gfm import flood_mask, ref_water_mask, validate_wms_rgba
 
-UA = {"User-Agent": "sailaab-nowcast/1.0 (Punjab flood nowcast; keyless)"}
+UA = {"User-Agent": "flood_watch-nowcast/1.0 (Punjab flood nowcast; keyless)"}
 
 
 class ReferenceWaterUnavailable(RuntimeError):
@@ -159,7 +159,7 @@ def _sum_window(series, w0, w1, upto=None):
 
 def fetch_rain(window, today_iso):
     """Rain features for the current + two antecedent windows. Returns
-    ``(features, source, meta)`` with the 6 :data:`sailaab.nowcast.RAIN_FEATURES`."""
+    ``(features, source, meta)`` with the 6 :data:`flood_watch.nowcast.RAIN_FEATURES`."""
     prev = window["prev_window"]
     prev2 = window["prev2_window"]
     start = (prev2 or prev or (window["window_start"], None))[0]

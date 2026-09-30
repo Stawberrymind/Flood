@@ -34,8 +34,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from sailaab import config
-from sailaab.gfm import web_mercator_area_km2
+from flood_watch import config
+from flood_watch.gfm import web_mercator_area_km2
 from pipeline.fetch_gfm import bbox_3857, grid_shape
 from pipeline.fetch_gfm_decade import (
     GFM_DIR,

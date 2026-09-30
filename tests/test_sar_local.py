@@ -5,7 +5,7 @@ No network, no Earth Engine — mirrors the Tier-A convention in gee/02."""
 import numpy as np
 import pytest
 
-from sailaab.sar_local import (
+from flood_watch.sar_local import (
     to_db,
     median_composite,
     tier_a_mask,

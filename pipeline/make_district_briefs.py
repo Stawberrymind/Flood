@@ -8,7 +8,7 @@ amber (risk) accents; A4 portrait; one page per district.
 
 Layout
 ------
-* Header   SAILAAB wordmark + "District Flood Brief -- <District>", the district
+* Header   FLOOD WATCH wordmark + "District Flood Brief -- <District>", the district
            name echoed in Gurmukhi, and the project URL (no QR libs -> URL is
            printed).
 * Left     mini-map: the district's tehsils shaded by their 2025 RF-derived
@@ -85,7 +85,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from sailaab.districts import canonical_name  # noqa: E402
+from flood_watch.districts import canonical_name  # noqa: E402
 
 DATA = ROOT / "data"
 OUT = ROOT / "briefs"
@@ -95,14 +95,14 @@ ATLAS = ROOT / "atlas"
 # constants                                                                     #
 # --------------------------------------------------------------------------- #
 GEN_DATE = "2026-07-22"  # printed in the footer + fixed PDF timestamp
-PROJECT_URL = "stawberrymind.github.io/Flood"
-REPO = "github.com/Stawberrymind/Flood"
+PROJECT_URL = "stawberrymind.github.io/flood_river_watch"
+REPO = "github.com/Stawberrymind/flood_river_watch"
 N_DECADE_SEASONS = 11  # 2015-2025 monsoons (see README)
 EXEMPLARS = ("Firozpur", "Kapurthala", "Gurdaspur")  # for the composite preview
 
 # Fixed PDF metadata -> byte-stable output (no embedded run timestamp).
 _PDF_META = {
-    "Creator": "sailaab/pipeline/make_district_briefs.py",
+    "Creator": "flood_watch/pipeline/make_district_briefs.py",
     "Producer": "matplotlib",
     "CreationDate": datetime(2026, 7, 22, 0, 0, 0),
     "ModDate": datetime(2026, 7, 22, 0, 0, 0),
@@ -123,7 +123,7 @@ TEHSIL_EDGE = "#9AA0AB"  # borders between the focus district's tehsils
 
 # flood choropleth ramp (white -> cyan), fixed statewide scale for comparability
 FLOOD_CMAP = LinearSegmentedColormap.from_list(
-    "sailaab_flood",
+    "flood_watch_flood",
     ["#FFFFFF", "#D7EEF4", "#8FD3E4", "#3EB1CE", "#0E7C9B", "#08485C"],
 )
 FLOOD_VMAX = 0.11  # statewide max tehsil fraction ~0.107 (Sultanpur Lodhi)
@@ -592,8 +592,8 @@ def build_brief(name: str, tables: dict, geom: dict, guru_fp) -> plt.Figure:
     fig.text(
         0.055,
         0.958,
-        "SAILAAB",
-        fontsize=19,
+        "FLOOD WATCH",
+        fontsize=16,
         color=INK,
         weight="bold",
         family="DejaVu Sans",
@@ -602,20 +602,20 @@ def build_brief(name: str, tables: dict, geom: dict, guru_fp) -> plt.Figure:
     # cyan accent tick under the wordmark
     _hline(fig, 0.055, 0.20, 0.9435, CYAN, 2.4)
     fig.text(
-        0.275,
+        0.40,
         0.958,
         "DISTRICT  FLOOD  BRIEF",
-        fontsize=9.5,
+        fontsize=8.5,
         color=SUBINK,
         weight="bold",
         family="DejaVu Sans",
         va="baseline",
     )
     fig.text(
-        0.275,
+        0.40,
         0.9405,
         "2025 monsoon  +  decade context",
-        fontsize=8.2,
+        fontsize=7,
         color=FAINT,
         family="DejaVu Sans",
         va="baseline",
@@ -624,9 +624,9 @@ def build_brief(name: str, tables: dict, geom: dict, guru_fp) -> plt.Figure:
     # right-aligned URL block
     fig.text(
         0.945,
-        0.958,
+        0.9405,
         PROJECT_URL,
-        fontsize=9.5,
+        fontsize=7,
         color=AMBER,
         ha="right",
         weight="bold",
@@ -635,9 +635,9 @@ def build_brief(name: str, tables: dict, geom: dict, guru_fp) -> plt.Figure:
     )
     fig.text(
         0.945,
-        0.9405,
+        0.958,
         "open data · no login",
-        fontsize=8.2,
+        fontsize=6.2,
         color=FAINT,
         ha="right",
         family="DejaVu Sans",
@@ -956,16 +956,16 @@ def build_brief(name: str, tables: dict, geom: dict, guru_fp) -> plt.Figure:
         0.030,
         f"Open data: {REPO} · validated vs Copernicus GFM & "
         "ISRO NDEM. Crop value order-of-magnitude (paddy MSP × DES district yields).",
-        fontsize=6.6,
+        fontsize=5.7,
         color=SUBINK,
         family="DejaVu Sans",
         va="baseline",
     )
     fig.text(
         0.945,
-        0.030,
+        0.016,
         f"Generated {GEN_DATE}",
-        fontsize=6.6,
+        fontsize=5.7,
         color=FAINT,
         ha="right",
         family="DejaVu Sans",

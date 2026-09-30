@@ -34,7 +34,7 @@ was **not needed**. Every year 2015–2025 in the committed CSVs is IMD 0.25°.
 
 ## New dependencies (pipeline-only — deliberately NOT in requirements.txt)
 
-Used only by `pipeline/fetch_rain.py`. The library `sailaab/rain.py` needs
+Used only by `pipeline/fetch_rain.py`. The library `flood_watch/rain.py` needs
 neither (pure pandas/numpy).
 
 - `imdlib` (>=0.1.21) — downloads/reads IMD `.grd`; pulls `xarray`, `scipy`,
@@ -58,11 +58,11 @@ Install: `pip install imdlib`.
   (leaks the fill into the western Punjab/border cells and drives the mean
   negative). `fetch_rain.py` therefore masks explicitly with `rain.where(rain >= 0)`
   (rainfall is non-negative; any negative is a sentinel).
-- **Windows:** half-open `[start, end)`, identical to `sailaab.windows` /
+- **Windows:** half-open `[start, end)`, identical to `flood_watch.windows` /
   GEE `filterDate` — adjacent windows never double-count the seam. A lag-k window
   is the current window shifted back by `k × (end−start)` days (antecedent
   precipitation), re-summed from the daily frame (so it is real even for the first
-  window of a season). Logic + tests: `sailaab/rain.py`, `tests/test_rain.py`.
+  window of a season). Logic + tests: `flood_watch/rain.py`, `tests/test_rain.py`.
 
 ## Outputs
 

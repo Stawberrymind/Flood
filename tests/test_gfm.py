@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from sailaab.gfm import (
+from flood_watch.gfm import (
     FLOOD_RGB,
     REF_WATER_RGB,
     color_mask,

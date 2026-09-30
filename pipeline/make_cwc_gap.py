@@ -14,7 +14,7 @@ on the caption, per ``docs/notes/cwc-gap.md``; the currency red-team (Punjab
 still has no CWC FF station in CWC's current public lists) is cited there and
 summarised on the figure as a muted secondary line.
 
-Pure logic (load/validate/rank/absent-state->0) lives in ``sailaab.cwc``; this
+Pure logic (load/validate/rank/absent-state->0) lives in ``flood_watch.cwc``; this
 driver does only IO and plotting. Deterministic: same committed CSV in -> same
 byte-stable PNG out. No network.
 
@@ -41,8 +41,8 @@ from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Patch  # noqa: E402
 from matplotlib.patheffects import withStroke  # noqa: E402
 
-from sailaab import cwc  # noqa: E402
-from sailaab import figstyle  # noqa: E402
+from flood_watch import cwc  # noqa: E402
+from flood_watch import figstyle  # noqa: E402
 
 DATA = ROOT / "data"
 IN_CSV = DATA / "cwc_ff_stations_2018.csv"

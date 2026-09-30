@@ -2,7 +2,7 @@
 """Publish-gate contract for the built public site (docs/).
 
 The public site is a React + Astryx single-page app: source lives in webapp/
-and Vite builds it into docs/ for GitHub Pages, served under the /Flood/ base.
+and Vite builds it into docs/ for GitHub Pages, served under the /flood_river_watch/ base.
 docs/index.html is therefore a thin shell (a #root div plus a hashed JS/CSS
 bundle); the interactive logic lives inside the bundle, not in hand-authored
 markup.
@@ -28,7 +28,7 @@ DOCS = ROOT / "docs"
 INDEX = DOCS / "index.html"
 ASSETS = DOCS / "assets"
 
-BASE = "/Flood/"                    # GitHub Pages project-site base path
+BASE = "/flood_river_watch/"                    # GitHub Pages project-site base path
 GEOJSON_BUDGET_BYTES = 150_000     # simplified district boundaries
 
 # data feeds the SPA loads at runtime, with the columns each caller relies on
@@ -66,7 +66,7 @@ def _parse() -> _Head:
 
 
 def _as_local(url: str) -> Path:
-    """Map a /Flood/... same-origin URL to its path under docs/."""
+    """Map a /flood_river_watch/... same-origin URL to its path under docs/."""
     assert url.startswith(BASE), f"asset {url!r} must be served under {BASE}"
     return DOCS / url[len(BASE):]
 
@@ -82,7 +82,7 @@ def test_shell_exists_and_mounts_root():
 
 def test_shell_metadata():
     html = INDEX.read_text(encoding="utf-8")
-    assert "<title>Sailaab" in html, "title must name the project"
+    assert "<title>Flood Watch" in html, "title must name the project"
     assert 'name="description"' in html, "meta description missing (SEO/share cards)"
     assert 'name="theme-color"' in html, "theme-color missing"
     assert f'href="{BASE}favicon.svg"' in html, "favicon must be referenced under the base"

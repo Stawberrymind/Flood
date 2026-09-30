@@ -12,14 +12,14 @@ import {Divider} from '@astryxdesign/core/Divider';
 import {HORIZONS, resolveHazardState} from './hazardSchema';
 
 import {RAW, REPO, BRANCH} from './repository';
-const FEED = RAW + 'punjabflood/outputs/forecast/latest.json';
-const VERIFY = `${REPO}/blob/${BRANCH}/punjabflood/docs/verification.md`;
-const RECORDS = `${REPO}/tree/${BRANCH}/punjabflood/outputs/forecast/`;
+const FEED = RAW + 'river-watch/outputs/forecast/latest.json';
+const VERIFY = `${REPO}/blob/${BRANCH}/river-watch/docs/verification.md`;
+const RECORDS = `${REPO}/tree/${BRANCH}/river-watch/outputs/forecast/`;
 
 // Every string the section shows, in the three languages of the page.
 const H_T = {
   en: {
-    no: '01', title: 'River watch',
+    no: '01', title: 'River-Watch',
     lead: 'Will Bhakra or Pong have to open its spillway in the next five days?',
     intro: 'Punjab floods when a dam is already near full and heavy rain falls on the hills above it. Every morning this watch reads the dam bulletin, the rain that fell over the last six days, four weather models and a 51-member ensemble for the next five, and at Bhakra the snow melting above the rain gauges. It then answers one question per dam: the chance the spillway has to open within one, two, three, four or five days.',
     issued: (d, b) => `Issued ${d}${b ? `, dam readings as on ${b}` : ''}. Updated once a day by the public pipeline.`,

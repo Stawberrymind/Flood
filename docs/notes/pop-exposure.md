@@ -4,7 +4,7 @@ Third independent validation headline: how many people **live on the ground the 
 says went under water**, per district, for both flood masks, cross-checked against
 the official ~3.55 lakh (355,000) "affected" figure (`config.OFFICIAL_POP_AFFECTED`).
 
-Date: 2026-07-22. Pure math in `sailaab/exposure.py` (unit-tested, `tests/test_exposure.py`);
+Date: 2026-07-22. Pure math in `flood_watch/exposure.py` (unit-tested, `tests/test_exposure.py`);
 IO/reproject in `pipeline/compute_pop_exposure.py`; product `data/pop_exposure_2025.csv`.
 
 ---
@@ -52,10 +52,10 @@ head-count conservation exact.
 **Flood masks (both reported — they bracket the truth):**
 - GFM union `data/gfm/gfm_punjab_20250827_0905.tif` — EPSG:3857, ~100 m, 382,488 flood px
   (118,534 inside Punjab districts = **864 km²**); broad multi-day union → **upper** bracket.
-- Sailaab RF `data/rasters/rf_flood_2025.tif` — EPSG:32643, 90 m, 64,473 flood px
+- Flood Watch RF `data/rasters/rf_flood_2025.tif` — EPSG:32643, 90 m, 64,473 flood px
   (all inside districts = **522 km²**); tight cropland-centred classifier → **lower** bracket.
 
-**Head-count-conserving warp** (`sailaab.exposure`): counts → density (people/m²; GHSL
+**Head-count-conserving warp** (`flood_watch.exposure`): counts → density (people/m²; GHSL
 equal-area = 1e6 m²/px) → `rasterio.warp.reproject` the *density* (bilinear; density is
 intensive) onto each mask grid → density × **target ground-pixel-area** → counts. Target
 area uses the cos²(lat) true-ground area on EPSG:3857 (`webmerc_pixel_area_m2`, same physics

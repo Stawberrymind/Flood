@@ -141,7 +141,7 @@ Data-integrity note: the on-disk `local_tierA_punjab_tierA_floodmask.tif` in
 `data/rasters/` turned out to be a stale artifact of the earlier standalone
 Tier-A run (only 3.2 kha inside districts, flood concentrated at the western
 border columns). `pipeline/infer_unet.py` therefore recomputes Tier-A from the
-same committed composites via the unit-tested `sailaab.sar_local` functions —
+same committed composites via the unit-tested `flood_watch.sar_local` functions —
 the recomputation reproduces `rf_grid.json`'s 105,183.4 ha (whole grid) and the
 committed district-stats sum 33,938 ha exactly.
 

@@ -55,7 +55,7 @@ record.
 
 Committed record: `data/punjab_flood_damage_history.csv` — 21 rows, one per
 `(period, metric, value, unit, source_uuid)`. Units kept in their source form and
-normalised in code (`sailaab.history`): `Mha`/`lakh_ha`/`ha` → ha, `crore_inr`
+normalised in code (`flood_watch.history`): `Mha`/`lakh_ha`/`ha` → ha, `crore_inr`
 and `count` passthrough. Figure: `atlas/punjab_flood_history.png` (log-ha area
 panel + linear lives panel); byte-stable across two driver runs
 (md5 `de39867e439ea21eeab7ac9d2db2a333`). Unit/schema tests: 25/25 pass.

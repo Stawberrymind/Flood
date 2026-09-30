@@ -1,13 +1,13 @@
 # pipeline/compare_gfm.py
-"""Sample-point agreement between Sailaab RF mask and Copernicus GFM."""
+"""Sample-point agreement between Flood Watch RF mask and Copernicus GFM."""
 
 import numpy as np
 import rasterio
 from rasterio.warp import transform as warp_transform
 
-from sailaab.validation import binary_metrics
+from flood_watch.validation import binary_metrics
 
-OURS = "data/sailaab_RF_floodmask_2025.tif"
+OURS = "data/flood_watch_RF_floodmask_2025.tif"
 GFM = "data/gfm/gfm_punjab_20250827_0905.tif"  # adjust to the real filename
 N = 5000
 RNG = np.random.default_rng(42)

@@ -77,7 +77,7 @@ const T = {
   en: {
     eyebrow: 'Punjab · open AI flood intelligence · live this monsoon',
     h1: 'The flood forecast Punjab never had.',
-    lede: 'In August 2025 Punjab saw its worst flood since 1988. All 23 districts went under, about 3.55 lakh people were affected, and India’s flood-forecast network had zero stations in the state. Sailaab rebuilds that capability in the open, and it is running right now.',
+    lede: 'In August 2025 Punjab saw its worst flood since 1988. All 23 districts went under, about 3.55 lakh people were affected, and India’s flood-forecast network had zero stations in the state. Flood Watch rebuilds that capability in the open, and it is running right now.',
     seeLive: 'See it live →',
     source: 'Open source (MIT) · method',
     gap: 'flood-forecast stations in Punjab. 226 exist across 22 other states. That absence is the gap this project fills.',
@@ -105,12 +105,12 @@ const T = {
     liveFloodL: 'Water flagged',
     liveLoading: 'querying…',
     liveUnavailable: 'Monitor unavailable',
-    footer: 'SAILAAB · built by a Punjab student during the 2026 monsoon · India AI Impact Festival 2026 · Code MIT · Maps & tables CC-BY-4.0 · Contains modified Copernicus Sentinel & CEMS-GFM data',
+    footer: 'FLOOD WATCH · RIVER-WATCH · built by a Punjab student during the 2026 monsoon · Code MIT · Maps & tables CC-BY-4.0 · Contains modified Copernicus Sentinel & CEMS-GFM data',
   },
   hi: {
     eyebrow: 'पंजाब · खुली AI बाढ़ इंटेलिजेंस · इस मानसून लाइव',
     h1: 'वह बाढ़ पूर्वानुमान जो पंजाब के पास कभी नहीं था।',
-    lede: 'अगस्त 2025 में पंजाब ने 1988 के बाद की सबसे भीषण बाढ़ झेली: सभी 23 ज़िले, ~3.55 लाख लोग प्रभावित, और भारत के बाढ़-पूर्वानुमान नेटवर्क में राज्य के शून्य स्टेशन। सैलाब यह क्षमता खुले में फिर से बनाता है, और यह अभी चल रहा है।',
+    lede: 'अगस्त 2025 में पंजाब ने 1988 के बाद की सबसे भीषण बाढ़ झेली: सभी 23 ज़िले, ~3.55 लाख लोग प्रभावित, और भारत के बाढ़-पूर्वानुमान नेटवर्क में राज्य के शून्य स्टेशन। Flood Watch यह क्षमता खुले में फिर से बनाता है, और यह अभी चल रहा है।',
     seeLive: 'लाइव देखें →',
     source: 'ओपन सोर्स (MIT) · विधि',
     gap: 'पंजाब में बाढ़-पूर्वानुमान स्टेशन। 22 अन्य राज्यों में 226 मौजूद हैं। यही कमी यह परियोजना भरती है।',
@@ -138,12 +138,12 @@ const T = {
     liveFloodL: 'चिह्नित जल',
     liveLoading: 'खोजा जा रहा है…',
     liveUnavailable: 'मॉनिटर उपलब्ध नहीं',
-    footer: 'SAILAAB · 2026 मानसून में एक पंजाबी छात्र द्वारा निर्मित · India AI Impact Festival 2026 · कोड MIT · नक्शे व तालिकाएँ CC-BY-4.0 · संशोधित Copernicus Sentinel व CEMS-GFM डेटा युक्त',
+    footer: 'FLOOD WATCH · RIVER-WATCH · 2026 मानसून में एक पंजाबी छात्र द्वारा निर्मित · कोड MIT · नक्शे व तालिकाएँ CC-BY-4.0 · संशोधित Copernicus Sentinel व CEMS-GFM डेटा युक्त',
   },
   pa: {
     eyebrow: 'ਪੰਜਾਬ · ਖੁੱਲ੍ਹੀ AI ਹੜ੍ਹ ਜਾਣਕਾਰੀ · ਇਸ ਮਾਨਸੂਨ ਲਾਈਵ',
     h1: 'ਉਹ ਹੜ੍ਹ ਭਵਿੱਖਬਾਣੀ ਜੋ ਪੰਜਾਬ ਕੋਲ ਕਦੇ ਨਹੀਂ ਸੀ।',
-    lede: 'ਅਗਸਤ 2025 ਵਿੱਚ ਪੰਜਾਬ ਨੇ 1988 ਤੋਂ ਬਾਅਦ ਦਾ ਸਭ ਤੋਂ ਭਿਆਨਕ ਹੜ੍ਹ ਝੱਲਿਆ: ਸਾਰੇ 23 ਜ਼ਿਲ੍ਹੇ, ~3.55 ਲੱਖ ਲੋਕ ਪ੍ਰਭਾਵਿਤ, ਅਤੇ ਭਾਰਤ ਦੇ ਹੜ੍ਹ-ਭਵਿੱਖਬਾਣੀ ਨੈੱਟਵਰਕ ਵਿੱਚ ਸੂਬੇ ਦੇ ਜ਼ੀਰੋ ਸਟੇਸ਼ਨ। ਸੈਲਾਬ ਇਹ ਸਮਰੱਥਾ ਖੁੱਲ੍ਹੇ ਵਿੱਚ ਮੁੜ ਉਸਾਰਦਾ ਹੈ, ਅਤੇ ਇਹ ਹੁਣੇ ਚੱਲ ਰਿਹਾ ਹੈ।',
+    lede: 'ਅਗਸਤ 2025 ਵਿੱਚ ਪੰਜਾਬ ਨੇ 1988 ਤੋਂ ਬਾਅਦ ਦਾ ਸਭ ਤੋਂ ਭਿਆਨਕ ਹੜ੍ਹ ਝੱਲਿਆ: ਸਾਰੇ 23 ਜ਼ਿਲ੍ਹੇ, ~3.55 ਲੱਖ ਲੋਕ ਪ੍ਰਭਾਵਿਤ, ਅਤੇ ਭਾਰਤ ਦੇ ਹੜ੍ਹ-ਭਵਿੱਖਬਾਣੀ ਨੈੱਟਵਰਕ ਵਿੱਚ ਸੂਬੇ ਦੇ ਜ਼ੀਰੋ ਸਟੇਸ਼ਨ। Flood Watch ਇਹ ਸਮਰੱਥਾ ਖੁੱਲ੍ਹੇ ਵਿੱਚ ਮੁੜ ਉਸਾਰਦਾ ਹੈ, ਅਤੇ ਇਹ ਹੁਣੇ ਚੱਲ ਰਿਹਾ ਹੈ।',
     seeLive: 'ਲਾਈਵ ਵੇਖੋ →',
     source: 'ਓਪਨ ਸੋਰਸ (MIT) · ਵਿਧੀ',
     gap: 'ਪੰਜਾਬ ਵਿੱਚ ਹੜ੍ਹ-ਭਵਿੱਖਬਾਣੀ ਸਟੇਸ਼ਨ। 22 ਹੋਰ ਸੂਬਿਆਂ ਵਿੱਚ 226 ਹਨ। ਇਹੀ ਘਾਟ ਇਹ ਪ੍ਰੋਜੈਕਟ ਪੂਰੀ ਕਰਦਾ ਹੈ।',
@@ -171,7 +171,7 @@ const T = {
     liveFloodL: 'ਚਿੰਨ੍ਹਿਤ ਪਾਣੀ',
     liveLoading: 'ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ…',
     liveUnavailable: 'ਮਾਨੀਟਰ ਉਪਲਬਧ ਨਹੀਂ',
-    footer: 'SAILAAB · 2026 ਮਾਨਸੂਨ ਵਿੱਚ ਇੱਕ ਪੰਜਾਬੀ ਵਿਦਿਆਰਥੀ ਵੱਲੋਂ ਬਣਾਇਆ · India AI Impact Festival 2026 · ਕੋਡ MIT · ਨਕਸ਼ੇ ਤੇ ਸਾਰਣੀਆਂ CC-BY-4.0 · ਸੋਧੇ Copernicus Sentinel ਤੇ CEMS-GFM ਡੇਟਾ ਸਹਿਤ',
+    footer: 'FLOOD WATCH · RIVER-WATCH · 2026 ਮਾਨਸੂਨ ਵਿੱਚ ਇੱਕ ਪੰਜਾਬੀ ਵਿਦਿਆਰਥੀ ਵੱਲੋਂ ਬਣਾਇਆ · ਕੋਡ MIT · ਨਕਸ਼ੇ ਤੇ ਸਾਰਣੀਆਂ CC-BY-4.0 · ਸੋਧੇ Copernicus Sentinel ਤੇ CEMS-GFM ਡੇਟਾ ਸਹਿਤ',
   },
 };
 
@@ -295,7 +295,7 @@ export default function App() {
       {/* standing head: the masthead of a bulletin, not a product navbar */}
       <Band dividers={['bottom']} paddingBlock={3}>
         <HStack justify="between" vAlign="center" width="100%" gap={4} wrap="wrap">
-          <Text type="code" color="primary" weight="semibold">SAILAAB</Text>
+          <Text type="code" color="primary" weight="semibold">FLOOD WATCH</Text>
           <SegmentedControl
             label="Language"
             size="sm"

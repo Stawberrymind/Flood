@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import pandas as pd
 
-from sailaab.forecast_features import (
+from flood_watch.forecast_features import (
     PADDY_CUTOFF_MD,
     add_district_prior,
     classification_metrics,

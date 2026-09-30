@@ -1,6 +1,6 @@
 # tests/test_cwc.py
 """Tests for the pure logic behind the CWC flood-forecast station-gap analysis
-(``sailaab.cwc``): schema validation of the "as on Jan 2018" state-wise table,
+(``flood_watch.cwc``): schema validation of the "as on Jan 2018" state-wise table,
 national totals (226 = 166 level + 60 inflow), the aggregate ``Total`` row
 excluded from per-state rows, per-row ``level + inflow == total`` consistency,
 stable-descending ranking by total stations, and the absent-state -> 0 semantics
@@ -14,7 +14,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from sailaab.cwc import (
+from flood_watch.cwc import (
     REQUIRED_COLUMNS,
     load_stations,
     national_totals,

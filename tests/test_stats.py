@@ -2,7 +2,7 @@
 import pandas as pd
 import pytest
 
-from sailaab.stats import tidy_district_export, flooded_fraction
+from flood_watch.stats import tidy_district_export, flooded_fraction
 
 
 def _raw():
@@ -53,7 +53,7 @@ def test_flooded_fraction_errors_on_unknown_district():
         flooded_fraction(df, areas)
 
 
-from sailaab.stats import crop_value_at_risk
+from flood_watch.stats import crop_value_at_risk
 
 
 def test_crop_value_at_risk_order_of_magnitude():

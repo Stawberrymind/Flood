@@ -45,8 +45,8 @@ from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Patch  # noqa: E402
 from matplotlib.patheffects import withStroke  # noqa: E402
 
-from sailaab.history import load_history, milestones, period_to_year  # noqa: E402
-from sailaab import figstyle  # noqa: E402
+from flood_watch.history import load_history, milestones, period_to_year  # noqa: E402
+from flood_watch import figstyle  # noqa: E402
 
 DATA = ROOT / "data"
 IN_CSV = DATA / "punjab_flood_damage_history.csv"

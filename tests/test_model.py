@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from sailaab.model import loyo_splits, fit_eval
+from flood_watch.model import loyo_splits, fit_eval
 
 
 def test_loyo_splits_cover_each_year_once():

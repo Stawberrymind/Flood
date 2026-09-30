@@ -10,7 +10,7 @@ from the repo with `matplotlib` alone.
 
 | File | What |
 |------|------|
-| `pipeline/make_district_briefs.py` | the generator (pure `matplotlib` + `numpy`; reuses `sailaab.districts.canonical_name`) |
+| `pipeline/make_district_briefs.py` | the generator (pure `matplotlib` + `numpy`; reuses `flood_watch.districts.canonical_name`) |
 | `briefs/<District>.pdf` × 20 | one print-ready A4 brief per district |
 | `atlas/briefs_preview.png` | 3 exemplars (Firozpur, Kapurthala, Gurdaspur) side-by-side, for the synopsis/video |
 
@@ -29,8 +29,8 @@ committed.
 
 ## Layout (A4 portrait, 210 × 297 mm)
 
-- **Header** — `SAILAAB` wordmark + "District Flood Brief", the tagline, the
-  project URL (`bakathefish.github.io/Flood`; no QR library is available so the
+- **Header** — `FLOOD WATCH` wordmark + "District Flood Brief", the tagline, the
+  project URL (`stawberrymind.github.io/flood_river_watch`; no QR library is available so the
   URL is printed), the district name in English, and the same name echoed in
   Gurmukhi. Both names auto-shrink to their half of the header so the longest
   ("Sahibzada Ajit Singh Nagar") never collides with its Gurmukhi.
@@ -42,7 +42,7 @@ committed.
   flooded ha, ₹ value-at-risk (crore), population exposed (RF & GFM); decade
   seasons >1% / >2%, worst-season share, mean annual ha, forecaster peak ranking score +
   statewide rank; then the tehsils table (2025 ha, decade ≥1%-season badges).
-- **Footer** — one-line method, "Open data: github.com/bakathefish/Flood ·
+- **Footer** — one-line method, "Open data: github.com/Stawberrymind/flood_river_watch ·
   validated vs Copernicus GFM & ISRO NDEM", and the generation date (2026-07-22).
 
 ## Design decisions
@@ -59,7 +59,7 @@ committed.
 - **Name reconciliation.** The district geojson spells one district "Shahid
   Bhagat Singh Nagar" while every CSV uses "Nawanshahr"; the tehsil geojson and
   CSVs agree elsewhere. We route every name through the existing
-  `sailaab.districts.canonical_name` crosswalk, so all five CSVs, both geojsons,
+  `flood_watch.districts.canonical_name` crosswalk, so all five CSVs, both geojsons,
   and the filenames line up on 20 canonical names. A couple of districts also
   carry a well-known alternate name (Mohali, Sri Muktsar Sahib) shown as a small
   sub-label.

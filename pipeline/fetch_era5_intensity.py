@@ -5,7 +5,7 @@ Pulls **hourly** precipitation from the Open-Meteo **ERA5 archive** (keyless,
 ``archive-api.open-meteo.com``) for the same two boxes and 3x3 cos(lat)-weighted
 point grids as ``pipeline/fetch_live_inputs.py``, 2015-2025, then reduces each
 box to one area-mean hourly series and derives three intensity metrics per 10-day
-monsoon window (same window grid as the decade run, ``sailaab.windows``):
+monsoon window (same window grid as the decade run, ``flood_watch.windows``):
 
 * ``*_max_3h_mm``   — max rolling 3-hour area-mean rainfall sum in the window
 * ``*_max_24h_mm``  — max rolling 24-hour area-mean rainfall sum in the window
@@ -33,8 +33,8 @@ import numpy as np
 import pandas as pd
 import requests
 
-from sailaab import config
-from sailaab.windows import monsoon_windows
+from flood_watch import config
+from flood_watch.windows import monsoon_windows
 
 # Same boxes as pipeline/fetch_live_inputs.py (and pipeline/fetch_rain.py).
 PUNJAB_BOX = {"lon": (73.85, 76.95), "lat": (29.53, 32.60)}  # Punjab plains
@@ -42,7 +42,7 @@ UPSTREAM_BOX = {"lon": (75.5, 78.6), "lat": (30.9, 33.3)}  # Sutlej/Beas/Ravi up
 BOXES = {"punjab": PUNJAB_BOX, "upstream": UPSTREAM_BOX}
 
 OM_ARCHIVE = "https://archive-api.open-meteo.com/v1/archive"
-UA = {"User-Agent": "sailaab-forecaster/1.0 (Punjab flood forecaster; keyless)"}
+UA = {"User-Agent": "flood_watch-forecaster/1.0 (Punjab flood forecaster; keyless)"}
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"

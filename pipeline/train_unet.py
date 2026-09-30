@@ -2,7 +2,7 @@
 """Tier-C benchmark: train a small CPU U-Net on Sen1Floods11 hand-labeled chips.
 
 Deterministic, CPU-only, timeboxed. Pure array/model logic lives in
-``sailaab.unet`` (unit-tested); this is the IO / torch orchestration, mirroring
+``flood_watch.unet`` (unit-tested); this is the IO / torch orchestration, mirroring
 the other ``pipeline/*.py`` runners.
 
 Data: Sen1Floods11 v1.1 ``flood_events/HandLabeled`` chips (VV+VH dB, 512x512;
@@ -28,7 +28,7 @@ from pathlib import Path
 import numpy as np
 import rasterio
 
-from sailaab.unet import (
+from flood_watch.unet import (
     build_unet,
     count_params,
     normalize_db,

@@ -8,7 +8,7 @@ basins (Ravi/Beas vs Sutlej), so the reported skill is never a same-place
 memorisation artefact.
 
 - Pure array logic (feature stacking, slope, agreement labels, stratified
-  balanced sampling, spatial split): `sailaab/rf.py` — unit-tested test-first in
+  balanced sampling, spatial split): `flood_watch/rf.py` — unit-tested test-first in
   `tests/test_rf.py` (small synthetic arrays, no network).
 - IO / orchestration (all network + rasterio): `pipeline/rf_build_features.py`
   (S1 feature stack + Tier-A mask), `pipeline/rf_aux_layers.py` (Copernicus DEM
@@ -24,7 +24,7 @@ memorisation artefact.
 
 `VV_flood`, `VH_flood`, `dVV = VV_flood − VV_pre`, `dVH = VH_flood − VH_pre`
 (all dB, descending tracks, median composites over the two 2025 windows in
-`sailaab/config.py`), plus **slope** (degrees) from Copernicus DEM GLO-30
+`flood_watch/config.py`), plus **slope** (degrees) from Copernicus DEM GLO-30
 (`cop-dem-glo-30`, anonymous PC, mosaicked to the same 90 m grid). If the DEM
 fights the run for >45 min it is dropped and the stack proceeds without slope
 (noted in the actuals).
@@ -40,7 +40,7 @@ Per pixel, on the canonical grid:
   (dark-in-the-dry-season SAR proxy). Excluded pixels never enter training.
 
 Stratified balanced sample of ~4,000 points/class, spread across districts
-(`sailaab.districts.rasterize_districts` + per-district quota), written to
+(`flood_watch.districts.rasterize_districts` + per-district quota), written to
 `data/rf_training_points_2025.csv` (`x, y, district, <features>, label`).
 
 **Caveat, stated up front:** because the labels are *agreement strata* — pixels
@@ -130,7 +130,7 @@ fields ruined by inundation *or* waterlogging/sand casting, not just pixels
 still under open water on the pass date. The two numbers measure different
 physical quantities; ours is the instantaneous open-water floor.
 
-## Fold metrics (sailaab.validation.binary_metrics)
+## Fold metrics (flood_watch.validation.binary_metrics)
 
 | Fold | Train → Test | n_train | n_test | OA | F1 | IoU | TP/FP/FN/TN |
 |---|---|---|---|---|---|---|---|
@@ -211,4 +211,4 @@ New downloads this stage ≈ 1.1–1.3 GB, within the 3 GB budget.
 
 New Python packages: **none** beyond those already recorded in
 `docs/notes/pc-sar.md` — scikit-learn 1.8.0, joblib 1.5.3, pandas were already
-in the environment and in use elsewhere in the repo (`sailaab/model.py`).
+in the environment and in use elsewhere in the repo (`flood_watch/model.py`).

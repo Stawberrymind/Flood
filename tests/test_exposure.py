@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 from rasterio.transform import from_bounds
 
-from sailaab.exposure import (
+from flood_watch.exposure import (
     counts_to_density,
     density_to_counts,
     population_in_mask_by_district,
@@ -104,8 +104,8 @@ def test_webmerc_pixel_area_near_equator_approx_projected():
 
 
 def test_webmerc_pixel_area_matches_gfm_area_helper():
-    # cross-check against the established sailaab.gfm.web_mercator_area_km2 physics
-    from sailaab.gfm import web_mercator_area_km2
+    # cross-check against the established flood_watch.gfm.web_mercator_area_km2 physics
+    from flood_watch.gfm import web_mercator_area_km2
 
     bounds = (8_220_944.0, 3_443_277.0, 8_566_034.0, 3_842_330.0)  # Punjab 3857 box
     nrows, ncols = 40, 35

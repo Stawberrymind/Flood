@@ -5,11 +5,11 @@ underwater in the Aug 15 - Sep 30 2025 Punjab flood event.
 Reads the per-day GFM flood masks in ``data/gfm/2025/`` (binary 0/1 uint8,
 EPSG:3857 ~100 m), keeps only the event-window passes (>= Aug 15, dropping the
 Jun/Jul paddy-transplant signal), subtracts reference water, and computes two
-bracketing per-pixel censored-duration estimators from ``sailaab.duration``:
+bracketing per-pixel censored-duration estimators from ``flood_watch.duration``:
 
     days_observed_wet  (LOWER, committed raster)   span_duration (UPPER, bracket)
 
-Products (all pure logic in ``sailaab.duration``; IO/rasterio/matplotlib here):
+Products (all pure logic in ``flood_watch.duration``; IO/rasterio/matplotlib here):
 
     data/rasters/duration_2025.tif        LOWER duration, uint8 days   (gitignored)
     data/rasters/duration_span_2025.tif   UPPER duration, uint8 days   (gitignored)
@@ -35,7 +35,7 @@ import rasterio
 from rasterio.enums import Resampling
 from rasterio.warp import reproject, transform_geom
 
-from sailaab.duration import (
+from flood_watch.duration import (
     day_offsets,
     filter_window,
     days_observed_wet,
@@ -43,11 +43,11 @@ from sailaab.duration import (
     duration_classes,
     DURATION_CLASS_LABELS,
 )
-from sailaab.districts import load_districts, rasterize_districts
-from sailaab.tehsils import load_tehsils
-from sailaab.stats import crop_value_at_risk
-from sailaab.gfm import web_mercator_area_km2
-from sailaab import figstyle
+from flood_watch.districts import load_districts, rasterize_districts
+from flood_watch.tehsils import load_tehsils
+from flood_watch.stats import crop_value_at_risk
+from flood_watch.gfm import web_mercator_area_km2
+from flood_watch import figstyle
 from pipeline.fetch_gfm import bbox_3857, grid_shape, write_mask_tif
 
 REPO = Path(__file__).resolve().parents[1]
@@ -83,7 +83,7 @@ PAPER_FAINT = "#5c6a70"
 
 
 # --------------------------------------------------------------------------- #
-# grid helpers (cos^2-lat pixel area, same physics as sailaab.gfm)
+# grid helpers (cos^2-lat pixel area, same physics as flood_watch.gfm)
 # --------------------------------------------------------------------------- #
 def _row_ha(bounds, nrows, ncols):
     minx, miny, maxx, maxy = bounds
@@ -178,7 +178,7 @@ def _crosscheck(tifs, refwater, dn, dow, span, n=6):
     got_span = span[ys, xs].astype(np.int64)
     assert np.array_equal(exp_dow, got_dow), (exp_dow, got_dow)
     assert np.array_equal(exp_span, got_span), (exp_span, got_span)
-    print(f"  cross-check OK: streamed rasters == sailaab.duration on {n} pixels")
+    print(f"  cross-check OK: streamed rasters == flood_watch.duration on {n} pixels")
 
 
 # --------------------------------------------------------------------------- #

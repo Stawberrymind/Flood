@@ -53,8 +53,8 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-from sailaab.observations import MIN_OBSERVED, RELIABLE_FROM, SUSPECT_FULL_COVERAGE, mask_observations
-from sailaab.io import atomic_path
+from flood_watch.observations import MIN_OBSERVED, RELIABLE_FROM, SUSPECT_FULL_COVERAGE, mask_observations
+from flood_watch.io import atomic_path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -62,7 +62,7 @@ DAILY = DATA / "gfm_district_daily_2015_2025.csv"
 FOOTPRINT = DATA / "gfm_footprint_daily.csv"
 OUT = DATA / "gfm_district_daily_observed_2015_2025.csv"
 
-# Matches MIN_OBSERVED_FRACTION in sailaab/nowcast.py.
+# Matches MIN_OBSERVED_FRACTION in flood_watch/nowcast.py.
 # Matches THRESHOLD in pipeline/run_forecaster_daily.py: the model's target is
 # flooding over more than 0.5% of district area, not any standing water.
 TARGET_FRACTION = 0.005

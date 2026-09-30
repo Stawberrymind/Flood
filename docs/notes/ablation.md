@@ -91,7 +91,7 @@ Expectations (falsifiable, recorded either way):
 Run 2026-07-22, `python -m pipeline.run_ablation` (no network; all inputs are the
 repo's committed CSVs). Same 1,540-row core-season frame (7 post-paddy windows x
 20 districts x 11 years, 27 events, base rate 1.75%), same LOYO folds
-(`sailaab.model.loyo_splits`), same XGBoost construction (`run_forecaster._mk_clf`:
+(`flood_watch.model.loyo_splits`), same XGBoost construction (`run_forecaster._mk_clf`:
 300 trees, depth 4, lr 0.05, subsample 0.9), same 2015-2024->2025 hindcast and the
 same flag constants (`FLAG_TOPN=5`, `FLAG_PROB=0.50`, event windows
 {08-14, 08-24, 09-03}) as the shipped forecaster. Classifier only — the fraction

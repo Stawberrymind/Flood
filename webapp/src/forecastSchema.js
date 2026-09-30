@@ -94,7 +94,7 @@ function uncoveredRowOk(d) {
 /** How the producer describes what the satellite actually saw. */
 const ACQ_STATES = ['observed', 'partial', 'not_observed', 'unresolved', 'unknown'];
 
-/** Mirrors MIN_OBSERVED_FRACTION in sailaab/nowcast.py, the footprint share a
+/** Mirrors MIN_OBSERVED_FRACTION in flood_watch/nowcast.py, the footprint share a
  *  district needs before it counts as imaged. */
 const MIN_OBSERVED_FRACTION = 0.95;
 
@@ -114,7 +114,7 @@ function acquisitionOk(d) {
   if (frac !== null && inRange(frac, 0, 1) === null) return false;
   if (d.covered !== (state === 'observed')) return false;
 
-  // The producer DERIVES the state from the fraction (sailaab/nowcast.py):
+  // The producer DERIVES the state from the fraction (flood_watch/nowcast.py):
   // >= 0.95 observed, > 0 partial, == 0 not_observed, and a null fraction only
   // when there is no footprint at all. Cross-checking `covered` against the
   // state while leaving this pair unchecked was the same omission one field
@@ -129,7 +129,7 @@ function acquisitionOk(d) {
   return true;  // 'unresolved': imaged, but the flood product did not resolve
 }
 
-/** Matches MAX_STALENESS_DAYS in sailaab/forecast_live.py. A SCORED row older
+/** Matches MAX_STALENESS_DAYS in flood_watch/forecast_live.py. A SCORED row older
  *  than this should never have existed, so seeing one means the producer's
  *  eligibility rule and this validator disagree, and the feed fails closed. */
 const MAX_INPUT_AGE_DAYS = 3;
@@ -190,7 +190,7 @@ const ALWAYS_EMITTED = [
  *  reaches outside the row. */
 const DERIVATIONS = [
   ['observed_km2 / observed_fraction_window', (d) =>
-    // both come from the same `if covered` branch in sailaab/nowcast.py, so
+    // both come from the same `if covered` branch in flood_watch/nowcast.py, so
     // they are null together or numeric together, never one of each
     (d.observed_km2 === null) === (d.observed_fraction_window === null)],
 

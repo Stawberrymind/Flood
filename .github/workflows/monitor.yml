@@ -1,4 +1,4 @@
-name: sailaab-monitor
+name: flood-watch-monitor
 on:
   schedule:
     - cron: "0 */6 * * *"
@@ -17,6 +17,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.13" }
       - run: pip install --require-hashes -r requirements.lock
+      - run: pip install --no-deps --no-build-isolation -e .
       - run: python -m pytest -q          # never publish from a red tree
       - run: python -m pipeline.live_monitor   # secretless: anonymous Planetary Computer STAC
       - run: python -m pipeline.nowcast        # unavailable inputs publish nulls; failed writes must fail the job

@@ -1,4 +1,4 @@
-// Sailaab — Script 03: Tier B Random Forest segmentation + spatial cross-validation
+// Flood Watch — Script 03: Tier B Random Forest segmentation + spatial cross-validation
 // The judged "AI component". Precedent: IJIST Oct-2025 RF on this same flood
 // (Pakistan side) @ 98.3% OA. Labels are auto-sampled from high-confidence strata;
 // validation uses spatially disjoint district folds (anti-leakage).
@@ -127,7 +127,7 @@ Map.addLayer(rfFlood, {palette: ['ff5500']}, 'RF flood');
 // Map.addLayer(rfFlood.and(tierA), {palette:['ffffff']}, 'High confidence');
 
 Export.image.toDrive({
-  image: rfFlood.unmask(0).byte(), description: 'sailaab_RF_floodmask_2025',
+  image: rfFlood.unmask(0).byte(), description: 'flood_watch_RF_floodmask_2025',
   region: aoi, scale: 20, maxPixels: 1e10
 });
 // Re-run the district-stats block from 02 with `rfFlood` for the headline table.

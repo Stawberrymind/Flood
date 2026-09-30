@@ -1,20 +1,20 @@
-# The founding-argument panel — `atlas/ndem_vs_sailaab.png`
+# The founding-argument panel — `atlas/ndem_vs_flood_watch.png`
 
 One image that states the premise: **ISRO's locked, static PDF flood sheet vs the
-SAILAAB open, interactive flood map — the same Punjab-2025 flood.** Regenerated
+FLOOD WATCH open, interactive flood map — the same Punjab-2025 flood.** Regenerated
 deterministically by `pipeline/make_ndem_panel.py` (same inputs → byte-stable
 PNG; no network, no randomness).
 
 ```
 python -m pip install pypdfium2          # pure wheel, no poppler
-python pipeline/make_ndem_panel.py       # -> atlas/ndem_vs_sailaab.png (2200x1127, ~1.0 MB)
+python pipeline/make_ndem_panel.py       # -> atlas/ndem_vs_flood_watch.png (2200x1127, ~1.0 MB)
 ```
 
 - **LEFT** — the NDEM rapid-mapping sheet (a locked A0 PDF, "For Official Use"),
   cropped to the framed map body, labeled `ISRO NDEM · 19 Aug 2025 · static PDF`.
-- **RIGHT** — the SAILAAB `rf_flood_2025.tif` mask over the *same approximate
+- **RIGHT** — the FLOOD WATCH `rf_flood_2025.tif` mask over the *same approximate
   extent*, dark cartography (ink ground, cyan inundation, hairline district
-  borders + labels), labeled `SAILAAB · same flood · open, interactive,
+  borders + labels), labeled `FLOOD WATCH · same flood · open, interactive,
   reproducible`.
 - **Footer** — `Same event, two access models. NDEM sheets validated our extent
   visually; full georeferenced comparison on the roadmap.`
@@ -27,7 +27,7 @@ visual panel"). The NDEM product is a raster PDF with **no machine-readable
 projection**, so the two halves are aligned **by district shape, not by
 coordinates**. We make **no claim of pixel agreement**; the caption on the image
 says "approximate extent match" explicitly. What the panel *does* show honestly:
-both ISRO and SAILAAB independently map the **same Beas-doab + Sutlej inundation
+both ISRO and FLOOD WATCH independently map the **same Beas-doab + Sutlej inundation
 signature** across Kapurthala / Tarn Taran in August 2025.
 
 Visual-match verdict: **good-to-loose.** The Beas-doab flood blob and the
@@ -64,7 +64,7 @@ Six NDEM PDFs were downloaded to `data/ndem/` (uncommitted; see
 **Chosen: `pbflood50dsc19082025_1100hrs_map.pdf`, page 0** — titled *"Flood
 Inundation Areas in Parts of Kapurthala and Tarn Taran Districts, Punjab State"*.
 It is the single-acquisition (19 Aug 2025) sheet over exactly the Kapurthala /
-Beas–Sutlej belt where the SAILAAB masks (`rf_flood_2025.tif` and the 60 m
+Beas–Sutlej belt where the FLOOD WATCH masks (`rf_flood_2025.tif` and the 60 m
 `local_tierA_kapurthala_tierA_floodmask.tif`) carry the strongest signal, and it
 matches the video plan's "19 Aug 2025 · Kapurthala/Tarn Taran" beat verbatim. The
 two cumulative statewide sheets are the better *quantitative* ground-truth (they
@@ -108,5 +108,5 @@ products and rasters stay uncommitted):
   pipeline; see `docs/notes/rf-train.md`).
 - `data/punjab_districts.geojson` — committed.
 
-Only `atlas/ndem_vs_sailaab.png`, `pipeline/make_ndem_panel.py` and this note are
+Only `atlas/ndem_vs_flood_watch.png`, `pipeline/make_ndem_panel.py` and this note are
 committed.

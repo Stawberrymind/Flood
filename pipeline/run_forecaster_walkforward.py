@@ -38,7 +38,7 @@ from pipeline.run_forecaster_daily_audit2 import (
     build_adjacency,
     seasonal_climatology,
 )
-from sailaab.forecast_daily import forward_event
+from flood_watch.forecast_daily import forward_event
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"

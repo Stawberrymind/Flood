@@ -1,5 +1,5 @@
 # tests/test_climatology.py
-"""TDD spec for sailaab.climatology — extreme-rain indices + trend statistics.
+"""TDD spec for flood_watch.climatology — extreme-rain indices + trend statistics.
 
 Every assertion is a hand-computed anchor on a synthetic series so the math is
 pinned independently of the IMD data (which is not committed as rasters).
@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.climatology import (
+from flood_watch.climatology import (
     annual_indices,
     empirical_return_period,
     lag1_autocorr,

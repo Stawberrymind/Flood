@@ -4,7 +4,7 @@
 This is the original ``pipeline/live_monitor.py`` verbatim (Google Earth Engine
 path, needs an EE service account). It has been superseded by the secretless
 Planetary-Computer ``pipeline/live_monitor.py``; preserved here unchanged so the
-EE Tier-A wiring and the ``sailaab.ee_graphs`` usage stay documented and runnable
+EE Tier-A wiring and the ``flood_watch.ee_graphs`` usage stay documented and runnable
 for anyone with EE credentials. Nothing in the default test run or the GitHub
 Action imports this module.
 
@@ -18,13 +18,13 @@ from pathlib import Path
 
 import ee
 
-from sailaab.alerts import render_alert
-from sailaab.ee_graphs import (
+from flood_watch.alerts import render_alert
+from flood_watch.ee_graphs import (
     punjab_districts,
     flood_mask_for_window,
     district_flood_stats,
 )
-from sailaab.monitor import load_state, new_scenes, save_state
+from flood_watch.monitor import load_state, new_scenes, save_state
 
 STATE = Path("monitor/state.json")
 LATEST = Path("monitor/latest.json")

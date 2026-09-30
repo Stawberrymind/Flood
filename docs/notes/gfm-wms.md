@@ -6,7 +6,7 @@ How the Copernicus **Global Flood Monitoring (GFM)** observed-flood-extent masks
 without a login). Fetched 2026-07-21.
 
 - **Endpoint:** `https://ows.globalfloods.eu/glofas-ows/ows` (WMS 1.3.0, no key, no login).
-- **Pure logic:** `sailaab/gfm.py` (PNG→binary decode, tiling, stitch, union, area) — unit-tested in `tests/test_gfm.py`.
+- **Pure logic:** `flood_watch/gfm.py` (PNG→binary decode, tiling, stitch, union, area) — unit-tested in `tests/test_gfm.py`.
 - **IO / fetch:** `pipeline/fetch_gfm.py` (`requests` + `rasterio`). Run: `python -m pipeline.fetch_gfm`.
 - **Rasters:** `data/gfm/` (gitignored, not committed). Quicklook: `atlas/checks/gfm_union_20250827_0905.png` (committed).
 
@@ -58,7 +58,7 @@ swath outlines and burnt-in text. Sampled palette (2026-07-21):
 **Rule:** a pixel is flood iff its colour is within ±48 per channel of the flood pink **and**
 alpha ≥ 96. The pink is cleanly separable — red/orange have `B ≤ 13` (pink `B=120`), green
 has `R=112` (pink `R≥180`), blue has `R=0`. Reference water uses the same rule on `(0,75,114)`.
-See `sailaab.gfm.color_mask` / `flood_mask` / `ref_water_mask`. Flood polygons render as solid
+See `flood_watch.gfm.color_mask` / `flood_mask` / `ref_water_mask`. Flood polygons render as solid
 pink (`alpha=255`) even at ~100 m; only thin anti-aliased edges are partial-alpha, so the
 result is insensitive to the exact `alpha_min`.
 

@@ -15,11 +15,11 @@ Design choices (see docs/notes/monitor-rw.md):
   relative_orbit) group, so all relative orbits are represented and the median
   covers the whole state gap-free, while total scene count (hence peak RAM) stays
   bounded. RTC gamma0 is terrain-flattened, so mixing orbits in the *baseline*
-  median is sound — the canonical GEE Tier-A (``sailaab.ee_graphs``) likewise
+  median is sound — the canonical GEE Tier-A (``flood_watch.ee_graphs``) likewise
   medians the pre window over all orbits.
 
 Reuses the STAC/COG machinery in ``pipeline.local_tier_a`` by import (no edit)
-and the quantized codec in ``sailaab.monitor_pc``.
+and the quantized codec in ``flood_watch.monitor_pc``.
 
 Example
 -------
@@ -41,7 +41,7 @@ from pipeline.local_tier_a import (
     search_window,
     target_grid,
 )
-from sailaab.monitor_pc import save_reference
+from flood_watch.monitor_pc import save_reference
 
 BBOX = AOIS["punjab"]
 DEFAULT_WINDOW = ("2026-04-01", "2026-05-31")

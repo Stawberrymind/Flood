@@ -29,8 +29,8 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import average_precision_score, roc_auc_score
 
-from sailaab import config
-from sailaab.forecast_v2 import (
+from flood_watch import config
+from flood_watch.forecast_v2 import (
     block_bootstrap_ci,
     fold_safe_prior,
     quiet_window_alert_rate,

@@ -10,7 +10,7 @@ Source: the same IMD Pune 0.25 deg daily gridded rasters already on disk under
 data/rasters/imd/rain/*.grd (downloaded by fetch_rain.py, no login). This script
 adds no new download requirement for years already fetched.
 
-The pure aggregation logic lives in sailaab/rain_districts.py (tested); this
+The pure aggregation logic lives in flood_watch/rain_districts.py (tested); this
 file only reads rasters and writes CSVs, mirroring the fetch_rain.py split.
 
 Usage:
@@ -30,14 +30,14 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from sailaab import config
-from sailaab.rain_districts import (
+from flood_watch import config
+from flood_watch.rain_districts import (
     add_api,
     apply_weights,
     build_cell_weights,
     district_daily_frame,
 )
-from sailaab.windows import monsoon_windows
+from flood_watch.windows import monsoon_windows
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -165,7 +165,7 @@ def main(years=None, out_daily=None, windows_too=True) -> None:
     for yr in years:
         windows += [(a, b) for a, b in monsoon_windows(yr)]
 
-    from sailaab.rain_districts import district_window_table
+    from flood_watch.rain_districts import district_window_table
 
     wt = district_window_table(daily, windows, lags=2)
     ext = _window_extremes(daily, windows)

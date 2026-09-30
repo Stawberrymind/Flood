@@ -39,7 +39,7 @@ Drivers: `pipeline/build_daily_district_flood.py` (labels),
 `pipeline/run_forecaster_walkforward.py` (the operational simulation that
 produces the headline), `pipeline/run_forecaster_daily_audit.py` and
 `_audit2.py` (the checks in sections 6 and 7).
-Pure helpers and tests: `sailaab/forecast_daily.py`,
+Pure helpers and tests: `flood_watch/forecast_daily.py`,
 `tests/test_forecast_daily.py`, `tests/test_daily_flood_data.py`.
 
 ## 1. What was actually wrong

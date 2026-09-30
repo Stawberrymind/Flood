@@ -1,6 +1,6 @@
 # tests/test_history.py
 """Tests for the pure logic behind the 70-year flood-context milestone figure
-(``sailaab.history``): unit normalisation (lakh_ha / Mha / ha -> ha, crore-INR
+(``flood_watch.history``): unit normalisation (lakh_ha / Mha / ha -> ha, crore-INR
 and count passthrough), disjoint metric-class tagging (flooded area vs crop-damage
 area vs lives vs houses -- never conflated), period->x mapping, and schema +
 anchor-value validation of the consolidated ``data/punjab_flood_damage_history.csv``.
@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.history import (
+from flood_watch.history import (
     AREA_CLASSES,
     AREA_UNIT_TO_HA,
     HISTORY_COLUMNS,

@@ -2,8 +2,8 @@
 """Decade batch (2015-2025) of Copernicus GFM observed flood extent from the
 keyless GloFAS WMS, and the two forecaster/atlas products built from it.
 
-Two phases (all WMS/rasterio IO lives here; pure logic is in ``sailaab.gfm`` and
-``sailaab.frequency``):
+Two phases (all WMS/rasterio IO lives here; pure logic is in ``flood_watch.gfm`` and
+``flood_watch.frequency``):
 
     python -m pipeline.fetch_gfm_decade fetch [YEAR ...]   # Phase A: pull per-day tifs
     python -m pipeline.fetch_gfm_decade aggregate          # Phase B: build products
@@ -44,16 +44,16 @@ import rasterio
 from PIL import Image
 from rasterio.warp import transform_geom
 
-from sailaab import config
-from sailaab.windows import monsoon_windows
-from sailaab.districts import load_districts, rasterize_districts
-from sailaab.frequency import (
+from flood_watch import config
+from flood_watch.windows import monsoon_windows
+from flood_watch.districts import load_districts, rasterize_districts
+from flood_watch.frequency import (
     window_index,
     frequency_count,
     classify_frequency,
     summarize_repeat_victims,
 )
-from sailaab.gfm import flood_mask, ref_water_mask, web_mercator_area_km2
+from flood_watch.gfm import flood_mask, ref_water_mask, web_mercator_area_km2
 from pipeline.fetch_gfm import (
     bbox_3857,
     grid_shape,
@@ -126,7 +126,7 @@ def _load_progress() -> set[str]:
 
 
 def _append_progress(day, probe_px, active, full_px, flood_km2):
-    from sailaab.io import atomic_write_text
+    from flood_watch.io import atomic_write_text
     frame = pd.read_csv(PROGRESS_CSV) if PROGRESS_CSV.exists() else pd.DataFrame()
     if len(frame):
         frame = frame[frame["day"] != day]
@@ -236,7 +236,7 @@ def _district_labels(bounds, nrows, ncols):
 
 def _row_ha(bounds, nrows, ncols) -> np.ndarray:
     """Per-row ground area of one pixel, in hectares, with the Web-Mercator
-    cos^2(lat) correction (same physics as ``sailaab.gfm.web_mercator_area_km2``)."""
+    cos^2(lat) correction (same physics as ``flood_watch.gfm.web_mercator_area_km2``)."""
     minx, miny, maxx, maxy = bounds
     px = (maxx - minx) / ncols
     py = (maxy - miny) / nrows

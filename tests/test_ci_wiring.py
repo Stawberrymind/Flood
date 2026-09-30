@@ -49,7 +49,7 @@ def tracked() -> list:
 def test_the_workflow_parses_at_all():
     """A YAML error here fails every run, and no test noticed the file existed."""
     wf = workflow()
-    assert wf["name"] == "sailaab-monitor"
+    assert wf["name"] == "flood-watch-monitor"
     assert steps(), "the monitor job has no steps"
 
 

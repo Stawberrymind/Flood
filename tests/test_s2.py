@@ -1,13 +1,13 @@
 # tests/test_s2.py
 """Pure-array Sentinel-2 truth-set logic, developed test-first with small
 synthetic arrays. No network, no rasterio -- just the deterministic NDWI /
-harmonisation / water-decision / sampling machinery in ``sailaab/s2.py`` that the
+harmonisation / water-decision / sampling machinery in ``flood_watch/s2.py`` that the
 optical cross-check pipeline is built on. See ``docs/notes/s2-truth.md``."""
 
 import numpy as np
 import pytest
 
-from sailaab.s2 import (
+from flood_watch.s2 import (
     BOA_ADD_OFFSET,
     DRY,
     UNCERTAIN,
@@ -19,7 +19,7 @@ from sailaab.s2 import (
     ndwi,
     precision_recall,
 )
-from sailaab.validation import binary_metrics
+from flood_watch.validation import binary_metrics
 
 
 # --- harmonize_reflectance -------------------------------------------------

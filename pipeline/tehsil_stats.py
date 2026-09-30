@@ -3,10 +3,10 @@
 
 Takes the district analysis down to **tehsil (ADM3 sub-district)** resolution,
 reusing every piece of tested machinery: the tehsil polygons +
-:mod:`sailaab.tehsils`, :func:`sailaab.districts.rasterize_districts` /
+:mod:`flood_watch.tehsils`, :func:`flood_watch.districts.rasterize_districts` /
 ``district_fractions``, the decade per-row cos^2-lat area helpers in
-:mod:`pipeline.fetch_gfm_decade`, :func:`sailaab.frequency.summarize_repeat_victims`,
-and :func:`sailaab.stats.crop_value_at_risk`. No WMS pulls -- it only reads tifs
+:mod:`pipeline.fetch_gfm_decade`, :func:`flood_watch.frequency.summarize_repeat_victims`,
+and :func:`flood_watch.stats.crop_value_at_risk`. No WMS pulls -- it only reads tifs
 already on disk.
 
 Two products, on the two canonical grids the tifs already live on:
@@ -40,12 +40,12 @@ import rasterio
 from rasterio.transform import from_bounds
 from rasterio.warp import transform_geom
 
-from sailaab import config
-from sailaab import figstyle
-from sailaab.districts import district_fractions, load_districts, rasterize_districts
-from sailaab.frequency import summarize_repeat_victims
-from sailaab.stats import crop_value_at_risk
-from sailaab.tehsils import load_tehsils
+from flood_watch import config
+from flood_watch import figstyle
+from flood_watch.districts import district_fractions, load_districts, rasterize_districts
+from flood_watch.frequency import summarize_repeat_victims
+from flood_watch.stats import crop_value_at_risk
+from flood_watch.tehsils import load_tehsils
 from pipeline.fetch_gfm import bbox_3857, grid_shape
 from pipeline.fetch_gfm_decade import (
     LATE_SEASON_MD,

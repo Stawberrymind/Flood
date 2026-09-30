@@ -1,5 +1,5 @@
 # tests/test_config.py
-from sailaab import config
+from flood_watch import config
 
 
 def test_thresholds_are_negative_db():

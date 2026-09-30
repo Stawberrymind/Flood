@@ -4,7 +4,7 @@ The animated day-by-day reveal of the Aug–Sep 2025 flood swallowing Punjab's
 river corridors. Regenerated deterministically from the git-ignored GFM day tifs
 by `pipeline/make_timelapse.py` (rasterio + PIL; same input → identical output).
 The cumulative-union area figure reuses the repo's cos²(lat)-corrected estimator
-`sailaab.gfm.web_mercator_area_km2` (`tests/test_gfm.py`), so the annotated km²
+`flood_watch.gfm.web_mercator_area_km2` (`tests/test_gfm.py`), so the annotated km²
 matches the atlas everywhere else.
 
 ```

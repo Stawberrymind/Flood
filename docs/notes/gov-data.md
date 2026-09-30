@@ -66,7 +66,7 @@ everything at common-paddy MSP makes the v2 basmati-district figures conservativ
 Reproduce v2 from the two CSVs (pure pandas):
 ```python
 import pandas as pd
-from sailaab.districts import canonical_name
+from flood_watch.districts import canonical_name
 V = {"Fazilka":"Firozpur","Pathankot":"Gurdaspur","Malerkotla":"Sangrur"}
 apy = pd.read_csv("data/punjab_paddy_apy.csv")
 apy["d"] = apy.district.map(canonical_name).map(lambda x: V.get(x,x))
@@ -268,7 +268,7 @@ users. There is **no blanket free student tier**.
    cycle, budget **2–6 weeks**.
 5. **Honest verdict for a solo student** — reachable only with one cooperating professor
    (fast lane is then genuinely cheap). Without that: **Kaggle (free T4×2/P100,
-   ~30 GPU-hrs/wk)** or Colab free T4 are the realistic defaults for Sailaab-scale
+   ~30 GPU-hrs/wk)** or Colab free T4 are the realistic defaults for Flood Watch-scale
    workloads; C-DAC AIRAWAT/PARAM (NSM) is the same institution-gate.
 
 ### 4c. NRSC Bhoonidhi — free EO downloads + EOS-04 SAR cross-validation
@@ -291,7 +291,7 @@ regional Sentinel-1/2 and Landsat-8/9 distribution.
    failure): modes HRS <2 m/10 km, FRS-1 ~few m/25 km, FRS-2 12 m/30 km quad-pol,
    **MRS 25 m/120 km**, **CRS 50 m/240 km**; products L0/L1(SLC)/L2A/**L2B
    terrain-normalised ARD (CEOS-ARD/RTC, GeoTIFF)**/L3A.
-4. **What Sailaab would do with it** — pull EOS-04 **L2B ARD ScanSAR (MRS 25 m)** over
+4. **What Flood Watch would do with it** — pull EOS-04 **L2B ARD ScanSAR (MRS 25 m)** over
    Punjab for flood-window + dry-baseline dates, run the existing C-band water-detection
    thresholds (both sensors are C-band ~5.4 GHz, thresholds transfer), and report per-
    district IoU/F1 vs the Sentinel-1 maps: an ISRO-sourced, agency-independent SAR

@@ -2,7 +2,7 @@
 """Statewide 90 m Sentinel-1 feature stack + regenerated Tier-A mask for the RF
 flood classifier (the judged AI stage).
 
-Descending tracks, both 2025 windows (``sailaab.config``), median composites of
+Descending tracks, both 2025 windows (``flood_watch.config``), median composites of
 VV and VH. Reuses the proven, SAS-re-sign-fixed COG reader in
 ``pipeline.local_tier_a`` (so the central-stripe nodata hole of the pre-fix run
 is filled). Writes float32 GeoTIFFs to ``data/rasters/`` (gitignored) plus a
@@ -13,7 +13,7 @@ grid sidecar the other RF pipeline scripts align to:
     local_tierA_punjab_tierA_floodmask.tif                      (uint8, regenerated)
     rf_grid.json                                                (grid metadata)
 
-Pure array logic lives in ``sailaab.sar_local`` / ``sailaab.rf``; this is a thin
+Pure array logic lives in ``flood_watch.sar_local`` / ``flood_watch.rf``; this is a thin
 IO runner mirroring the other ``pipeline/*.py`` CLIs.
 
 Usage:
@@ -29,8 +29,8 @@ from pathlib import Path
 import numpy as np
 import rasterio
 
-from sailaab.config import FLOOD_2025, PRE_2025
-from sailaab.sar_local import flooded_hectares, sieve_mask, tier_a_mask
+from flood_watch.config import FLOOD_2025, PRE_2025
+from flood_watch.sar_local import flooded_hectares, sieve_mask, tier_a_mask
 import pipeline.local_tier_a as lta
 from pipeline.local_tier_a import (
     AOIS,

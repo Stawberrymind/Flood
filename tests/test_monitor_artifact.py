@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from sailaab import forecast_live
+from flood_watch import forecast_live
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT = ROOT / "monitor" / "nowcast.json"
@@ -162,7 +162,7 @@ def test_the_coverage_rule_runs_on_a_board_shaped_payload():
     on a quiet cycle is every run, so the rule would go unexercised for days at
     a time and its own imports would not even be reached. This runs it against
     a payload that always carries a board."""
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     districts = [
         {"district": "a", "p_event": 0.4},

@@ -6,7 +6,7 @@ GitHub. We pull the all-India FeatureCollection, keep ST_NM=='Punjab' (20
 districts, the Census-2011 / GAUL-2015 vintage the rest of the pipeline uses),
 and re-emit a tidy FeatureCollection whose only property is ``district`` (the
 datameet DISTRICT spelling). Name reconciliation to the GAUL ADM2_NAME spellings
-in ``sailaab.config`` lives in ``sailaab.districts`` (NAME_ALIASES), not here.
+in ``flood_watch.config`` lives in ``flood_watch.districts`` (NAME_ALIASES), not here.
 
 No login, no API key. See docs/notes/districts.md for provenance + the mapping
 table. Stdlib only (urllib); the geometry is small (~0.4 MB) so no simplify step
@@ -27,7 +27,7 @@ OUT = Path(__file__).resolve().parents[1] / "data" / "punjab_districts.geojson"
 
 
 def fetch(url: str) -> dict:
-    req = urllib.request.Request(url, headers={"User-Agent": "sailaab/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": "flood_watch/1.0"})
     ctx = ssl.create_default_context()
     with urllib.request.urlopen(req, timeout=120, context=ctx) as resp:
         return json.loads(resp.read())

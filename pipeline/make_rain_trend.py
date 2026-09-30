@@ -40,8 +40,8 @@ import pandas as pd  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patheffects import withStroke  # noqa: E402
 
-from sailaab import climatology as cl  # noqa: E402
-from sailaab import figstyle  # noqa: E402
+from flood_watch import climatology as cl  # noqa: E402
+from flood_watch import figstyle  # noqa: E402
 
 DATA = ROOT / "data"
 DAILY_CSV = DATA / "rain_daily_boxes_1961_2025.csv"

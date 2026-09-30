@@ -3,9 +3,9 @@
 
 import ee
 
-from sailaab import config
-from sailaab.decade import run_manifest
-from sailaab.ee_graphs import punjab_districts, flood_mask_for_window
+from flood_watch import config
+from flood_watch.decade import run_manifest
+from flood_watch.ee_graphs import punjab_districts, flood_mask_for_window
 
 EE_PROJECT = "ee-YOURUSER"
 
@@ -23,8 +23,8 @@ def main():
     freq = ee.ImageCollection(season_layers).sum().rename("flood_frequency")
     ee.batch.Export.image.toDrive(
         image=freq.byte(),
-        description="sailaab_flood_frequency_2015_2025",
-        folder="sailaab",
+        description="flood_watch_flood_frequency_2015_2025",
+        folder="flood_watch",
         region=aoi,
         scale=30,
         maxPixels=1e10,

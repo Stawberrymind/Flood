@@ -13,8 +13,8 @@ inflow-forecast stations — while the national network counts 226 stations
 (166 level + 60 inflow) across 22 states/UTs. Neighbouring Haryana has 1,
 J&K 3, Rajasthan 3.
 
-Why it matters for Sailaab: the state hit by the worst flood since 1988 sits
-outside the national flood-forecast station network. Sailaab's district
+Why it matters for Flood Watch: the state hit by the worst flood since 1988 sits
+outside the national flood-forecast station network. Flood Watch's district
 forecaster and live monitor are not an incremental improvement on an existing
 public layer for Punjab — for this state, at district granularity, that layer
 does not otherwise exist in public.
@@ -62,7 +62,7 @@ Ministry of Water Resources, River Development and Ganga Rejuvenation (via Rajya
 Sabha), published on OGD 2019-08-13, Government Open Data Licence – India. The
 resource carries **counts only** — no station names, rivers, or coordinates.
 
-Pure logic in `sailaab/cwc.py`; `tests/test_cwc.py` = **16 tests, all pass**
+Pure logic in `flood_watch/cwc.py`; `tests/test_cwc.py` = **16 tests, all pass**
 (full suite green). `load_stations` validates the schema, enforces
 `level + inflow == total` on every state row, and cross-checks the table's own
 `Total` row (166/60/226) against the summed state rows before dropping it — so

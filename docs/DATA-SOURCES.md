@@ -13,6 +13,5 @@ Every dataset touched by the pipeline. Access dates are when the data was first 
 | Copernicus DEM GLO-30 | ESA / Airbus via Planetary Computer `cop-dem-glo-30` | Anonymous STAC | Free with attribution | 2026-07-21 | Slope feature / masking (RF stage) |
 | ESA WorldCover 10 m (class 40 = cropland) | ESA via Planetary Computer `esa-worldcover` | Anonymous STAC | CC-BY 4.0 | 2026-07-21 | Crop-flooded hectares (Wave 1/3) |
 | NDEM flood map products (PB 2017/2019/2023/2025) | ISRO / NRSC | `ndem.nrsc.gov.in/documents/Disaster_Document/<yr>/PB/…` PDFs (browser UA required); 4 products for 2025 incl. two cumulative sheets | Government map sheets: viewed for validation, not redistributed | 2026-07-21 | Independent validation (visual/georeferenced comparison) |
-| Festival portal facts | indiaaiimpactfest.ai-for-all.in | Public pages (deadline banner, category, brackets) | — | 2026-07-21 | Deadline **Jul 26 2026** re-verified; synopsis/video spec is behind registration |
 
 Dead ends, documented in `docs/notes/validation-recon.md`: Copernicus EMS Rapid Mapping EMSR838 vectors (login-walled as of 2026-07-21), India-WRIS API (geo-blocked/timeout), AIKosh downloads (login), CWC weekly bulletins (series stops 2025-05-08, no monsoon-2025 issues), CWC ffm_dashboard (401).

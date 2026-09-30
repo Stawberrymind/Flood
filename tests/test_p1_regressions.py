@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.observations import mask_observations, has_training_contract
+from flood_watch.observations import mask_observations, has_training_contract
 
 
 def observed_frame(values, states=None, coverage=None, dates=None):
@@ -154,7 +154,7 @@ def test_legacy_model_is_rejected_before_deserializing(monkeypatch):
 def test_model_and_provenance_must_match(tmp_path, monkeypatch):
     import joblib
     from pipeline import nowcast as driver
-    from sailaab.forecast_live import FEATURE_ORDER
+    from flood_watch.forecast_live import FEATURE_ORDER
     model = tmp_path / "forecaster.joblib"
     bundle = {"feature_order": list(FEATURE_ORDER), "training_contract": contract()}
     joblib.dump(bundle, model)
@@ -224,7 +224,7 @@ def test_successfully_published_unavailable_nowcast_is_explicitly_null(tmp_path,
 @pytest.mark.parametrize("fail_stage", ["render_latest_png", "atomic_write_text"])
 def test_monitor_drains_backlog_without_skipping_or_aging_out(tmp_path, monkeypatch, fail_stage):
     from pipeline import live_monitor as monitor
-    from sailaab.monitor import load_state, save_state
+    from flood_watch.monitor import load_state, save_state
     reference = tmp_path / "reference.tif"
     reference.touch()
     monkeypatch.setattr(monitor, "REF_PATH", reference)

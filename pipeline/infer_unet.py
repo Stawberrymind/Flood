@@ -29,10 +29,10 @@ import rasterio
 from rasterio.warp import transform_geom
 
 from pipeline.local_tier_a import AOIS, DST_CRS, target_grid
-from sailaab.districts import load_districts, rasterize_districts
-from sailaab.sar_local import flooded_hectares, sieve_mask, tier_a_mask
-from sailaab.unet import build_unet, normalize_db, tile_offsets
-from sailaab.validation import binary_metrics
+from flood_watch.districts import load_districts, rasterize_districts
+from flood_watch.sar_local import flooded_hectares, sieve_mask, tier_a_mask
+from flood_watch.unet import build_unet, normalize_db, tile_offsets
+from flood_watch.validation import binary_metrics
 
 RES = 90.0
 PX_AREA_M2 = RES * RES  # 8100 m^2 -> 0.81 ha / pixel
@@ -115,7 +115,7 @@ def _quicklook(unet, rf, tier_a, gfm, path, max_w=900):
     f = max(1, int(np.ceil(unet.shape[1] / max_w)))
     panels = [
         ("U-Net (Sen1Floods11)", unet),
-        ("RF (Sailaab)", rf),
+        ("RF (Flood Watch)", rf),
         ("Threshold (Tier-A)", tier_a),
         ("GFM union (ref)", gfm),
     ]
@@ -177,7 +177,7 @@ def main():
 
     rf = (_read(RASTER_DIR / "rf_flood_2025.tif") > 0) & in_pj
     # Tier-A is recomputed from the SAME composites via the unit-tested pure
-    # functions (sailaab.sar_local) rather than read from the uint8 artifact:
+    # functions (flood_watch.sar_local) rather than read from the uint8 artifact:
     # the on-disk mask file can be a stale product of an earlier standalone run
     # (observed: 3.2 kha in-district vs the committed 33.9 kha). Recomputation
     # reproduces rf_grid.json's tierA_flooded_ha and the committed district

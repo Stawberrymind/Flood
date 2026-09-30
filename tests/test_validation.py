@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from sailaab.validation import binary_metrics
+from flood_watch.validation import binary_metrics
 
 
 def test_perfect_agreement():

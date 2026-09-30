@@ -52,7 +52,7 @@ def test_hazard_section_uses_the_shared_validator():
     assert "p_exhaustion_flood_scale" in js
     # the feed is the product's latest.json, not a dated record the Action
     # would have to rename every day
-    assert "punjabflood/outputs/forecast/latest.json" in jsx
+    assert "river-watch/outputs/forecast/latest.json" in jsx
 
 
 def test_alert_section_uses_checked_snapshot_and_no_coercion():

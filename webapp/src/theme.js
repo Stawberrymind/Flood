@@ -1,6 +1,6 @@
 import {defineTheme} from '@astryxdesign/core/theme';
 
-/* Sailaab — a gazette, not a dashboard.
+/* Flood Watch — a gazette, not a dashboard.
  *
  * The page is a light warm-paper document: an official record you could
  * print and hand to a district officer. The one dark moment is the live
@@ -22,29 +22,29 @@ import {defineTheme} from '@astryxdesign/core/theme';
 const WATER = '#0B5563';
 const WATER_ON_DARK = '#5FC2D2';
 
-export const sailaabTheme = defineTheme({
-  name: 'sailaab',
+export const floodWatchTheme = defineTheme({
+  name: 'flood_watch',
   typography: {
     scale: {base: 16, ratio: 1.25},
     // Each stack runs roman → Devanagari → Gurmukhi, so a Hindi or Punjabi
     // heading picks up the matching Noto Serif instead of dropping to a
     // system face halfway through the type system.
     heading: {
-      family: 'Sailaab Serif',
-      fallbacks: '"Sailaab Serif Deva", "Sailaab Serif Guru", Georgia, "Times New Roman", serif',
+      family: 'Flood Watch Serif',
+      fallbacks: '"Flood Watch Serif Deva", "Flood Watch Serif Guru", Georgia, "Times New Roman", serif',
       weights: {1: 'semibold', 2: 'semibold', 3: 'semibold'},
     },
     body: {
-      family: 'Sailaab Sans',
-      fallbacks: '"Sailaab Sans Deva", "Sailaab Sans Guru", -apple-system, "Segoe UI", Roboto, sans-serif',
+      family: 'Flood Watch Sans',
+      fallbacks: '"Flood Watch Sans Deva", "Flood Watch Sans Guru", -apple-system, "Segoe UI", Roboto, sans-serif',
     },
     // Plex Mono carries no Devanagari or Gurmukhi, and there is no Indic
     // monospace in this set, so the kickers and column heads in the Hindi
     // and Punjabi editions fall through to the matching Noto Sans rather
     // than to whatever the operating system happens to have.
     code: {
-      family: 'Sailaab Mono',
-      fallbacks: '"Sailaab Sans Deva", "Sailaab Sans Guru", ui-monospace, Menlo, Consolas, monospace',
+      family: 'Flood Watch Mono',
+      fallbacks: '"Flood Watch Sans Deva", "Flood Watch Sans Guru", ui-monospace, Menlo, Consolas, monospace',
     },
   },
   // Near-square. A flood record does not have rounded corners; the only

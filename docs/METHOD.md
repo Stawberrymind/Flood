@@ -1,10 +1,10 @@
-# Sailaab: Method
+# Flood Watch: Method
 
 ## 1. Software architecture
-Decision logic lives in the pure-Python `sailaab/` package, developed test-first
+Decision logic lives in the pure-Python `flood_watch/` package, developed test-first
 (pytest, tests/ mirrors the package 1:1). Earth Engine effects are confined to
 `gee/*.js` and thin `pipeline/*.py` CLIs. Constants (thresholds, windows,
-spatial folds, official comparison bands) are centralized in `sailaab/config.py`.
+spatial folds, official comparison bands) are centralized in `flood_watch/config.py`.
 GEE steps use pre-declared acceptance checkpoints (see VERIFICATION-LOG.md).
 <!-- Sections 2+ appended by later plans: 2 Mapping, 3 Decade, 4 Validation,
      5 Forecaster, 6 Monitor -->
@@ -43,6 +43,6 @@ transplant windows excluded from fit and eval; leakage check with fold-safe prio
 5/5 flood districts flagged, ~10-day lead (notes/forecaster.md).
 
 ## 6. Live monitor (Wave 5)
-Secretless GitHub Action (6-hourly): anonymous PC STAC scene watermark (sailaab/monitor.py),
+Secretless GitHub Action (6-hourly): anonymous PC STAC scene watermark (flood_watch/monitor.py),
 coarse VV composite of new scenes vs committed 150 m pre-monsoon reference, Tier-A rule,
 district km², PA/HI/EN alerts, state committed to repo (notes/monitor-rw.md).

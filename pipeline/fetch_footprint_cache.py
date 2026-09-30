@@ -71,7 +71,7 @@ def _load_done(names=None) -> set[str]:
 
 def _write_day(rows):
     """Replace an entire date, including any rows left by an interrupted old run."""
-    from sailaab.io import atomic_write_text
+    from flood_watch.io import atomic_write_text
     new = pd.DataFrame(rows, columns=["date", "district", "acq_fraction", "bbox_fraction", "era"])
     frame = pd.read_csv(OUT) if OUT.exists() else new.iloc[:0]
     frame = frame[~frame["date"].isin(new["date"])]

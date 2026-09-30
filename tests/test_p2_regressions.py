@@ -10,7 +10,7 @@ import pandas as pd
 import pytest
 import yaml
 
-from sailaab.io import atomic_path, atomic_write_text
+from flood_watch.io import atomic_path, atomic_write_text
 
 
 def test_interrupted_atomic_write_keeps_previous_product(tmp_path):
@@ -46,7 +46,7 @@ def test_empty_or_all_missing_sar_window_fails(monkeypatch):
 
 
 def test_excitation_does_not_reinject_an_event_on_missing_days():
-    from sailaab.hazard import excitation_features
+    from flood_watch.hazard import excitation_features
     frame = pd.DataFrame({"date": pd.date_range("2020-08-01", periods=3),
                           "district": "A", "fraction": [1.0, np.nan, 0.0]})
     result = excitation_features(frame, {"A": []}, threshold=0.5, tau=2.0)
@@ -58,7 +58,7 @@ def test_excitation_does_not_reinject_an_event_on_missing_days():
     (["2020-07-01", "2020-07-03", "2020-07-04"], [100, 0, 0]),
 ])
 def test_api_preserves_unknown_rain_and_calendar_gaps(dates, rain):
-    from sailaab.rain_districts import add_api
+    from flood_watch.rain_districts import add_api
     frame = pd.DataFrame({"date": dates + ["2021-07-01"], "district": "A", "rain_mm": rain + [10]})
     result = add_api(frame)["api_mm"].tolist()
     assert result[0] == 100 and result[-1] == 10
@@ -130,7 +130,7 @@ def test_live_cwc_follows_server_page_size_and_probes_all_dams(monkeypatch):
 
 
 def test_wms_rejects_changed_palette_and_error_image_shape():
-    from sailaab.gfm import validate_wms_rgba
+    from flood_watch.gfm import validate_wms_rgba
     arr = np.zeros((2, 2, 4), dtype=np.uint8)
     validate_wms_rgba(arr, (2, 2))
     arr[0, 0] = (20, 20, 240, 255)
@@ -162,7 +162,7 @@ def test_decade_fetch_does_not_gate_small_floods_on_a_coarse_probe(tmp_path, mon
 def test_pr_ci_gates_both_packages_and_all_jobs_install_hash_locks():
     workflow = yaml.safe_load(Path(".github/workflows/build.yml").read_text())
     steps = workflow["jobs"]["build"]["steps"]
-    assert any(s.get("working-directory") == "punjabflood" and "pytest" in s.get("run", "") for s in steps)
+    assert any(s.get("working-directory") == "river-watch" and "pytest" in s.get("run", "") for s in steps)
     for path in Path(".github/workflows").glob("*.yml"):
         jobs = yaml.safe_load(path.read_text())["jobs"]
         for job in jobs.values():

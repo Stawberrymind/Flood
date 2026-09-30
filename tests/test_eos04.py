@@ -13,8 +13,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from sailaab import config
-from sailaab.eos04 import (
+from flood_watch import config
+from flood_watch.eos04 import (
     agreement_metrics,
     confusion,
     district_agreement,
@@ -22,7 +22,7 @@ from sailaab.eos04 import (
     water_mask_change,
     water_mask_single,
 )
-from sailaab.sar_local import tier_a_mask
+from flood_watch.sar_local import tier_a_mask
 
 
 # ---------------------------------------------------------------- masks

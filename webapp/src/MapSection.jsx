@@ -62,7 +62,7 @@ const RAMPS = {
 // nothing", which is the opposite of what a null means — and a neutral grey
 // cannot be told apart from the ochre ramp by colour alone (dE 7.4, well
 // under the 15 floor), so the distinction has to be carried by texture.
-const NO_DATA_PATTERN_ID = 'sailaab-nodata';
+const NO_DATA_PATTERN_ID = 'flood_watch-nodata';
 const NO_DATA_FILL = `url(#${NO_DATA_PATTERN_ID})`;
 
 const colorFor = (v, layer) => {

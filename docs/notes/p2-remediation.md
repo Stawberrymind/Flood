@@ -49,9 +49,9 @@ cross-platform, hash-checked lock; compiler-runtime constraints are recorded in
 
 ```sh
 python -m pip install --require-hashes -r requirements.lock
-python -m pip install --no-deps --no-build-isolation -e './punjabflood[dev]'
+python -m pip install --no-deps --no-build-isolation -e './river-watch[dev]'
 python -m pytest -q
-cd punjabflood
+cd river_watch
 python -m pytest -q -m 'not network'
 ```
 
@@ -59,7 +59,7 @@ To intentionally refresh dependencies, regenerate with a supported installed
 `uv` and review the resulting changes before running both suites:
 
 ```sh
-uv pip compile requirements.txt punjabflood/pyproject.toml requirements/pyproject.toml \
+uv pip compile requirements.txt river-watch/pyproject.toml requirements/pyproject.toml \
   --extra dev --universal --python-version 3.13 --generate-hashes --no-annotate \
   --upgrade --output-file requirements.lock
 ```

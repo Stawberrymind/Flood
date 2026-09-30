@@ -22,7 +22,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from sailaab import forecast_live
+from flood_watch import forecast_live
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -117,7 +117,7 @@ def test_a_temporal_mosaic_cannot_certify_a_district_wide_reading():
     certification from a partial pass; the union path re-admitted it through
     the back door.
     """
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     payload = nc.build_nowcast_json(
         generated_utc="2026-08-06T00:00:00Z",
@@ -159,7 +159,7 @@ def test_a_temporal_mosaic_cannot_certify_a_district_wide_reading():
 
 def test_a_district_with_a_recent_observation_keeps_its_coverage():
     """The rule above must not blank districts that genuinely were imaged."""
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     payload = nc.build_nowcast_json(
         generated_utc="2026-08-06T00:00:00Z",
@@ -193,7 +193,7 @@ def test_a_district_with_a_recent_observation_keeps_its_coverage():
 
 def _window_boundary_payload(**over):
     """A feed shaped exactly like the 14 Aug one: fresh history, empty window."""
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     kwargs = dict(
         generated_utc="2026-08-14T07:22:11Z",
@@ -257,7 +257,7 @@ def _producer_extras(names) -> dict:
     previous version listed the two freshness fields by hand, which is the
     failure being tested for, one layer out.
     """
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     ranked = forecast_live.rank_and_tier(
         pd.Series([0.5 - 0.1 * i for i in range(len(names))], index=list(names)),
@@ -276,7 +276,7 @@ def test_the_uncovered_rule_covers_every_field_a_row_can_carry():
     payload and forgotten here shows up as a failure now, rather than as an
     invalid feed on the first cycle that publishes it.
     """
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     # Built through the EXTRAS path, because that path can put fields on a row
     # that the base dict never mentions, and those are exactly the ones the
@@ -299,7 +299,7 @@ def test_the_uncovered_rule_covers_every_field_a_row_can_carry():
 
 
 def test_publishable_districts_is_the_intersection_not_either_side():
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     covered = {"covered": True, "acquisition_state": "observed",
                "acquisition_fraction": 1.0}
@@ -316,7 +316,7 @@ def test_publishable_districts_is_the_intersection_not_either_side():
 
 def test_the_window_boundary_leaves_nobody_publishable():
     """The precondition for withholding the forecast block entirely."""
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     order = ["Amritsar", "Barnala"]
     observed = {n: {"covered": False} for n in order}
@@ -371,7 +371,7 @@ def test_the_withdrawn_mosaic_row_is_accepted_by_the_shipped_validator():
     board fell closed with no disclosure behind it. That is the same five-day
     outage this file already documents, reachable by a second route.
     """
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     payload = nc.build_nowcast_json(
         generated_utc="2026-08-19T00:00:00Z",
@@ -408,7 +408,7 @@ def test_a_tier_decided_on_the_raw_score_cannot_contradict_the_published_one():
     """
     import pandas as pd
 
-    from sailaab import forecast_live
+    from flood_watch import forecast_live
 
     threshold = 0.7916666865348816
     raw = 0.79166          # below the threshold; rounds to 0.7917, above it
@@ -440,7 +440,7 @@ def test_a_previous_window_observation_cannot_certify_this_window():
     outside the window it was certifying. Membership in `last_seen` was true
     the whole time, so the guard let it through.
     """
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     window = {"core_season": True, "window_start": "2026-08-14",
               "window_end": "2026-08-24", "activates": "2026-07-25"}
@@ -488,7 +488,7 @@ def test_covered_and_its_state_cannot_be_set_independently():
     upgrading the state to match the flag, because that would invent an
     observation; it withdraws the claim.
     """
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     payload = nc.build_nowcast_json(
         generated_utc="2026-08-19T00:00:00Z",
@@ -514,7 +514,7 @@ def test_extras_cannot_overwrite_a_field_they_do_not_own():
     fires on uncovered rows, so on a COVERED row extras could overwrite the
     acquisition_state that coverage_is_earned() had just settled, and the
     payload would go out contradicting itself with nothing to catch it."""
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     payload = nc.build_nowcast_json(
         generated_utc="2026-08-19T00:00:00Z",
@@ -552,7 +552,7 @@ def test_coverage_cannot_be_granted_without_saying_which_window():
     """window_start used to be optional, and optional meant the date test was
     skipped, which grants coverage with no window proof at all. A caller that
     has a history to check against must say what it is checking against."""
-    from sailaab import nowcast as nc
+    from flood_watch import nowcast as nc
 
     observed = {"west": {"covered": True, "acquisition_state": "observed",
                          "acquisition_fraction": 1.0}}

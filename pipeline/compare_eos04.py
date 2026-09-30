@@ -130,7 +130,7 @@ def main(scene_dir: Path = SCENES, raster_dir: Path = RASTERS) -> int:
     from rasterio.enums import Resampling
     from rasterio.warp import reproject
 
-    from sailaab.eos04 import (
+    from flood_watch.eos04 import (
         agreement_metrics,
         confusion,
         district_agreement,
@@ -138,7 +138,7 @@ def main(scene_dir: Path = SCENES, raster_dir: Path = RASTERS) -> int:
         water_mask_change,
         water_mask_single,
     )
-    from sailaab.sar_local import to_db
+    from flood_watch.sar_local import to_db
 
     with rasterio.open(reference) as ref:
         ref_profile = ref.profile
@@ -235,7 +235,7 @@ def main(scene_dir: Path = SCENES, raster_dir: Path = RASTERS) -> int:
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 5.6), facecolor="#0a0e11")
     panels = [
-        (ours & union_valid, "Sailaab Tier-A (S1)", "#63e6d5"),
+        (ours & union_valid, "Flood Watch Tier-A (S1)", "#63e6d5"),
         (union, "EOS-04 water (ISRO)", "#ffb454"),
         (ours & union, "Agreement", "#f487e8"),
     ]

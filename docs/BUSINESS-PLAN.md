@@ -1,6 +1,6 @@
-# Sailaab: Business Plan (optional festival deliverable)
+# Flood Watch: Business Plan (optional festival deliverable)
 
-**Posture:** Sailaab's core is a public good: MIT code, CC-BY data, zero-cost
+**Posture:** Flood Watch's core is a public good: MIT code, CC-BY data, zero-cost
 to run, free forever (a festival rule and a design principle). This plan is a
 *sustainability and deployment* plan: how the system reaches the institutions
 that should run on it, and what funds the scale-out. It is reviewed separately
@@ -45,7 +45,7 @@ audit.
 | **Institutional instances** | state SDMAs / Revenue Depts (procurement or MoU) | hosted multi-state instance, SLAs, girdawari-verification exports per village-circle, training | pilot-ready |
 | **Analytics services** | PMFBY insurers, lenders, CSR/climate funds | independent loss-extent audits, recurrence underwriting layers | roadmap |
 
-Reference pricing (assumption, to be tested in mentorship): a per-state
+Reference pricing (assumption, to be tested with deployment partners): a per-state
 instance priced against the avoided cost of manual survey targeting; even 5%
 efficiency on one girdawari cycle dwarfs any realistic hosting fee. Core infra
 cost today: ₹0/month (GitHub CI + open data). Scale compute: IndiaAI Compute
@@ -81,9 +81,9 @@ system's name into policy rooms (SANDRP already covers this space).
   precondition; institutions can adopt before they contract.
 - **Founder concentration**: solo student builder; mitigations: 450+ tests,
   full method paper, verification log. The system is transferable by design.
-  ISB mentorship asks: government procurement navigation, PPP structuring.
+  Deployment support needs: government procurement navigation, PPP structuring.
 
 ## 8. Team
 
 Solo student builder (Punjab), built during the 2026 monsoon. The repo is the
-CV: github.com/bakathefish/Flood · live: bakathefish.github.io/Flood
+CV: github.com/Stawberrymind/flood_river_watch · live: stawberrymind.github.io/flood_river_watch

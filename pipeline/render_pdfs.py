@@ -28,8 +28,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 
 PAGES = [
-    ("synopsis-print.html", "SAILAAB-synopsis.pdf"),
-    ("business-plan-print.html", "SAILAAB-business-plan.pdf"),
+    ("synopsis-print.html", "FLOOD_WATCH-synopsis.pdf"),
+    ("business-plan-print.html", "FLOOD_WATCH-business-plan.pdf"),
 ]
 
 CHROME_CANDIDATES = [

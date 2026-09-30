@@ -8,7 +8,7 @@ is absent (torch is a user-level install, deliberately not in requirements.txt).
 import numpy as np
 import pytest
 
-from sailaab.unet import (
+from flood_watch.unet import (
     dice_coeff,
     normalize_db,
     random_crop_coords,
@@ -129,7 +129,7 @@ def test_random_crop_coords_rejects_oversized():
 # --- torch model (skips cleanly without torch) ----------------------------- #
 def test_build_unet_forward_shape_and_size():
     torch = pytest.importorskip("torch")
-    from sailaab.unet import build_unet, count_params
+    from flood_watch.unet import build_unet, count_params
 
     torch.manual_seed(0)
     net = build_unet(in_ch=2, base=16, depth=4, out_ch=1).eval()

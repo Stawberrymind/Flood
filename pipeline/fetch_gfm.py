@@ -6,11 +6,11 @@ Source: Global Flood Monitoring (GFM), Copernicus Emergency Management Service,
 served by the GloFAS Open Web Service at ``https://ows.globalfloods.eu/glofas-ows/ows``.
 No login / API key -- WMS 1.3.0 GetMap with an empty ``STYLES=`` and ``EPSG:3857``.
 The service publishes styled RGBA PNGs (not class values); the colour decode rule
-lives in ``sailaab.gfm`` and is documented in ``docs/notes/gfm-wms.md``.
+lives in ``flood_watch.gfm`` and is documented in ``docs/notes/gfm-wms.md``.
 
 This is the only WMS/rasterio-touching code for the GFM validation layer; all the
 pure array logic (PNG->binary decode, tiling, stitching, union, cos-lat area) is in
-``sailaab/gfm.py`` and is unit-tested. Rasters land under ``data/gfm/`` and are NOT
+``flood_watch/gfm.py`` and is unit-tested. Rasters land under ``data/gfm/`` and are NOT
 committed (gitignored).
 
 Usage:
@@ -34,7 +34,7 @@ from PIL import Image
 from pyproj import Transformer
 from rasterio.transform import from_bounds
 
-from sailaab.gfm import (
+from flood_watch.gfm import (
     flood_mask,
     ref_water_mask,
     validate_wms_rgba,
@@ -47,7 +47,7 @@ from sailaab.gfm import (
 )
 
 OWS = "https://ows.globalfloods.eu/glofas-ows/ows"
-UA = {"User-Agent": "sailaab-flood-validation/1.0 (Punjab 2025; keyless GFM WMS)"}
+UA = {"User-Agent": "flood_watch-flood-validation/1.0 (Punjab 2025; keyless GFM WMS)"}
 
 FLOOD_LAYER = "gfm_observed_flood_extent_group_layer"
 REFWATER_LAYER = "gfm_reference_water_mask_group_layer"
@@ -157,7 +157,7 @@ def write_mask_tif(path, mask, bounds):
     minx, miny, maxx, maxy = bounds
     nrows, ncols = mask.shape
     transform = from_bounds(minx, miny, maxx, maxy, ncols, nrows)
-    from sailaab.io import atomic_path
+    from flood_watch.io import atomic_path
     with atomic_path(path) as temporary, rasterio.open(
         temporary,
         "w",

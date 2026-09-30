@@ -64,8 +64,8 @@ from pipeline.run_forecaster_daily_audit2 import (
     build_adjacency,
     seasonal_climatology,
 )
-from sailaab.forecast_daily import forward_event
-from sailaab.hazard import (
+from flood_watch.forecast_daily import forward_event
+from flood_watch.hazard import (
     FirthLogistic,
     contingency_scores,
     excitation_features,
@@ -387,7 +387,7 @@ def main() -> None:
     # neighbouring districts flood together. Resample seasons, then blocks of
     # whole days inside them, and score every candidate on the same drawn rows
     # so the deltas between them are paired.
-    from sailaab.uncertainty import (
+    from flood_watch.uncertainty import (
         BLOCK_DAYS, delete_one_season, delta_ci, percentile_ci, season_summary,
         two_stage_bootstrap,
     )

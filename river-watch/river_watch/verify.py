@@ -1,0 +1,1634 @@
+"""Verification of the hazard tier on the dense records.
+
+Three tests, each against a record that exists independently of this project:
+
+1. **Annual peak class, 38 years.** The WRD's own annual maximum discharge at Harike,
+   Ropar and Dhilwan (1988 to 2025) with its High/Medium/Low class, against season
+   predictors built from ERA5 catchment rain (all years) and CWC storage (from 1991):
+   rank correlation with the peak, area under the ROC curve for the High class, and
+   leave-one-year-out logistic probabilities scored by the Brier score against the
+   climatological base rate.
+2. **Event timing.** The routed forced-release hydrograph against the dated Dhilwan peaks
+   (2023-08-17, 2025-08-31): signed lag in days and the magnitude ratio.
+3. **Live season.** The inflow model against the BBMB bulletins of 2026: bias, correlation,
+   mean absolute error.
+
+Everything is written to ``outputs/verification/`` as CSV and JSON; the Markdown report is
+rendered from those files so no number is typed by hand.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+from scipy.stats import spearmanr
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+
+log = logging.getLogger(__name__)
+
+from river_watch import constants as C
+from river_watch import hei, inflow, reservoirs, routing
+
+SEASON_MONTHS = (6, 7, 8, 9)
+
+
+def _season(df: pd.DataFrame, col: str = "date") -> pd.DataFrame:
+    d = pd.to_datetime(df[col])
+    return df[d.dt.month.isin(SEASON_MONTHS)]
+
+
+def rain_predictors(rain_daily: pd.DataFrame, catchment: str, area_km2: float) -> pd.DataFrame:
+    """Per year: season rain volume (BCM) and the maximum 1, 3, 5 and 10-day volumes."""
+    r = rain_daily[rain_daily["catchment"] == catchment].copy()
+    r["date"] = pd.to_datetime(r["date"])
+    r = r.set_index("date").sort_index()
+    vol = pd.Series(inflow.rain_volume_bcm(r["rain_mm"], area_km2), index=r.index)
+    rows = []
+    for year, g in vol.groupby(vol.index.year):
+        s = g[g.index.month.isin(SEASON_MONTHS)]
+        if s.notna().sum() < 100:
+            continue
+        rows.append(
+            {
+                "year": int(year),
+                f"{catchment}_season_bcm": float(s.sum()),
+                f"{catchment}_max1d_bcm": float(s.max()),
+                f"{catchment}_max3d_bcm": float(s.rolling(3).sum().max()),
+                f"{catchment}_max5d_bcm": float(s.rolling(5).sum().max()),
+                f"{catchment}_max10d_bcm": float(s.rolling(10).sum().max()),
+            }
+        )
+    return pd.DataFrame(rows).set_index("year")
+
+
+def storage_predictors(state: pd.DataFrame, dam: str) -> pd.DataFrame:
+    """Per year: storage fraction on 1 July, 1 August, 15 August and the season maximum."""
+    s = state[(state["dam"] == dam) & state["storage_bcm"].notna()].copy()
+    s["date"] = pd.to_datetime(s["date"])
+    s = s.set_index("date")["storage_bcm"].sort_index()
+    cap = C.DAMS[dam].live_capacity_bcm.value
+    rows = []
+    for year, g in s.groupby(s.index.year):
+        g = g[g.index.month.isin(SEASON_MONTHS)]
+        if len(g) < 30:
+            continue
+
+        def at(md):
+            t = pd.Timestamp(f"{year}-{md}")
+            w = g[(g.index >= t - pd.Timedelta(days=3)) & (g.index <= t + pd.Timedelta(days=3))]
+            return float(w.iloc[(w.index - t).map(abs).argmin()]) / cap if len(w) else np.nan
+
+        rows.append(
+            {
+                "year": int(year),
+                f"{dam}_frac_jul01": at("07-01"),
+                f"{dam}_frac_aug01": at("08-01"),
+                f"{dam}_frac_aug15": at("08-15"),
+                f"{dam}_frac_max": float(g.max()) / cap,
+                f"{dam}_days_above_95pct": int((g > 0.95 * cap).sum()),
+            }
+        )
+    return pd.DataFrame(rows).set_index("year")
+
+
+MAX_CARRY_DAYS = 21  # longest gap between measurements the model is allowed to bridge
+
+
+def sm_anomaly_series_for(
+    rain_daily: pd.DataFrame, catchment: str, params: inflow.InflowParams
+) -> pd.Series | None:
+    """The soil-moisture anomaly by date for a catchment, against the climatology the
+    parameters carry; None when the parameters use no soil moisture or the record has
+    none. Days without a value carry no anomaly (zero) so a gap never stops a run."""
+    if not params.uses_sm or "sm_0_7" not in rain_daily.columns:
+        return None
+    r = rain_daily[rain_daily["catchment"] == catchment].copy()
+    r["date"] = pd.to_datetime(r["date"])
+    s = r.set_index("date")["sm_0_7"].astype(float).sort_index()
+    if s.notna().sum() == 0:
+        return None
+    return inflow.sm_anomaly_series(s, params.sm_clim).fillna(0.0)
+
+
+def _anom(sm: pd.Series | None, d) -> float:
+    return float(sm.get(d, 0.0)) if sm is not None else 0.0
+
+
+def melt_series_for(
+    rain_daily: pd.DataFrame, catchment: str, params: inflow.InflowParams
+) -> pd.Series | None:
+    """The catchment melt volume (BCM) by date for a catchment, from the ``melt_bcm`` column
+    of the rain table; None when the parameters carry no snowmelt term or the table has no
+    such column. Days without a value melt nothing (zero) so a gap never stops a run."""
+    if not params.has_melt or "melt_bcm" not in rain_daily.columns:
+        return None
+    r = rain_daily[rain_daily["catchment"] == catchment].copy()
+    r["date"] = pd.to_datetime(r["date"])
+    return r.set_index("date")["melt_bcm"].astype(float).fillna(0.0).sort_index()
+
+
+_MELT_GAPS_LOGGED: set[tuple[str, str]] = set()
+
+
+def _melt_window(melt: pd.Series | None, index: pd.DatetimeIndex) -> np.ndarray:
+    """The melt volumes over ``index`` (zeros without a series). A day the series lacks
+    melts nothing and is logged once per gap (series span and the year the gap starts): a
+    parameter set that carries the term has
+    handed part of its base to the melt, so a missing day silently lowers the prediction."""
+    if melt is None:
+        return np.zeros(len(index))
+    w = melt.reindex(index)
+    if w.isna().any() and len(index):
+        first = w[w.isna()].index.min()
+        key = (str(melt.index.min().date()), str(melt.index.max().date()), first.year)
+        if key not in _MELT_GAPS_LOGGED:
+            _MELT_GAPS_LOGGED.add(key)
+            log.warning(
+                "melt series (%s to %s) lacks days from %s; those days melt nothing",
+                key[0], key[1], first.date(),
+            )
+    return w.fillna(0.0).to_numpy(dtype=float)
+
+
+def carry_storage(
+    measured: pd.Series,
+    basis: dict,
+    rain: pd.Series,
+    dam: str,
+    params: inflow.InflowParams,
+    max_carry_days: int = MAX_CARRY_DAYS,
+    sm: pd.Series | None = None,
+    capacity_bcm: float | None = None,
+    melt: pd.Series | None = None,
+) -> tuple[pd.Series, dict, dict]:
+    """Daily storage between measurements from the model's own water balance.
+
+    Each day without a measurement takes ``S = min(cap, S_prev + I - A)``: the one-day inflow
+    the calibrated model gives for the observed rain, less the non-spill passage ``A``, which
+    is exactly the storage-change relation the model was fitted on. Every measurement
+    re-anchors the path; gaps longer than ``max_carry_days`` are left empty, and after the
+    last measurement the path runs on for ``max_carry_days`` more (a season whose record
+    stops early, as Ranjit Sagar's does in 2025) and then ends. Carried days get
+    ``basis='model'``.
+
+    Returns the series, the basis per day, and the re-anchor gaps: on each measurement day
+    the path reaches, the model's carried value for that day minus the measurement. A
+    positive gap means the reservoir gained less than the model's balance says, which is the
+    dam passing more than its turbines, the inflow over-predicted, or both. ``capacity_bcm``
+    is the ceiling the carry clamps at (the live capacity at FRL by default; the top of the
+    flood cushion for that scenario)."""
+    cap = C.DAMS[dam].live_capacity_bcm.value if capacity_bcm is None else float(capacity_bcm)
+    absorb = hei.absorption_cusecs(dam)
+    a_bcm = C.cusec_days_to_bcm(absorb)
+    base_bcm = max(params.intercept_bcm_per_day + a_bcm, 0.0)
+    base_cusecs = C.bcm_to_cusec_days(base_bcm)
+    measured = measured.sort_index()
+    full = pd.date_range(
+        measured.index.min(),
+        measured.index.max() + pd.Timedelta(days=max_carry_days),
+        freq="D",
+    )
+    out = pd.Series(np.nan, index=full)
+    out_basis = {}
+    gaps: dict = {}
+    n_hist = inflow.history_days(params)
+
+    def step(prev_value: float, d: pd.Timestamp) -> float:
+        window = pd.date_range(d - pd.Timedelta(days=n_hist - 1), d)
+        hist = rain.reindex(window)
+        if hist.isna().any():
+            return float("nan")
+        mh = _melt_window(melt, window)
+        inflow_bcm = float(
+            inflow.predict_daily_bcm(
+                params,
+                [hist.iloc[-1]],
+                base_cusecs,
+                rain_mm_recent=hist.iloc[:-1].to_numpy(),
+                sm_anom=_anom(sm, d),
+                melt_bcm_recent=mh[:-1],
+                melt_bcm_forecast=mh[-1:],
+            )[0]
+        )
+        return float(min(max(prev_value + inflow_bcm - a_bcm, 0.0), cap))
+
+    prev = np.nan
+    since = 0
+    for d in full:
+        if d in measured.index:
+            if not np.isnan(prev) and since < max_carry_days:
+                carried = step(prev, d)
+                if carried == carried:
+                    gaps[d] = carried - float(measured.loc[d])
+            prev = float(measured.loc[d])
+            since = 0
+            out.loc[d] = prev
+            out_basis[d] = basis.get(d, "")
+            continue
+        since += 1
+        if np.isnan(prev) or since > max_carry_days:
+            prev = np.nan
+            continue
+        prev = step(prev, d)
+        if np.isnan(prev):
+            continue
+        out.loc[d] = prev
+        out_basis[d] = "model"
+    return out.dropna(), out_basis, gaps
+
+
+def perfect_prog_hei(
+    state: pd.DataFrame,
+    rain_daily: pd.DataFrame,
+    dam: str,
+    catchment: str,
+    params: inflow.InflowParams,
+    horizon_days: int = 5,
+    carry: str = "given",
+    capacity_bcm: float | None = None,
+    rule_curve_rating=None,
+) -> pd.DataFrame:
+    """Daily headroom-exhaustion index using observed rain as a perfect forecast and the
+    recorded storage as the state. Returns date, dam, hei, forced_release_bcm, the horizon
+    peak and first-day forced releases, and the storage basis of each day.
+
+    ``carry='given'`` uses the storage rows as supplied (the caller may have interpolated
+    gaps, basis ``interp``). ``carry='model'`` drops interpolated rows and bridges the gaps
+    between measurements with ``carry_storage`` (basis ``model``). ``capacity_bcm`` runs
+    the balance against another ceiling than the live capacity at FRL (the flood-cushion
+    scenario). ``rule_curve_rating`` (a ``reservoirs.Rating``) runs it against the filling
+    schedule instead: the ceiling on each day of the horizon is the storage at that day's
+    permissible level, and a reservoir above the schedule owes the drawdown on day one; the
+    carry between measurements stays at FRL (the record's own bound)."""
+    s, basis, rain, gaps, sm, melt = _event_series(
+        state, rain_daily, dam, catchment, params, carry, capacity_bcm
+    )
+    absorb = hei.absorption_cusecs(dam)
+    rows = []
+    for d, storage in s.items():
+        if d.month not in SEASON_MONTHS:
+            continue
+        fut = rain.reindex(pd.date_range(d + pd.Timedelta(days=1), periods=horizon_days))
+        past = rain.reindex(
+            pd.date_range(d - pd.Timedelta(days=inflow.history_days(params) - 1), d)
+        )
+        if fut.isna().any() or past.isna().any():
+            continue
+        cap_d, clamp = capacity_bcm, True
+        if rule_curve_rating is not None:
+            cap_d = reservoirs.rule_curve_capacity_bcm(rule_curve_rating, dam, fut.index)
+            clamp = False
+        row = _hei_row(
+            dam,
+            d,
+            storage,
+            fut.to_numpy(),
+            past.to_numpy(),
+            params,
+            absorb,
+            _anom(sm, d),
+            capacity_bcm=cap_d,
+            clamp_start=clamp,
+            melt_past=_melt_window(melt, past.index),
+            melt_fut=_melt_window(melt, fut.index),
+        )
+        row["storage_basis"] = basis.get(d, "")
+        row["reanchor_gap_bcm"] = gaps.get(d, float("nan"))
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def _event_series(
+    state: pd.DataFrame,
+    rain_daily: pd.DataFrame,
+    dam: str,
+    catchment: str,
+    params: inflow.InflowParams,
+    carry: str,
+    capacity_bcm: float | None = None,
+) -> tuple[pd.Series, dict, pd.Series, dict, pd.Series | None, pd.Series | None]:
+    """The storage series (measured, or measured and model-carried), its basis per day, the
+    observed catchment rain series, the re-anchor gaps of ``carry_storage`` (empty without
+    the model carry), the soil-moisture anomaly series (None when unused) and the catchment
+    melt series (None when the parameters carry no snowmelt term)."""
+    s = state[(state["dam"] == dam) & state["storage_bcm"].notna()].copy()
+    s["date"] = pd.to_datetime(s["date"])
+    if carry == "model" and "basis" in s:
+        s = s[s["basis"] != "interp"]
+    basis = s.set_index("date")["basis"].to_dict() if "basis" in s else {}
+    s = s.set_index("date")["storage_bcm"].sort_index()
+    r = rain_daily[rain_daily["catchment"] == catchment].copy()
+    r["date"] = pd.to_datetime(r["date"])
+    rain = r.set_index("date")["rain_mm"].sort_index()
+    sm = sm_anomaly_series_for(rain_daily, catchment, params)
+    melt = melt_series_for(rain_daily, catchment, params)
+    gaps: dict = {}
+    if carry == "model" and len(s):
+        s, basis, gaps = carry_storage(
+            s, basis, rain, dam, params, sm=sm, capacity_bcm=capacity_bcm, melt=melt
+        )
+    return s, basis, rain, gaps, sm, melt
+
+
+def _hei_row(
+    dam,
+    d,
+    storage,
+    fut,
+    past,
+    params: inflow.InflowParams,
+    absorb: float,
+    sm_anom: float = 0.0,
+    capacity_bcm=None,
+    clamp_start: bool = True,
+    melt_past=(),
+    melt_fut=(),
+) -> dict:
+    """One day's index from a storage, a rain path over the horizon (``fut``, mm per day),
+    the recent observed rain (``past``), the day's soil-moisture anomaly and, for a
+    parameter set with a snowmelt term, the recent and horizon melt volumes (BCM). The base
+    flow the product takes from the bulletin is unknown historically, so the calibration
+    intercept plus the non-spill passage stands in for it (the storage-change relation the
+    model was fitted on)."""
+    base_bcm = max(params.intercept_bcm_per_day + C.cusec_days_to_bcm(absorb), 0.0)
+    daily = inflow.predict_daily_bcm(
+        params,
+        np.asarray(fut, dtype=float),
+        C.bcm_to_cusec_days(base_bcm),
+        rain_mm_recent=past,
+        sm_anom=sm_anom,
+        melt_bcm_recent=melt_past,
+        melt_bcm_forecast=melt_fut,
+    )
+    res = hei.headroom_exhaustion(
+        dam, float(storage), daily, absorb, capacity_bcm=capacity_bcm, clamp_start=clamp_start
+    )
+    return {
+        "date": d,
+        "dam": dam,
+        "storage_bcm": float(storage),
+        "hei": res.hei,
+        "forced_release_bcm": res.forced_release_bcm,
+        "peak_release_cusecs": max(res.release_by_day_cusecs) if res.release_by_day_cusecs else 0.0,
+        "release_day1_cusecs": res.release_by_day_cusecs[0] if res.release_by_day_cusecs else 0.0,
+        "inflow_day1_cusecs": C.bcm_to_cusec_days(float(daily[0])),
+        "rain_day1_mm": float(fut[0]),
+        "day_of_exhaustion": res.day_of_exhaustion,
+    }
+
+
+AS_ISSUED_MODELS = ("ecmwf_ifs025", "gfs_seamless", "ecmwf_aifs025_single")
+
+
+def as_issued_hei(
+    state: pd.DataFrame,
+    rain_daily: pd.DataFrame,
+    qpf_leads: pd.DataFrame,
+    dam: str,
+    catchment: str,
+    params: inflow.InflowParams,
+    model: str,
+    horizon_days: int = 5,
+    carry: str = "model",
+) -> pd.DataFrame:
+    """The index each day from the rain forecast that was actually issued that day (the
+    archived lead 1 to ``horizon_days`` QPF of ``model``) and the recorded or model-carried
+    storage: what the product would have said, day by day, with the base flow stand-in of
+    ``_hei_row``. Rows carry the forecast and the observed rain over the horizon."""
+    s, basis, rain, _, sm, melt = _event_series(state, rain_daily, dam, catchment, params, carry)
+    q = qpf_leads[(qpf_leads["catchment"] == catchment) & (qpf_leads["model"] == model)]
+    fc = {
+        (pd.Timestamp(t), int(k)): float(v)
+        for t, k, v in zip(q["target_date"], q["lead_days"], q["rain_mm"], strict=True)
+    }
+    absorb = hei.absorption_cusecs(dam)
+    rows = []
+    for d, storage in s.items():
+        if d.month not in SEASON_MONTHS:
+            continue
+        fut = [fc.get((d + pd.Timedelta(days=k), k)) for k in range(1, horizon_days + 1)]
+        past = rain.reindex(
+            pd.date_range(d - pd.Timedelta(days=inflow.history_days(params) - 1), d)
+        )
+        if any(v is None or v != v for v in fut) or past.isna().any():
+            continue
+        obs_fut = rain.reindex(pd.date_range(d + pd.Timedelta(days=1), periods=horizon_days))
+        row = _hei_row(
+            dam,
+            d,
+            storage,
+            fut,
+            past.to_numpy(),
+            params,
+            absorb,
+            _anom(sm, d),
+            melt_past=_melt_window(melt, past.index),
+            melt_fut=_melt_window(melt, obs_fut.index),
+        )
+        row.update(
+            {
+                "model": model,
+                "storage_basis": basis.get(d, ""),
+                "qpf_horizon_mm": float(np.sum(fut)),
+                "obs_horizon_mm": float(obs_fut.sum())
+                if not obs_fut.isna().any()
+                else float("nan"),
+            }
+        )
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+EVENT_WINDOW = ((8, 1), (9, 15))  # the late-monsoon weeks in which the release floods happen
+
+
+def as_issued_event_summary(
+    ai: pd.DataFrame,
+    pp: pd.DataFrame,
+    year: int,
+    observed_peak_date: str | None = None,
+    window=EVENT_WINDOW,
+) -> list[dict]:
+    """Per model, over the event window of ``year``, the as-issued flags scored against the
+    model's own perfect-prognosis run (the spillway forced within the horizon under observed
+    rain), since BBMB's gate log is not public.
+
+    A flagged issue date is a hit when the perfect-prognosis run of the same date also forces
+    the spillway within the horizon, a false flag otherwise; a perfect-prognosis flag with no
+    as-issued flag is a miss. The first hit is the warning: the row carries its date and the
+    day it put the spill on, and the lead from it to the model's first spill under observed
+    rain and to the observed control-point peak where one is dated. The earliest flag of any
+    kind and the earliest perfect-prognosis flag are kept beside it."""
+    start = pd.Timestamp(year, *window[0])
+    end = pd.Timestamp(year, *window[1])
+    pd_dates = pd.to_datetime(pp["date"])
+    p = pp[(pd_dates >= start) & (pd_dates <= end)]
+    spill = p[p["release_day1_cusecs"] > 0]
+    pp_first = pd.to_datetime(spill["date"]).min() + pd.Timedelta(days=1) if len(spill) else None
+    pp_peak = float(p["release_day1_cusecs"].max()) if len(p) else float("nan")
+    pp_flags = set(pd.to_datetime(p[p["day_of_exhaustion"].notna()]["date"]))
+    obs_peak = pd.Timestamp(observed_peak_date) if observed_peak_date else None
+
+    def _iso(t):
+        return None if t is None else pd.Timestamp(t).date().isoformat()
+
+    def _lead(frm, to):
+        return None if frm is None or to is None else int((pd.Timestamp(to) - frm).days)
+
+    rows = []
+    for model, g in ai.groupby("model"):
+        dates = pd.to_datetime(g["date"])
+        g = g[(dates >= start) & (dates <= end)].sort_values("date")
+        g_dates = set(pd.to_datetime(g["date"]))
+        flagged = g[g["day_of_exhaustion"].notna()]
+        flags = set(pd.to_datetime(flagged["date"]))
+        hits = sorted(flags & pp_flags)
+        first_any = min(flags) if flags else None
+        first_hit = hits[0] if hits else None
+        first_hit_row = (
+            flagged[pd.to_datetime(flagged["date"]) == first_hit].iloc[0]
+            if first_hit is not None
+            else None
+        )
+        rows.append(
+            {
+                "year": year,
+                "dam": str(g["dam"].iloc[0]) if "dam" in g and len(g) else None,
+                "model": model,
+                "issue_days": int(len(g)),
+                "flagged_days": int(len(flags)),
+                "hit_days": int(len(hits)),
+                "false_flag_days": int(len(flags - pp_flags)),
+                "missed_days": int(len((pp_flags & g_dates) - flags)),
+                "first_flag_issue_date": _iso(first_any),
+                "first_hit_issue_date": _iso(first_hit),
+                "first_hit_spill_day": None
+                if first_hit_row is None
+                else int(first_hit_row["day_of_exhaustion"]),
+                "pp_first_flag_date": _iso(min(pp_flags)) if pp_flags else None,
+                "pp_first_spill_date": _iso(pp_first),
+                "lead_days_to_pp_spill": _lead(first_hit, pp_first),
+                "observed_peak_date": _iso(obs_peak),
+                "lead_days_to_observed_peak": _lead(first_hit, obs_peak),
+                "max_forecast_peak_release_cusecs": float(g["peak_release_cusecs"].max())
+                if len(g)
+                else float("nan"),
+                "pp_peak_day1_release_cusecs": pp_peak,
+            }
+        )
+    return rows
+
+
+FLOOD_SCALE_COLS = [
+    "dam",
+    "kind",
+    "start",
+    "end",
+    "truth_cusecs",
+    "model_cusecs",
+    "ratio",
+    "n_days",
+    "source",
+]
+
+
+def flood_scale_inflow_check(
+    pp_by_dam: dict[str, pd.DataFrame],
+    periods: pd.DataFrame | None = None,
+    points: pd.DataFrame | None = None,
+    season_peaks: pd.DataFrame | None = None,
+    record_days: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    """The model's one-day inflow under observed rain against the flood-scale inflow figures
+    the public record holds. ``pp_by_dam`` maps a dam to its perfect-prognosis run
+    (``perfect_prog_hei``), whose ``inflow_day1_cusecs`` on issue date d is the inflow of the
+    day after. ``periods``: dam, period_start, period_end, mean_inflow_cusecs, source (set
+    against the model's mean over the same days); ``points`` and ``record_days``: date, dam,
+    inflow_cusecs, source (one day each; the second is labelled ``record day``);
+    ``season_peaks``: dam, year, peak_inflow_cusecs, source (against the model's largest day
+    of the same June to September). One row per figure: the model value, the ratio of model
+    to figure, and how many model days entered (0 with the model value missing when the run
+    does not cover the days)."""
+    daily: dict[str, pd.Series] = {}
+    for dam, pp in pp_by_dam.items():
+        g = pp.dropna(subset=["inflow_day1_cusecs"])
+        s = pd.Series(
+            g["inflow_day1_cusecs"].to_numpy(dtype=float),
+            index=pd.DatetimeIndex(pd.to_datetime(g["date"]) + pd.Timedelta(days=1)),
+        ).sort_index()
+        daily[dam] = s[~s.index.duplicated(keep="last")]
+    empty = pd.Series(dtype=float, index=pd.DatetimeIndex([]))
+    rows = []
+
+    def add(dam, kind, start, end, truth, sel: pd.Series, agg, source):
+        model = float(agg(sel)) if len(sel) else float("nan")
+        rows.append(
+            {
+                "dam": dam,
+                "kind": kind,
+                "start": pd.Timestamp(start).date().isoformat(),
+                "end": pd.Timestamp(end).date().isoformat(),
+                "truth_cusecs": float(truth),
+                "model_cusecs": model,
+                "ratio": model / float(truth)
+                if model == model and float(truth) > 0
+                else float("nan"),
+                "n_days": int(len(sel)),
+                "source": source,
+            }
+        )
+
+    if periods is not None:
+        for r in periods.itertuples(index=False):
+            s = daily.get(r.dam, empty)
+            a, b = pd.Timestamp(r.period_start), pd.Timestamp(r.period_end)
+            add(
+                r.dam,
+                "period mean",
+                a,
+                b,
+                r.mean_inflow_cusecs,
+                s[(s.index >= a) & (s.index <= b)],
+                np.mean,
+                r.source,
+            )
+    for frame, kind in ((points, "day"), (record_days, "record day")):
+        if frame is None:
+            continue
+        for r in frame.itertuples(index=False):
+            s = daily.get(r.dam, empty)
+            d = pd.Timestamp(r.date)
+            add(r.dam, kind, d, d, r.inflow_cusecs, s[s.index == d], np.mean, r.source)
+    if season_peaks is not None:
+        for r in season_peaks.itertuples(index=False):
+            s = daily.get(r.dam, empty)
+            y = int(r.year)
+            sel = s[(s.index.year == y) & s.index.month.isin(SEASON_MONTHS)]
+            add(
+                r.dam,
+                "season peak",
+                f"{y}-06-01",
+                f"{y}-09-30",
+                r.peak_inflow_cusecs,
+                sel,
+                np.max,
+                r.source,
+            )
+    return pd.DataFrame(rows, columns=FLOOD_SCALE_COLS)
+
+
+def flood_scale_summary(fs: pd.DataFrame, min_period_days: int = 10) -> dict:
+    """What the adoption rule for a response variant reads off a flood-scale table: how many
+    period means the run covers on at least ``min_period_days`` days, the worst deviation of
+    those ratios from one, the smallest and largest season-peak ratio, and (for the record,
+    not for the rule) how many dated single-day figures the run covers and the median of
+    the model's ratio to them."""
+    pm = fs[(fs["kind"] == "period mean") & (fs["n_days"] >= min_period_days)].dropna(
+        subset=["ratio"]
+    )
+    pk = fs[fs["kind"] == "season peak"].dropna(subset=["ratio"])
+    dd = fs[fs["kind"].isin(["day", "record day"])].dropna(subset=["ratio"])
+    return {
+        "n_period_means": int(len(pm)),
+        "n_dated_days": int(len(dd)),
+        "dated_day_ratio_median": float(dd["ratio"].median()) if len(dd) else float("nan"),
+        "period_mean_worst_deviation": float((pm["ratio"] - 1.0).abs().max())
+        if len(pm)
+        else float("nan"),
+        "season_peak_ratio_min": float(pk["ratio"].min()) if len(pk) else float("nan"),
+        "season_peak_ratio_max": float(pk["ratio"].max()) if len(pk) else float("nan"),
+    }
+
+
+def flood_scale_error(fs: pd.DataFrame, min_period_days: int = 10) -> dict:
+    """The model's flood-scale error from the flood-scale table: over the period means the
+    run covers on at least ``min_period_days`` days (daily quantities, the scale of a
+    horizon's volume), the count, mean and sample standard deviation of log(model /
+    reported); the dated readings' count and log spread beside them for the record (moment
+    readings, noisier than a daily mean, not used by the product). The spread feeds the
+    product's third spill probability; fewer than three periods give no spread."""
+    pm = fs[(fs["kind"] == "period mean") & (fs["n_days"] >= min_period_days)].dropna(
+        subset=["ratio"]
+    )
+    pm = pm[pm["ratio"] > 0]
+    dd = fs[fs["kind"].isin(["day", "record day"])].dropna(subset=["ratio"])
+    dd = dd[dd["ratio"] > 0]
+    lp = np.log(pm["ratio"].to_numpy(dtype=float))
+    ld = np.log(dd["ratio"].to_numpy(dtype=float))
+    return {
+        "n_periods": int(len(pm)),
+        "log_bias": float(lp.mean()) if len(lp) else float("nan"),
+        "log_sd": float(lp.std(ddof=1)) if len(lp) >= 3 else float("nan"),
+        "n_dated_days": int(len(dd)),
+        "dated_log_sd": float(ld.std(ddof=1)) if len(ld) >= 3 else float("nan"),
+        "min_period_days": int(min_period_days),
+    }
+
+
+def variant_verdict(
+    base: dict,
+    variant: dict,
+    loso: pd.DataFrame,
+    variant_name: str,
+    dams: tuple[str, ...] | None = None,
+) -> dict:
+    """The adoption rule for an inflow-response variant, each condition on its own: the
+    leave-one-season-out error may not rise at any dam, the season-peak ratios of the
+    flood-scale check must rise, and the period means may not move further from the reported
+    means than the baseline's worst one does. ``base`` and ``variant`` are
+    ``flood_scale_summary`` results; ``loso`` has one row per dam and variant with
+    ``rmse_bcm`` (``variant == 'baseline'`` for the response in use). ``dams`` restricts the
+    rule to the dams a variant touches (the caller then passes summaries over those dams
+    only); every dam both have otherwise."""
+    b = loso[loso["variant"] == "baseline"].set_index("dam")["rmse_bcm"]
+    v = loso[loso["variant"] == variant_name].set_index("dam")["rmse_bcm"]
+    dams = sorted(set(b.index) & set(v.index) & (set(dams) if dams is not None else set(b.index)))
+    rmse_ok = bool(dams) and all(float(v[d]) <= float(b[d]) * (1 + 1e-9) for d in dams)
+    peaks_ok = bool(variant["season_peak_ratio_min"] > base["season_peak_ratio_min"])
+    periods_ok = bool(
+        variant["period_mean_worst_deviation"] <= base["period_mean_worst_deviation"] + 1e-9
+    )
+    return {
+        "variant": variant_name,
+        "dams": dams,
+        "loso_error_not_higher": rmse_ok,
+        "season_peaks_higher": peaks_ok,
+        "period_means_hold": periods_ok,
+        "adopt": bool(rmse_ok and peaks_ok and periods_ok),
+    }
+
+
+def annual_max(df: pd.DataFrame, col: str, name: str) -> pd.DataFrame:
+    d = pd.to_datetime(df["date"])
+    out = df.groupby(d.dt.year)[col].max().rename(name).to_frame()
+    out.index.name = "year"
+    return out
+
+
+def peak_class_test(
+    pred: pd.DataFrame,
+    peaks: pd.DataFrame,
+    predictor: str,
+    peak_col: str = "harike_us_cusecs",
+    class_col: str = "wrd_class",
+) -> dict:
+    """Rank correlation, High-class AUROC and leave-one-year-out Brier for one predictor."""
+    df = (
+        pred[[predictor]]
+        .join(peaks.set_index("year")[[peak_col, class_col]], how="inner")
+        .dropna(subset=[predictor, peak_col])
+    )
+    n = len(df)
+    out = {"predictor": predictor, "n_years": int(n)}
+    if n < 8:
+        out["note"] = "too few years"
+        return out
+    rho, p = spearmanr(df[predictor], df[peak_col])
+    out["spearman_rho"] = float(rho)
+    out["spearman_p"] = float(p)
+    y = (df[class_col].fillna("") == "H").astype(int).to_numpy()
+    out["n_high"] = int(y.sum())
+    if 0 < y.sum() < n:
+        out["auroc_high"] = float(roc_auc_score(y, df[predictor]))
+        # leave-one-year-out logistic regression on the standardised predictor
+        x = df[[predictor]].to_numpy(dtype=float)
+        probs = np.full(n, np.nan)
+        for i in range(n):
+            mask = np.arange(n) != i
+            if y[mask].sum() == 0 or y[mask].sum() == mask.sum():
+                probs[i] = y[mask].mean()
+                continue
+            mu, sd = x[mask].mean(), x[mask].std() or 1.0
+            clf = LogisticRegression(C=1.0)
+            clf.fit((x[mask] - mu) / sd, y[mask])
+            probs[i] = clf.predict_proba((x[i : i + 1] - mu) / sd)[0, 1]
+        clim = np.array([np.delete(y, i).mean() for i in range(n)])
+        out["brier_loyo"] = float(np.mean((probs - y) ** 2))
+        out["brier_climatology"] = float(np.mean((clim - y) ** 2))
+        out["brier_skill_score"] = (
+            1.0 - out["brier_loyo"] / out["brier_climatology"]
+            if out["brier_climatology"] > 0
+            else float("nan")
+        )
+        out["loyo_probabilities"] = {int(k): float(v) for k, v in zip(df.index, probs, strict=True)}
+    return out
+
+
+def rule_curve_timing_test(
+    pp_frl: pd.DataFrame, pp_rule: pd.DataFrame, openings: pd.DataFrame, dam: str
+) -> pd.DataFrame:
+    """For each dated gate opening of ``dam`` (``data/reference/bbmb/gate_openings.csv``):
+    the first day of that season on which the FRL bound and the schedule bound each force a
+    release (the run issued the day before puts it on the day), and the signed lag of each
+    from the opening. The schedule bound counts a day only when the release is more than a
+    tenth of the turbine passage, so the drawdown of a reservoir a hair above its line does
+    not fire it. A season with no forced day under a bound gets a note."""
+    from river_watch import constants as C
+
+    small = 0.1 * hei.absorption_cusecs(dam)
+    rows = []
+    for _, o in openings[openings["dam"] == dam].iterrows():
+        d0 = pd.Timestamp(o["date"])
+        row = {
+            "year": int(d0.year),
+            "opening_date": d0.date().isoformat(),
+            "opening_level_ft": float(o["level_ft"]),
+            "schedule_level_ft": C.rule_curve_level_ft(dam, d0),
+            "frl_ft": float(C.DAMS[dam].frl_ft.value),
+        }
+        for label, pp, thr in (("frl", pp_frl, 0.0), ("rule", pp_rule, small)):
+            g = pp[(pp["dam"] == dam)].copy()
+            g["date"] = pd.to_datetime(g["date"])
+            g = g[g["date"].dt.year == d0.year]
+            row[f"n_days_{label}"] = int(len(g))
+            fire = g[g["release_day1_cusecs"] > thr].sort_values("date")
+            if fire.empty:
+                row[f"first_forced_{label}"] = None
+                row[f"lag_{label}_days"] = None
+                continue
+            first = fire["date"].iloc[0] + pd.Timedelta(days=1)
+            row[f"first_forced_{label}"] = first.date().isoformat()
+            row[f"lag_{label}_days"] = int((first - d0).days)
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def routed_vs_gauge_readings(
+    arrivals: pd.DataFrame, readings: pd.DataFrame, stations=("Dhilwan",)
+) -> pd.DataFrame:
+    """The routed release at each station on the days the press quoted the gauge
+    (``data/reference/wrd/gauge_readings_press.csv``, ambiguous rows left out): the reading,
+    the routed flow that day, and the ratio. Moment readings against a daily routed value;
+    a check of the level of the hydrograph on dated days, not a fit."""
+    r = readings[~readings["ambiguous"].astype(bool) & readings["station"].isin(stations)].copy()
+    r["date"] = pd.to_datetime(r["date"])
+    a = arrivals.copy()
+    a["date"] = pd.to_datetime(a["date"])
+    a = a.set_index(["station", "date"])["cusecs"]
+    rows = []
+    for _, x in r.sort_values(["station", "date"]).iterrows():
+        routed = a.get((x["station"], x["date"]), float("nan"))
+        rows.append(
+            {
+                "station": x["station"],
+                "date": x["date"].date().isoformat(),
+                "observed_cusecs": float(x["discharge_cusecs"]),
+                "routed_cusecs": float(routed),
+                "ratio": float(routed) / float(x["discharge_cusecs"])
+                if routed == routed and x["discharge_cusecs"] > 0
+                else float("nan"),
+                "as_of_time": str(x.get("as_of_time", "")),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def event_timing_test(
+    arrivals: pd.DataFrame,
+    peaks_dhilwan: pd.DataFrame,
+    years=(2023, 2025),
+    station: str = "Dhilwan",
+) -> pd.DataFrame:
+    """Predicted versus observed Dhilwan peak per year: dates, magnitudes, signed lag."""
+    a = arrivals[arrivals["station"] == station].copy()
+    a["date"] = pd.to_datetime(a["date"])
+    obs = peaks_dhilwan.set_index("year")
+    rows = []
+    for y in years:
+        g = a[a["date"].dt.year == y]
+        if g.empty or g["cusecs"].max() <= 0:
+            rows.append({"year": y, "note": "no predicted release"})
+            continue
+        i = g["cusecs"].idxmax()
+        pred_date = g.loc[i, "date"]
+        obs_date = pd.Timestamp(obs.loc[y, "date"])
+        rows.append(
+            {
+                "year": y,
+                "predicted_peak_date": pred_date.date().isoformat(),
+                "predicted_peak_cusecs": float(g.loc[i, "cusecs"]),
+                "observed_peak_date": obs_date.date().isoformat(),
+                "observed_peak_cusecs": float(obs.loc[y, "discharge_cusecs"]),
+                "lag_days": int((pred_date - obs_date).days),
+                "magnitude_ratio": float(g.loc[i, "cusecs"] / obs.loc[y, "discharge_cusecs"]),
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def local_inflow_series(
+    rain_daily: pd.DataFrame,
+    areas: dict[str, float],
+    params: dict[str, inflow.InflowParams],
+    sensitivity_dam: str = "Ranjit Sagar",
+) -> dict[str, dict[str, pd.Series]]:
+    """Daily local inflow (cusecs) of every local catchment with rain on file, keyed by the
+    dam whose response is transferred: ``{dam: {catchment: series}}``. Each catchment's own
+    transfer dam (``constants.LOCAL_CATCHMENTS``) is the primary; ``sensitivity_dam`` (the
+    lowest fitted coefficient) is run beside it."""
+    out: dict[str, dict[str, pd.Series]] = {}
+    for name, area in areas.items():
+        if name not in C.LOCAL_CATCHMENTS:
+            continue
+        r = rain_daily[rain_daily["catchment"] == name].copy()
+        if r.empty:
+            continue
+        r["date"] = pd.to_datetime(r["date"])
+        rs = r.sort_values("date").drop_duplicates("date", keep="last").set_index("date")
+        rs = rs["rain_mm"].astype(float)
+        for dam in dict.fromkeys((C.LOCAL_CATCHMENTS[name].transfer_dam, sensitivity_dam)):
+            if dam in params:
+                out.setdefault(dam, {})[name] = inflow.local_inflow_cusecs(params[dam], area, rs)
+    return out
+
+
+def live_test(predicted_cusecs: pd.Series, observed_cusecs: pd.Series) -> dict:
+    df = pd.DataFrame({"pred": predicted_cusecs, "obs": observed_cusecs}).dropna()
+    if len(df) < 3:
+        return {"n": int(len(df)), "note": "too few days"}
+    r = (
+        float(np.corrcoef(df["pred"], df["obs"])[0, 1])
+        if df["obs"].std() > 0 and df["pred"].std() > 0
+        else float("nan")
+    )
+    return {
+        "n": int(len(df)),
+        "bias_pct": float((df["pred"].mean() - df["obs"].mean()) / df["obs"].mean() * 100),
+        "pearson_r": r,
+        "mae_cusecs": float((df["pred"] - df["obs"]).abs().mean()),
+        "mean_obs_cusecs": float(df["obs"].mean()),
+        "mean_pred_cusecs": float(df["pred"].mean()),
+    }
+
+
+LIVE_HORIZONS = (1, 2, 3, 4, 5)
+
+
+def live_horizon_test(
+    bulletins: pd.DataFrame,
+    rain: pd.Series,
+    params: inflow.InflowParams,
+    qpf_leads: pd.DataFrame | None = None,
+    catchment: str | None = None,
+    horizons=LIVE_HORIZONS,
+    models=AS_ISSUED_MODELS,
+    sm: pd.Series | None = None,
+    melt: pd.Series | None = None,
+) -> pd.DataFrame:
+    """The live season's inflow prediction by horizon, against persistence. ``sm`` is the
+    soil-moisture anomaly by date (``sm_anomaly_series_for``); the issue day's anomaly
+    holds over the horizon. ``melt`` is the catchment melt volume by date
+    (``melt_series_for``) for a parameter set that carries the snowmelt term: the recent
+    days' melt enters the base removal and the horizon days' melt the prediction (the
+    archive's melt, perfect prognosis for melt).
+
+    ``bulletins``: one row per day (index date) with ``inflow_cusecs``, the season's BBMB
+    figures. From every bulletin day d the base flow is the observed inflow less the quick
+    response the recent rain explains, and the inflow of day d + h is predicted with the
+    observed catchment rain of the days in between (``rain``, the perfect-prognosis leg)
+    and, where ``qpf_leads`` is given, with the rain forecast issued on d (lead 1 to h of
+    each model). Persistence says the inflow of d + h equals that of d. Each prediction is
+    scored on the days a bulletin exists for d + h (``live_test``). One row per horizon and
+    rain source, with the source ``persistence`` beside them."""
+    rs = rain.sort_index()
+    n_hist = inflow.history_days(params)
+    fc: dict = {}
+    if qpf_leads is not None and catchment is not None:
+        q = qpf_leads[qpf_leads["catchment"] == catchment]
+        fc = {
+            (str(m), pd.Timestamp(t), int(k)): float(v)
+            for m, t, k, v in zip(
+                q["model"], q["target_date"], q["lead_days"], q["rain_mm"], strict=True
+            )
+        }
+    obs = bulletins["inflow_cusecs"].astype(float)
+    rows = []
+    for h in horizons:
+        preds: dict[str, dict] = {"observed rain": {}, "persistence": {}}
+        for m in models:
+            preds[m] = {}
+        for d in bulletins.index:
+            target = d + pd.Timedelta(days=h)
+            if target not in obs.index:
+                continue
+            hist = rs.reindex(pd.date_range(d - pd.Timedelta(days=n_hist - 1), d))
+            if hist.isna().any():
+                continue
+            a = _anom(sm, d)
+            m_hist = _melt_window(melt, hist.index)
+            base = inflow.base_from_observed(
+                params, float(obs.loc[d]), hist.to_numpy(), a, melt_bcm_recent=m_hist
+            )
+            preds["persistence"][target] = float(obs.loc[d])
+            fut = rs.reindex(pd.date_range(d + pd.Timedelta(days=1), periods=h))
+            m_fut = _melt_window(melt, fut.index)
+            if not fut.isna().any():
+                vol = inflow.predict_daily_bcm(
+                    params,
+                    fut.to_numpy(),
+                    base,
+                    rain_mm_recent=hist.to_numpy(),
+                    sm_anom=a,
+                    melt_bcm_recent=m_hist,
+                    melt_bcm_forecast=m_fut,
+                )
+                preds["observed rain"][target] = C.bcm_to_cusec_days(float(vol[-1]))
+            for m in models:
+                f = [fc.get((m, d + pd.Timedelta(days=k), k)) for k in range(1, h + 1)]
+                if any(v is None or v != v for v in f):
+                    continue
+                vol = inflow.predict_daily_bcm(
+                    params,
+                    np.asarray(f, dtype=float),
+                    base,
+                    rain_mm_recent=hist.to_numpy(),
+                    sm_anom=a,
+                    melt_bcm_recent=m_hist,
+                    melt_bcm_forecast=m_fut,
+                )
+                preds[m][target] = C.bcm_to_cusec_days(float(vol[-1]))
+        for source, p in preds.items():
+            if not p:
+                continue
+            score = live_test(pd.Series(p), obs)
+            rows.append({"dam": params.dam, "horizon_days": int(h), "rain": source, **score})
+    return pd.DataFrame(rows)
+
+
+def horizon_contribution(
+    rain: pd.Series,
+    melt: pd.Series | None,
+    params: inflow.InflowParams,
+    issue_days: pd.DatetimeIndex,
+    horizon: int = 5,
+) -> dict:
+    """How much of a five-day (``horizon``) inflow forecast each response contributes, from
+    every issue day in ``issue_days``: the model's daily volumes (``predict_daily_bcm``)
+    summed over the horizon with no base flow and, for the melt response, no rain, and for
+    the rain response, no melt (the two enter the quick response additively, so each sum
+    is that response alone). ``rain`` is the observed catchment rain by date (mm), ``melt``
+    the catchment melt volume by date (BCM); a day the melt series lacks melts nothing.
+    An issue day whose history or horizon runs past the rain record is skipped. Returns
+    ``n_days``, the mean and the largest of each response (BCM over the horizon; None
+    with no days) and the per-day melt sums (``melt_by_day``)."""
+    rs = rain.sort_index()
+    n = inflow.history_days(params)
+    melt_by_day: dict[str, float] = {}
+    rain_sum: list[float] = []
+    for d in issue_days:
+        hist = rs.reindex(pd.date_range(d - pd.Timedelta(days=n - 1), d))
+        fut = rs.reindex(pd.date_range(d + pd.Timedelta(days=1), periods=horizon))
+        if hist.isna().any() or fut.isna().any():
+            continue
+        m_hist = _melt_window(melt, hist.index)
+        m_fut = _melt_window(melt, fut.index)
+        m_vol = inflow.predict_daily_bcm(
+            params,
+            np.zeros(horizon),
+            0.0,
+            rain_mm_recent=np.zeros(n),
+            melt_bcm_recent=m_hist,
+            melt_bcm_forecast=m_fut,
+        )
+        r_vol = inflow.predict_daily_bcm(
+            params,
+            fut.to_numpy(),
+            0.0,
+            rain_mm_recent=hist.to_numpy(),
+            melt_bcm_recent=np.zeros(n),
+            melt_bcm_forecast=np.zeros(horizon),
+        )
+        melt_by_day[d.strftime("%Y-%m-%d")] = float(m_vol.sum())
+        rain_sum.append(float(r_vol.sum()))
+    ms = list(melt_by_day.values())
+    return {
+        "n_days": len(ms),
+        "horizon_days": int(horizon),
+        "melt_mean_bcm": float(np.mean(ms)) if ms else None,
+        "melt_max_bcm": float(np.max(ms)) if ms else None,
+        "rain_mean_bcm": float(np.mean(rain_sum)) if rain_sum else None,
+        "rain_max_bcm": float(np.max(rain_sum)) if rain_sum else None,
+        "melt_by_day": melt_by_day,
+    }
+
+
+def _qpf_merge(qpf_leads: pd.DataFrame, rain_daily: pd.DataFrame) -> pd.DataFrame:
+    """As-issued forecasts joined to the observed catchment rain on the days both have."""
+    obs = rain_daily.copy()
+    obs["date"] = pd.to_datetime(obs["date"])
+    obs = obs.rename(columns={"date": "target_date", "rain_mm": "obs_mm"})[
+        ["target_date", "catchment", "obs_mm"]
+    ]
+    q = qpf_leads.copy()
+    q["target_date"] = pd.to_datetime(q["target_date"])
+    return q.merge(obs, on=["target_date", "catchment"], how="inner").dropna(
+        subset=["rain_mm", "obs_mm"]
+    )
+
+
+def _qpf_scores(f: np.ndarray, o: np.ndarray, heavy_mm: float) -> dict:
+    """Bias, Pearson r, MAE, and hit rate and false-alarm ratio for heavy days (observed or
+    forecast at or above ``heavy_mm``)."""
+    hits = int(((f >= heavy_mm) & (o >= heavy_mm)).sum())
+    misses = int(((f < heavy_mm) & (o >= heavy_mm)).sum())
+    false_alarms = int(((f >= heavy_mm) & (o < heavy_mm)).sum())
+    return {
+        "obs_mean_mm": float(o.mean()),
+        "fc_mean_mm": float(f.mean()),
+        "bias_pct": float((f.mean() - o.mean()) / o.mean() * 100) if o.mean() > 0 else float("nan"),
+        "pearson_r": float(np.corrcoef(f, o)[0, 1])
+        if f.std() > 0 and o.std() > 0
+        else float("nan"),
+        "mae_mm": float(np.abs(f - o).mean()),
+        "heavy_days_obs": hits + misses,
+        "hit_rate": hits / (hits + misses) if hits + misses else float("nan"),
+        "false_alarm_ratio": false_alarms / (hits + false_alarms)
+        if hits + false_alarms
+        else float("nan"),
+    }
+
+
+def qpf_skill(
+    qpf_leads: pd.DataFrame, rain_daily: pd.DataFrame, heavy_mm: float = 30.0
+) -> pd.DataFrame:
+    """As-issued catchment QPF against the observed catchment rain, per catchment, model and
+    lead: bias, Pearson r, MAE, and hit rate and false-alarm ratio for heavy days
+    (observed or forecast at or above ``heavy_mm``). Only the days both series have."""
+    df = _qpf_merge(qpf_leads, rain_daily)
+    rows = []
+    for (cat, model, lead), g in df.groupby(["catchment", "model", "lead_days"]):
+        n = len(g)
+        if n < 20:
+            continue
+        scores = _qpf_scores(g["rain_mm"].to_numpy(), g["obs_mm"].to_numpy(), heavy_mm)
+        rows.append(
+            {"catchment": cat, "model": model, "lead_days": int(lead), "n_days": n, **scores}
+        )
+    return pd.DataFrame(rows)
+
+
+QPF_FACTOR_CLIP = (0.5, 2.0)
+QPF_SCORE_COLS = ("bias_pct", "mae_mm", "hit_rate", "false_alarm_ratio")
+
+
+def qpf_bias_test(
+    qpf_leads: pd.DataFrame,
+    rain_daily: pd.DataFrame,
+    heavy_mm: float = 30.0,
+    factor_clip: tuple[float, float] = QPF_FACTOR_CLIP,
+    min_train_days: int = 60,
+) -> pd.DataFrame:
+    """Does a multiplicative bias correction of the as-issued QPF help out of sample?
+
+    For each catchment, model and lead, one factor (observed season rain over forecast season
+    rain, clipped to ``factor_clip``) is fitted on every season but one and applied to the
+    held-out season; the held-out corrected forecasts of all seasons are then scored against
+    the raw ones with ``_qpf_scores``. Pearson r does not move under a scale factor within a
+    season, so the row keeps bias, MAE, hit rate and false-alarm ratio, raw and corrected,
+    plus the range of the held-out factors and the factor fitted on every season (the one a
+    product would apply)."""
+    df = _qpf_merge(qpf_leads, rain_daily)
+    df["season"] = df["target_date"].dt.year
+    rows = []
+    for (cat, model, lead), g in df.groupby(["catchment", "model", "lead_days"]):
+        seasons = sorted(g["season"].unique())
+        f_all, o_all = g["rain_mm"].to_numpy(), g["obs_mm"].to_numpy()
+        season = g["season"].to_numpy()
+        if len(seasons) < 2 or len(g) < 20 or f_all.sum() <= 0:
+            continue
+        corrected = np.full(len(g), np.nan)
+        factors = {}
+        for y in seasons:
+            train = season != y
+            if train.sum() < min_train_days or f_all[train].sum() <= 0:
+                continue
+            fac = float(np.clip(o_all[train].sum() / f_all[train].sum(), *factor_clip))
+            factors[int(y)] = fac
+            corrected[~train] = f_all[~train] * fac
+        ok = ~np.isnan(corrected)
+        if ok.sum() < 20:
+            continue
+        raw = _qpf_scores(f_all[ok], o_all[ok], heavy_mm)
+        cor = _qpf_scores(corrected[ok], o_all[ok], heavy_mm)
+        rows.append(
+            {
+                "catchment": cat,
+                "model": model,
+                "lead_days": int(lead),
+                "n_days": int(ok.sum()),
+                "n_seasons": len(factors),
+                "factor_min": min(factors.values()),
+                "factor_max": max(factors.values()),
+                "factor_all_seasons": float(np.clip(o_all.sum() / f_all.sum(), *factor_clip)),
+                "heavy_days_obs": raw["heavy_days_obs"],
+                **{f"raw_{k}": raw[k] for k in QPF_SCORE_COLS},
+                **{f"corrected_{k}": cor[k] for k in QPF_SCORE_COLS},
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def routed_forced_release(pp: pd.DataFrame, dam: str) -> pd.DataFrame:
+    """Route the horizon-peak forced release placed at the issue date. This is an envelope
+    (the largest daily spill the next ``horizon_days`` could force, shown as early as it can
+    be known), not a timing estimate; use ``routed_next_day_release`` for timing."""
+    s = pp[pp["dam"] == dam].set_index("date")["peak_release_cusecs"].sort_index()
+    return routing.arrivals({dam: s})
+
+
+def routed_next_day_release(
+    pp: pd.DataFrame,
+    dam: str,
+    passage: bool = True,
+    local: dict[str, pd.Series] | None = None,
+) -> pd.DataFrame:
+    """Route the perfect-prog forced release placed on the day it happens: the release on
+    day d+1 is the first-day forced spill of the run issued on day d (today's storage,
+    tomorrow's observed rain).
+
+    With ``passage`` the routed river release on a spill day is the spill plus the turbine
+    passage less the diversion capacity (``routing.river_release_when_spilling``), the lower
+    bound on what a full reservoir sends down the river; without it only the spill is routed,
+    a lower bound of a lower bound."""
+    g = pp[pp["dam"] == dam].copy()
+    g["date"] = pd.to_datetime(g["date"]) + pd.Timedelta(days=1)
+    s = g.set_index("date")["release_day1_cusecs"].sort_index()
+    full = pd.date_range(s.index.min(), s.index.max(), freq="D")
+    s = s.reindex(full).fillna(0.0)
+    if passage:
+        s = pd.Series(routing.river_release_when_spilling(dam, s.to_numpy()), index=s.index)
+    return routing.arrivals({dam: s}, local=local)
+
+
+def local_inflow_summary(
+    local_cusecs: dict[str, pd.Series],
+    arrivals_dam_only: pd.DataFrame,
+    peaks: pd.DataFrame,
+    years=(2023, 2025),
+    station: str = "Dhilwan",
+    window_days: int = 3,
+) -> pd.DataFrame:
+    """What the local term is worth on the observed peak days: per event year, the local
+    inflow at ``station`` on the department's peak day, its largest value within
+    ``window_days`` of it, the routed dam release that day (``arrivals_dam_only``), and
+    both as ratios to the observed peak. Only the local catchments that feed ``station``
+    count (``constants.LOCAL_CATCHMENTS``)."""
+    from river_watch import constants as C
+
+    feeders = [
+        n for n, lc in C.LOCAL_CATCHMENTS.items() if station in lc.stations and n in local_cusecs
+    ]
+    total = (
+        pd.concat([local_cusecs[n] for n in feeders], axis=1).fillna(0.0).sum(axis=1)
+        if feeders
+        else pd.Series(dtype=float)
+    )
+    total.index = pd.to_datetime(total.index)
+    a = arrivals_dam_only[arrivals_dam_only["station"] == station].copy()
+    a["date"] = pd.to_datetime(a["date"])
+    dam = a.set_index("date")["cusecs"]
+    obs = peaks.set_index("year")
+    rows = []
+    max_col = f"local_max_within_{window_days}_days_cusecs"
+    for y in years:
+        od = pd.Timestamp(obs.loc[y, "date"])
+        op = float(obs.loc[y, "discharge_cusecs"])
+        win = pd.date_range(
+            od - pd.Timedelta(days=window_days), od + pd.Timedelta(days=window_days)
+        )
+        t = total.reindex(win)
+        if t.isna().all():
+            rows.append(
+                {
+                    "year": y,
+                    "station": station,
+                    "observed_peak_date": od.date().isoformat(),
+                    "observed_peak_cusecs": op,
+                    "note": "no local series for the event window",
+                }
+            )
+            continue
+        on_day = float(t.get(od, float("nan")))
+        dam_day = float(dam.get(od, 0.0))
+        rows.append(
+            {
+                "year": y,
+                "station": station,
+                "local_catchments": ", ".join(feeders),
+                "observed_peak_date": od.date().isoformat(),
+                "observed_peak_cusecs": op,
+                "local_on_peak_day_cusecs": on_day,
+                max_col: float(t.max()),
+                "local_max_date": t.idxmax().date().isoformat(),
+                "routed_dam_on_peak_day_cusecs": dam_day,
+                "local_share_of_observed_peak": on_day / op,
+                "dam_plus_local_ratio": (dam_day + on_day) / op,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def write_json(obj, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(obj, indent=2, default=_json_default), encoding="utf-8")
+
+
+def _json_default(o):
+    if isinstance(o, np.integer | np.floating):
+        return o.item()
+    if isinstance(o, pd.Timestamp):
+        return o.isoformat()
+    return str(o)
+
+
+def qpf_model_comparison(
+    qpf_leads: pd.DataFrame,
+    rain_daily: pd.DataFrame,
+    incumbent: str,
+    challenger: str,
+    catchments=tuple(C.DAMS),
+    leads=(1, 2, 3),
+    heavy_mm: float = 30.0,
+) -> dict:
+    """Two rain sources scored on exactly the same (catchment, target day, lead) rows over
+    the dam catchments at the product's short leads, pooled. The rule for the product's
+    primary deterministic model: the challenger replaces the incumbent only if its heavy-day
+    hit rate is higher and its false-alarm ratio is not higher, on those common rows."""
+    df = _qpf_merge(qpf_leads, rain_daily)
+    df = df[df["catchment"].isin(list(catchments)) & df["lead_days"].isin(list(leads))]
+    key = ["catchment", "target_date", "lead_days"]
+    a = df[df["model"] == incumbent][key + ["rain_mm", "obs_mm"]]
+    b = df[df["model"] == challenger][key + ["rain_mm"]]
+    both = a.merge(b, on=key, suffixes=("_inc", "_chal"))
+    out = {
+        "incumbent_model": incumbent,
+        "challenger_model": challenger,
+        "catchments": list(catchments),
+        "leads": list(leads),
+        "n_common_days": int(len(both)),
+        "incumbent": {},
+        "challenger": {},
+        "switch": False,
+    }
+    if both.empty:
+        return out
+    o = both["obs_mm"].to_numpy()
+    out["incumbent"] = _qpf_scores(both["rain_mm_inc"].to_numpy(), o, heavy_mm)
+    out["challenger"] = _qpf_scores(both["rain_mm_chal"].to_numpy(), o, heavy_mm)
+    hi, hc = out["incumbent"]["hit_rate"], out["challenger"]["hit_rate"]
+    fi, fc = out["incumbent"]["false_alarm_ratio"], out["challenger"]["false_alarm_ratio"]
+    hit_better = hc == hc and hi == hi and hc > hi
+    far_ok = fc != fc or fi != fi or fc <= fi
+    out["hit_rate_higher"] = bool(hit_better)
+    out["false_alarm_not_higher"] = bool(far_ok)
+    out["switch"] = bool(hit_better and far_ok)
+    return out
+
+
+def realtime_vs_final(
+    final: pd.DataFrame,
+    realtime: pd.DataFrame,
+    era5: pd.DataFrame,
+    catchments=tuple(C.DAMS),
+    heavy_mm: float = 30.0,
+) -> dict:
+    """The two in-season observed-rain records against the final IMD grid on the days each
+    has: per dam catchment, the IMD real-time grid (``imd_rt``) and ERA5, scored with
+    ``_qpf_scores`` (bias, r, MAE, heavy-day hit rate and false-alarm ratio). The rule for
+    the product's observed record, written before the pull: the real-time grid replaces the
+    best-match past days only if its MAE is lower than ERA5's at every dam and its heavy-day
+    hit rate is not lower at any; a dam with no real-time days fails it."""
+
+    def series(df: pd.DataFrame, cat: str) -> pd.Series:
+        g = df[df["catchment"] == cat].copy()
+        g["date"] = pd.to_datetime(g["date"])
+        return g.set_index("date")["rain_mm"].astype(float).sort_index()
+
+    rows, missing = [], []
+    mae_lower, hit_ok = [], []
+    for cat in catchments:
+        f = series(final, cat)
+        scores = {}
+        for name, df in (("imd_rt", realtime), ("era5", era5)):
+            s = series(df, cat)
+            both = f.index.intersection(s.index)
+            if len(both) == 0:
+                continue
+            sc = _qpf_scores(s.loc[both].to_numpy(), f.loc[both].to_numpy(), heavy_mm)
+            scores[name] = sc
+            rows.append({"catchment": cat, "record": name, "n_days": int(len(both)), **sc})
+        if "imd_rt" not in scores or "era5" not in scores:
+            missing.append(cat)
+            continue
+        rt, e = scores["imd_rt"], scores["era5"]
+        mae_lower.append(rt["mae_mm"] < e["mae_mm"])
+        hr, he = rt["hit_rate"], e["hit_rate"]
+        # no heavy day in the season: the condition is vacuous; ERA5 without a hit rate
+        # cannot beat a real-time record that has one
+        hit_ok.append((hr != hr and he != he) or (hr == hr and (he != he or hr >= he)))
+    ok_mae = bool(mae_lower) and all(mae_lower) and not missing
+    ok_hit = bool(hit_ok) and all(hit_ok) and not missing
+    return {
+        "rows": rows,
+        "dams_missing": missing,
+        "mae_lower_everywhere": ok_mae,
+        "hit_rate_not_lower": ok_hit,
+        "switch": ok_mae and ok_hit,
+        "heavy_mm": heavy_mm,
+    }
+
+
+BLEND_MODELS = ("ecmwf_aifs025_single", "ecmwf_ifs025", "gfs_seamless")
+
+
+def qpf_blend_test(
+    qpf_leads: pd.DataFrame,
+    rain_daily: pd.DataFrame,
+    incumbent: str = "ecmwf_aifs025_single",
+    models=BLEND_MODELS,
+    catchments=tuple(C.DAMS),
+    leads=(1, 2, 3),
+    heavy_mm: float = 30.0,
+) -> dict:
+    """Do the deterministic models combined beat the product's primary one?
+
+    On the (catchment, target day, lead) rows every model in ``models`` has, over the dam
+    catchments at the product's short leads, four challengers are scored beside the
+    incumbent with ``_qpf_scores``: the equal-weight mean, an inverse-MAE weighted mean
+    whose weights are fitted on every season but the one scored (leave-one-season-out, so
+    the score is out of sample), the largest of the models (the hazard-minded blend), and
+    the incumbent itself. Each challenger is judged by the rule of ``qpf_model_comparison``
+    (heavy-day hit rate higher, false-alarm ratio not higher); ``adopt`` names the one the
+    product should take, or None when none passes."""
+    df = _qpf_merge(qpf_leads, rain_daily)
+    df = df[df["catchment"].isin(list(catchments)) & df["lead_days"].isin(list(leads))]
+    key = ["catchment", "target_date", "lead_days"]
+    wide = None
+    for m in models:
+        g = df[df["model"] == m][key + ["rain_mm"] + (["obs_mm"] if wide is None else [])]
+        g = g.rename(columns={"rain_mm": m})
+        wide = g if wide is None else wide.merge(g, on=key)
+    out = {
+        "incumbent_model": incumbent,
+        "models": list(models),
+        "catchments": list(catchments),
+        "leads": list(leads),
+        "n_common_days": 0 if wide is None else int(len(wide)),
+        "scores": {},
+        "weights_all_seasons": {},
+        "adopt": None,
+    }
+    if wide is None or len(wide) < 20:
+        return out
+    o = wide["obs_mm"].to_numpy()
+    f = {m: wide[m].to_numpy() for m in models}
+    season = wide["target_date"].dt.year.to_numpy()
+    blends = {
+        "equal_mean": np.mean([f[m] for m in models], axis=0),
+        "max_of_models": np.max([f[m] for m in models], axis=0),
+    }
+    # inverse-MAE weights, leave one season out
+    weighted = np.full(len(o), np.nan)
+    for y in np.unique(season):
+        train = season != y
+        if train.sum() < 60:
+            continue
+        inv = np.array([1.0 / max(np.abs(f[m][train] - o[train]).mean(), 1e-6) for m in models])
+        w = inv / inv.sum()
+        weighted[~train] = sum(w[i] * f[m][~train] for i, m in enumerate(models))
+    inv_all = np.array([1.0 / max(np.abs(f[m] - o).mean(), 1e-6) for m in models])
+    out["weights_all_seasons"] = {
+        m: float(v) for m, v in zip(models, inv_all / inv_all.sum(), strict=True)
+    }
+    ok = ~np.isnan(weighted)
+    inc = _qpf_scores(f[incumbent], o, heavy_mm)
+    out["scores"][incumbent] = inc
+    for m in models:
+        if m != incumbent:
+            out["scores"][m] = _qpf_scores(f[m], o, heavy_mm)
+    for name, b in blends.items():
+        out["scores"][name] = _qpf_scores(b, o, heavy_mm)
+    if ok.sum() >= 20:
+        out["scores"]["inverse_mae_weighted_loso"] = {
+            **_qpf_scores(weighted[ok], o[ok], heavy_mm),
+            "incumbent_on_same_rows": _qpf_scores(f[incumbent][ok], o[ok], heavy_mm),
+        }
+    passing = []
+    for name in ("equal_mean", "inverse_mae_weighted_loso", "max_of_models"):
+        s = out["scores"].get(name)
+        if not s:
+            continue
+        ref = s.get("incumbent_on_same_rows", inc)
+        hit_better = (
+            s["hit_rate"] == s["hit_rate"]
+            and ref["hit_rate"] == ref["hit_rate"]
+            and s["hit_rate"] > ref["hit_rate"]
+        )
+        far_ok = (
+            s["false_alarm_ratio"] != s["false_alarm_ratio"]
+            or ref["false_alarm_ratio"] != ref["false_alarm_ratio"]
+            or s["false_alarm_ratio"] <= ref["false_alarm_ratio"]
+        )
+        s["hit_rate_higher"] = bool(hit_better)
+        s["false_alarm_not_higher"] = bool(far_ok)
+        s["passes_rule"] = bool(hit_better and far_ok)
+        if s["passes_rule"]:
+            passing.append((s["mae_mm"], name))
+    out["adopt"] = min(passing)[1] if passing else None
+    return out
+
+
+WATCH_EVENT_BEFORE_DAYS = 14
+WATCH_EVENT_AFTER_DAYS = 7
+
+
+def weather_watch_hindcast(
+    qpf_leads: pd.DataFrame,
+    climatology: dict[str, np.ndarray],
+    events: dict[str, str] | None,
+    models: tuple[str, ...] = AS_ISSUED_MODELS,
+    primary: str = "ecmwf_aifs025_single",
+    months=(6, 7, 8, 9),
+    watch_days: int = 3,
+    heavy_mm: float = 30.0,
+    catchments: tuple[str, ...] | None = None,
+) -> dict:
+    """The weather watch run day by day over the as-issued archive, deterministic branch
+    only (no ensemble is archived): for every issue date whose leads 1 to ``watch_days``
+    every model in ``models`` present that season holds, the primary model's three-day
+    total placed in ``climatology`` and the share of models with a day at or above
+    ``heavy_mm``, through ``weather.level`` with ``has_ensemble`` False. The primary is
+    ``primary`` where the issue date has it, else the first model it has.
+
+    ``events`` maps a catchment to the date of its dam event (ISO). Returns the rows, one
+    summary per catchment and season (the share of issue days at each level, and the days
+    at watch or above outside the event window, ``WATCH_EVENT_BEFORE_DAYS`` before to
+    ``WATCH_EVENT_AFTER_DAYS`` after an event, as false alarms), and one summary per event
+    (the first issue date at watch and at alert within the window before it, and the
+    lead)."""
+    from river_watch import weather as wx
+
+    q = qpf_leads.copy()
+    q["target_date"] = pd.to_datetime(q["target_date"])
+    q = q[q["model"].isin(list(models)) & q["lead_days"].between(1, watch_days)]
+    q["issue_date"] = q["target_date"] - pd.to_timedelta(q["lead_days"], unit="D")
+    q = q[q["issue_date"].dt.month.isin(list(months))]
+    cats = list(catchments) if catchments is not None else sorted(q["catchment"].unique())
+    events = events or {}
+    rows: list[dict] = []
+    for cat in cats:
+        g = q[q["catchment"] == cat]
+        # the models the archive holds for this catchment in each season
+        season_models = g.groupby(g["issue_date"].dt.year)["model"].agg(lambda s: set(s))
+        for issue, gi in g.groupby("issue_date"):
+            by_model = {}
+            for m, gm in gi.groupby("model"):
+                s = gm.set_index("lead_days")["rain_mm"].reindex(range(1, watch_days + 1))
+                if s.isna().any():
+                    continue
+                by_model[m] = s.to_numpy(dtype=float)
+            if set(by_model) != season_models.get(issue.year, set()):
+                continue  # an issue date short of a model at some lead is not scored
+            model = primary if primary in by_model else next(iter(by_model))
+            three = float(by_model[model].sum())
+            pct = wx.percentile_of(climatology.get(cat), three)
+            heavy = {m: bool((v >= heavy_mm).any()) for m, v in by_model.items()}
+            share = sum(heavy.values()) / len(heavy)
+            rows.append(
+                {
+                    "issue_date": issue.date().isoformat(),
+                    "year": int(issue.year),
+                    "catchment": cat,
+                    "primary_model": model,
+                    "n_models": int(len(by_model)),
+                    "three_day_mm": three,
+                    "three_day_percentile": pct,
+                    "models_with_heavy_day": float(share),
+                    "level": wx.level(pct, None, share, False),
+                }
+            )
+    df = pd.DataFrame(rows)
+    if df.empty:
+        return {"rows": df, "seasons": [], "events": []}
+    rank = {"quiet": 0, "watch": 1, "alert": 2}
+    df["level_rank"] = df["level"].map(rank)
+    d = pd.to_datetime(df["issue_date"])
+    df["in_event_window"] = False
+    for cat, ev in events.items():
+        e = pd.Timestamp(ev)
+        m = (
+            (df["catchment"] == cat)
+            & (d >= e - pd.Timedelta(days=WATCH_EVENT_BEFORE_DAYS))
+            & (d <= e + pd.Timedelta(days=WATCH_EVENT_AFTER_DAYS))
+        )
+        df.loc[m, "in_event_window"] = True
+    seasons = []
+    for (cat, y), g in df.groupby(["catchment", "year"]):
+        outside = g[~g["in_event_window"]]
+        seasons.append(
+            {
+                "catchment": cat,
+                "year": int(y),
+                "n_issue_days": int(len(g)),
+                "watch_share": float((g["level"] == "watch").mean()),
+                "alert_share": float((g["level"] == "alert").mean()),
+                "n_outside_event_window": int(len(outside)),
+                "false_alarm_days": int((outside["level_rank"] >= 1).sum()),
+                "false_alert_days": int((outside["level_rank"] >= 2).sum()),
+            }
+        )
+    ev_rows = []
+    for cat, ev in events.items():
+        e = pd.Timestamp(ev)
+        before = (
+            (df["catchment"] == cat)
+            & (d < e)
+            & (d >= e - pd.Timedelta(days=WATCH_EVENT_BEFORE_DAYS))
+        )
+        g = df[before].sort_values("issue_date")
+        first_w = g[g["level_rank"] >= 1].head(1)
+        first_a = g[g["level_rank"] >= 2].head(1)
+        # the issue day just before the window opened: a level already raised there means
+        # the lead is bounded by the window, not measured by it
+        eve = df[
+            (df["catchment"] == cat) & (d == e - pd.Timedelta(days=WATCH_EVENT_BEFORE_DAYS + 1))
+        ]
+        eve_rank = int(eve["level_rank"].iloc[0]) if len(eve) else 0
+
+        def _first(r):
+            return str(r["issue_date"].iloc[0]) if len(r) else None
+
+        def _lead(r):
+            return int((e - pd.Timestamp(r["issue_date"].iloc[0])).days) if len(r) else None
+
+        def _at_edge(r, rank):
+            return bool(len(r) and len(g) and r.index[0] == g.index[0] and eve_rank >= rank)
+
+        ev_rows.append(
+            {
+                "catchment": cat,
+                "event_date": e.date().isoformat(),
+                "n_issue_days_before": int(len(g)),
+                "first_watch_issue_date": _first(first_w),
+                "watch_lead_days": _lead(first_w),
+                "watch_raised_before_window": _at_edge(first_w, 1),
+                "first_alert_issue_date": _first(first_a),
+                "alert_lead_days": _lead(first_a),
+                "alert_raised_before_window": _at_edge(first_a, 2),
+                "days_at_watch_before": int((g["level_rank"] >= 1).sum()),
+                "days_at_alert_before": int((g["level_rank"] >= 2).sum()),
+                "max_percentile_before": float(g["three_day_percentile"].max()) if len(g) else None,
+            }
+        )
+    return {
+        "rows": df.drop(columns=["level_rank"]),
+        "seasons": seasons,
+        "events": ev_rows,
+        "window_days_before": WATCH_EVENT_BEFORE_DAYS,
+        "window_days_after": WATCH_EVENT_AFTER_DAYS,
+    }

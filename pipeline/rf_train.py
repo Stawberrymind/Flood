@@ -14,7 +14,7 @@ Steps: agreement-strata labels -> stratified balanced point sample (committed CS
 points -> statewide RF flood raster -> independent random-point check vs GFM ->
 per-district + crop-flooded stats (committed CSV) -> quicklooks -> joblib model.
 
-Pure array logic is in ``sailaab.rf`` (unit-tested); this is the IO / sklearn
+Pure array logic is in ``flood_watch.rf`` (unit-tested); this is the IO / sklearn
 orchestration. Run: ``python -m pipeline.rf_train``.
 """
 
@@ -36,21 +36,21 @@ from sklearn.ensemble import RandomForestClassifier
 import joblib
 
 from pipeline.local_tier_a import AOIS, DST_CRS, target_grid
-from sailaab import config
-from sailaab.districts import (
+from flood_watch import config
+from flood_watch.districts import (
     district_fractions,
     fold_of,
     load_districts,
     rasterize_districts,
 )
-from sailaab.rf import (
+from flood_watch.rf import (
     agreement_labels,
     sample_features,
     stratified_balanced_sample,
     xy_from_index,
 )
-from sailaab.sar_local import flooded_hectares
-from sailaab.validation import binary_metrics
+from flood_watch.sar_local import flooded_hectares
+from flood_watch.validation import binary_metrics
 
 RES = 90.0
 PX_AREA_M2 = RES * RES
@@ -349,7 +349,7 @@ def _quicklook_rf(rf_flood, refwater, districts, path, max_w=1400):
     path.parent.mkdir(parents=True, exist_ok=True)
     fig, ax = plt.subplots(figsize=(7, 8))
     ax.imshow(rgb)
-    ax.set_title("Sailaab RF flood — Punjab 2025 (district boundaries)", fontsize=11)
+    ax.set_title("Flood Watch RF flood — Punjab 2025 (district boundaries)", fontsize=11)
     ax.axis("off")
     fig.savefig(path, dpi=130, bbox_inches="tight")
     plt.close(fig)
@@ -359,7 +359,7 @@ def _quicklook_3panel(tier_a, rf_flood, gfm, path, max_w=900):
     f = max(1, int(np.ceil(rf_flood.shape[1] / max_w)))
     panels = [
         ("Tier-A SAR", _orpool(tier_a, f)),
-        ("Sailaab RF", _orpool(rf_flood, f)),
+        ("Flood Watch RF", _orpool(rf_flood, f)),
         ("GFM union", _orpool(gfm, f)),
     ]
     fig, axes = plt.subplots(1, 3, figsize=(13, 6))

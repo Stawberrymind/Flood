@@ -47,7 +47,7 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-from sailaab.forecast_daily import (
+from flood_watch.forecast_daily import (
     build_climatology,
     climatology_percentile,
     dry_at_issue,
@@ -56,13 +56,13 @@ from sailaab.forecast_daily import (
     trailing_max,
     trailing_sums,
 )
-from sailaab.forecast_v2 import (
+from flood_watch.forecast_v2 import (
     block_bootstrap_ci,
     brier_skill,
     quiet_window_alert_rate,
     recall_at_k,
 )
-from sailaab.observations import mask_observations
+from flood_watch.observations import mask_observations
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"

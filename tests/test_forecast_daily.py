@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from sailaab.forecast_daily import (
+from flood_watch.forecast_daily import (
     build_climatology,
     climatology_percentile,
     dry_at_issue,
@@ -254,7 +254,7 @@ def _fc(**boxes):
 
 
 def test_adjacency_finds_touching_districts_only():
-    from sailaab.forecast_daily import build_adjacency
+    from flood_watch.forecast_daily import build_adjacency
 
     gj = _fc(
         A=_sq(0, 0, 1, 1),
@@ -268,7 +268,7 @@ def test_adjacency_finds_touching_districts_only():
 
 
 def test_neighbour_water_excludes_the_district_itself():
-    from sailaab.forecast_daily import neighbour_water
+    from flood_watch.forecast_daily import neighbour_water
 
     daily = pd.DataFrame(
         {
@@ -285,7 +285,7 @@ def test_neighbour_water_excludes_the_district_itself():
 
 
 def test_neighbour_water_looks_back_over_the_window():
-    from sailaab.forecast_daily import neighbour_water
+    from flood_watch.forecast_daily import neighbour_water
 
     dates = pd.to_datetime(["2020-08-01", "2020-08-02"])
     daily = pd.DataFrame(
@@ -302,7 +302,7 @@ def test_neighbour_water_looks_back_over_the_window():
 
 
 def test_seasonal_onset_rate_is_per_district_and_week():
-    from sailaab.forecast_daily import seasonal_onset_rate
+    from flood_watch.forecast_daily import seasonal_onset_rate
 
     tr = pd.DataFrame(
         {
@@ -352,7 +352,7 @@ def test_forward_horizon_preserves_unsorted_input_index():
 
 
 def test_neighbour_water_expires_by_calendar_time_on_sparse_inputs():
-    from sailaab.forecast_daily import neighbour_water
+    from flood_watch.forecast_daily import neighbour_water
 
     df = pd.DataFrame({
         "date": pd.to_datetime(["2020-08-01", "2020-08-10", "2020-08-02"]),
@@ -387,7 +387,7 @@ def test_hysteresis_does_not_borrow_a_wet_row_from_outside_three_days():
 
 
 def test_lagged_daily_values_preserves_index_and_marks_omitted_days():
-    from sailaab.forecast_daily import lagged_daily_values
+    from flood_watch.forecast_daily import lagged_daily_values
 
     df = _target([0.1, 0.2, 0.3]).drop(index=1).iloc[::-1]
     result = lagged_daily_values(df)

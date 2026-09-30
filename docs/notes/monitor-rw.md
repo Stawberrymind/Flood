@@ -35,16 +35,16 @@ contents: write`) to push the state commit.
 ```
 MPC STAC search (sentinel-1-rtc, Punjab bbox, last 12 days)
   -> per-scene UTC datetimes
-  -> sailaab.monitor.new_scenes() vs monitor/state.json watermark
+  -> flood_watch.monitor.new_scenes() vs monitor/state.json watermark
        no new scenes -> print "no new scenes", exit 0
-  -> sailaab.monitor_pc.plan_passes(): which acquisition date(s) to composite
+  -> flood_watch.monitor_pc.plan_passes(): which acquisition date(s) to composite
   -> for each new pass date:
        coarse 150 m VV composite of just that pass's scenes (a swath)
        ΔVV = VV_pass − VV_reference        (pre-built composite, below)
-       Tier-A mask (sailaab.sar_local) + speckle sieve
-       per-district flooded km² (sailaab.districts, polygons reprojected to UTM)
+       Tier-A mask (flood_watch.sar_local) + speckle sieve
+       per-district flooded km² (flood_watch.districts, polygons reprojected to UTM)
   -> monitor/latest.json  (pass date, per-district km², districts ≥ 25 km²,
-                           trilingual alerts from sailaab.alerts)
+                           trilingual alerts from flood_watch.alerts)
   -> monitor/latest.png   (statewide VV quicklook + cyan flood overlay)
   -> advance watermark to the latest scene
 ```
@@ -95,7 +95,7 @@ is no per-run baseline fetch, which is what makes a run cheap.
   quantized to **int16 = round(dB × 100)** with `-32768` as nodata, DEFLATE +
   predictor 2, tiled GeoTIFF. Grid: exactly `target_grid(PUNJAB_BBOX, 150)` in
   **EPSG:32643**, so live passes read onto the identical grid and ΔVV is
-  pixel-aligned. Codec: `sailaab.monitor_pc.save_reference` / `load_reference`
+  pixel-aligned. Codec: `flood_watch.monitor_pc.save_reference` / `load_reference`
   (dequantizes to float dB + NaN transparently).
 - **Window**: `2026-04-01 .. 2026-05-31` — the *same-year* pre-monsoon dry
   season, the freshest "normal, no standing water" baseline before the 2026
@@ -106,7 +106,7 @@ is no per-run baseline fetch, which is what makes a run cheap.
   orbits — hence the whole state, gap-free — are represented while total scene
   count (and peak RAM for the NaN-median) stays bounded. RTC gamma0 is
   terrain-flattened, so mixing orbits in a *baseline median* is sound; the
-  canonical GEE Tier-A (`sailaab.ee_graphs.flood_mask_for_window`) likewise
+  canonical GEE Tier-A (`flood_watch.ee_graphs.flood_mask_for_window`) likewise
   medians its pre window over all orbits.
 - **Build command** (run once, offline; the Action never rebuilds it):
   `python -m pipeline.build_reference --res 150 --per-orbit 2` (12 scenes: the 2
@@ -136,17 +136,17 @@ the local Tier-A route.
 
 | Concern | Module | Tested by |
 |---|---|---|
-| Watermark (new-scene state) | `sailaab/monitor.py` (unchanged) | `tests/test_monitor.py` |
-| Scene grouping, backlog plan, km² shaping, alerts fan-out, reference codec, geom reproject | `sailaab/monitor_pc.py` (new, pure/light-IO) | `tests/test_monitor_pc.py` (14) |
-| Tier-A array logic | `sailaab/sar_local.py` (reused) | `tests/test_sar_local.py` |
-| District rasterize / reduce | `sailaab/districts.py` (reused) | `tests/test_districts.py` |
-| Trilingual alerts | `sailaab/alerts.py` (reused) | `tests/test_alerts.py` |
+| Watermark (new-scene state) | `flood_watch/monitor.py` (unchanged) | `tests/test_monitor.py` |
+| Scene grouping, backlog plan, km² shaping, alerts fan-out, reference codec, geom reproject | `flood_watch/monitor_pc.py` (new, pure/light-IO) | `tests/test_monitor_pc.py` (14) |
+| Tier-A array logic | `flood_watch/sar_local.py` (reused) | `tests/test_sar_local.py` |
+| District rasterize / reduce | `flood_watch/districts.py` (reused) | `tests/test_districts.py` |
+| Trilingual alerts | `flood_watch/alerts.py` (reused) | `tests/test_alerts.py` |
 | STAC / COG IO | `pipeline/local_tier_a.py` (reused **by import**, not edited) | end-to-end run |
 | Monitor runner | `pipeline/live_monitor.py` (rewritten, secretless) | end-to-end run |
 | Reference builder | `pipeline/build_reference.py` (new, one-time) | end-to-end run |
 | Legacy EE monitor | `pipeline/legacy_ee_monitor.py` (old code, verbatim, not in CI) | — |
 
-`sailaab/ee_graphs.py` and the `ee`-marked tests are untouched.
+`flood_watch/ee_graphs.py` and the `ee`-marked tests are untouched.
 
 ## Live verification (2026-07-21, monsoon active)
 

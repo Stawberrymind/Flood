@@ -1,7 +1,7 @@
 # tests/test_alerts.py
 import pytest
 
-from sailaab.alerts import render_alert
+from flood_watch.alerts import render_alert
 
 
 def test_english_alert_contains_facts():

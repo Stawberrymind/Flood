@@ -42,7 +42,7 @@ from pipeline.run_forecaster_daily import (
     _fold_prior,
     build_frame,
 )
-from sailaab.forecast_daily import forward_event
+from flood_watch.forecast_daily import forward_event
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -107,7 +107,7 @@ def onset_events(full: pd.DataFrame, threshold: float) -> pd.DataFrame:
     d["md"] = d["date"].dt.strftime("%m-%d")
     d = d[d["md"] >= CORE_MD].sort_values(["district", "year", "date"])
     wet = d["fraction"] > threshold
-    from sailaab.forecast_daily import lagged_daily_values
+    from flood_watch.forecast_daily import lagged_daily_values
 
     prev = lagged_daily_values(d)
     ev = d[wet & prev.notna() & prev.le(threshold)]

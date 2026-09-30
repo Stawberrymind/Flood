@@ -46,11 +46,11 @@ import rasterio
 from PIL import Image, ImageDraw, ImageFont
 from pyproj import Transformer
 
-# Make ``sailaab`` importable when this file is run as a script.
+# Make ``flood_watch`` importable when this file is run as a script.
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
-from sailaab.gfm import web_mercator_area_km2  # noqa: E402
+from flood_watch.gfm import web_mercator_area_km2  # noqa: E402
 
 # --- atlas dark-cartography palette (R, G, B) --------------------------------
 INK = (10, 16, 20)  # #0a1014  background / no-data
@@ -262,7 +262,7 @@ def render_day(rgb_map, origin, polylines, fonts, d, area_cum, area_new, progres
     _text(
         draw,
         (LEFT_X, CANVAS_H - 30),
-        "SAILAAB · Sentinel-1 / Copernicus GFM",
+        "FLOOD WATCH · Sentinel-1 / Copernicus GFM",
         fonts["credit"],
         CREDIT,
         "lm",
@@ -290,7 +290,7 @@ def render_hold(rgb_map, origin, polylines, fonts, area_cum, n_days):
     _text(
         draw,
         (LEFT_X, CANVAS_H - 30),
-        "SAILAAB · Sentinel-1 / Copernicus GFM",
+        "FLOOD WATCH · Sentinel-1 / Copernicus GFM",
         fonts["credit"],
         CREDIT,
         "lm",

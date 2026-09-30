@@ -9,7 +9,7 @@ training quantity and never has to touch the raw archive.
 The bundle carries the fitted pipeline, the feature order it was fitted in, the
 district susceptibility priors, the seasonal onset climatology, the district
 adjacency, and the operating constants. The nowcast driver asserts the feature
-order against `sailaab.forecast_live.FEATURE_ORDER`, so a retrain that changes
+order against `flood_watch.forecast_live.FEATURE_ORDER`, so a retrain that changes
 the feature set fails loudly instead of silently scoring the wrong columns.
 
 Run: python -m pipeline.train_daily_forecaster
@@ -43,11 +43,11 @@ from pipeline.run_forecaster_daily_audit2 import (
     seasonal_climatology,
 )
 from pipeline.run_forecaster_benchmark import MAX_HOPS, TAU_DAYS, _boosting
-from sailaab.hazard import excitation_features
-from sailaab.forecast_live import FEATURE_ORDER
-from sailaab.forecast_daily import forward_event
-from sailaab.observations import TRAINING_CONTRACT
-from sailaab.io import atomic_path, atomic_write_text
+from flood_watch.hazard import excitation_features
+from flood_watch.forecast_live import FEATURE_ORDER
+from flood_watch.forecast_daily import forward_event
+from flood_watch.observations import TRAINING_CONTRACT
+from flood_watch.io import atomic_path, atomic_write_text
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"

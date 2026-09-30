@@ -31,8 +31,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 
 PAIRS = [
-    ("synopsis-print.html", "SAILAAB-synopsis.pdf"),
-    ("business-plan-print.html", "SAILAAB-business-plan.pdf"),
+    ("synopsis-print.html", "FLOOD_WATCH-synopsis.pdf"),
+    ("business-plan-print.html", "FLOOD_WATCH-business-plan.pdf"),
 ]
 
 
@@ -143,7 +143,7 @@ def test_the_withdrawal_exemption_resists_rephrasing(name, planted):
 
 def test_the_real_disclosures_are_still_exempt():
     """Strictness that flags the honest sentences just gets itself deleted."""
-    text = _pdf_text("SAILAAB-synopsis.pdf")
+    text = _pdf_text("FLOOD_WATCH-synopsis.pdf")
     assert "96%" in text, "the synopsis should still disclose the retracted claim"
     assert not _asserted(text, "96%"), "a genuine disclosure was flagged as an assertion"
 
@@ -168,7 +168,7 @@ def test_pooled_figure_never_travels_alone_in_the_pdf():
     document would pass with the headline on page one and its caveat on page
     five, which is not a reader's experience of the claim.
     """
-    text = _pdf_text("SAILAAB-synopsis.pdf")
+    text = _pdf_text("FLOOD_WATCH-synopsis.pdf")
     if "0.249" not in text:
         pytest.skip("synopsis no longer quotes the pooled figure")
     span = 700
@@ -253,9 +253,9 @@ def test_headline_claims_survived_the_render():
     """Text extraction has to actually find the claims, not just fail to find
     the retired ones. A blank or image-only render would pass every check
     above while publishing nothing readable."""
-    text = _pdf_text("SAILAAB-synopsis.pdf")
+    text = _pdf_text("FLOOD_WATCH-synopsis.pdf")
     assert len(text) > 5_000, "synopsis PDF has almost no extractable text"
-    for needle in ("block bootstrap", "0.042", "Sailaab"):
+    for needle in ("block bootstrap", "0.042", "Flood Watch"):
         assert needle in text, f"{needle!r} missing from the rendered synopsis"
 
 

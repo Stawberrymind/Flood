@@ -7,12 +7,12 @@ CHALLENGER = champion's 16 features + 6 sub-daily ERA5 intensity features
 
 Everything reuses the champion harness verbatim — ``pipeline.run_forecaster``'s
 ``build_dataset`` / ``loyo_oof`` / ``loyo_metrics_table`` / ``hindcast_2025`` and
-the same ``sailaab.model`` LOYO folds and XGBoost config — so the comparison is
+the same ``flood_watch.model`` LOYO folds and XGBoost config — so the comparison is
 apples-to-apples on the identical 1540-row core-season frame. The adoption rule
 was pre-declared in ``docs/notes/challenger.md`` BEFORE this ran.
 
 Conformal (both outcomes): split-conformal prediction intervals for the champion's
-regression head from LOYO-honest out-of-fold residuals (``sailaab.conformal``).
+regression head from LOYO-honest out-of-fold residuals (``flood_watch.conformal``).
 
 Committed outputs:
   data/rain_intensity_windows.csv     (built by pipeline/fetch_era5_intensity.py)
@@ -39,9 +39,9 @@ from pipeline.run_forecaster import (
     loyo_metrics_table,
     loyo_oof,
 )
-from sailaab import config
-from sailaab.conformal import empirical_coverage, loyo_conformal
-from sailaab.forecast_features import PADDY_CUTOFF_MD
+from flood_watch import config
+from flood_watch.conformal import empirical_coverage, loyo_conformal
+from flood_watch.forecast_features import PADDY_CUTOFF_MD
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"

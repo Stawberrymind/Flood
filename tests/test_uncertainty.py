@@ -6,7 +6,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from sailaab.uncertainty import (
+from flood_watch.uncertainty import (
     BLOCK_DAYS,
     delete_one_season,
     delta_ci,

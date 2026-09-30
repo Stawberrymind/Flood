@@ -1,5 +1,5 @@
 # tests/test_conformal.py
-"""TDD for sailaab/conformal.py — split-conformal intervals with LOYO-honest
+"""TDD for flood_watch/conformal.py — split-conformal intervals with LOYO-honest
 calibration. The headline is the synthetic coverage check: intervals built from a
 calibration sample must cover a fresh sample at (approximately) the nominal rate.
 """
@@ -7,7 +7,7 @@ calibration sample must cover a fresh sample at (approximately) the nominal rate
 import numpy as np
 import pytest
 
-from sailaab.conformal import (
+from flood_watch.conformal import (
     conformal_quantile,
     empirical_coverage,
     loyo_conformal,

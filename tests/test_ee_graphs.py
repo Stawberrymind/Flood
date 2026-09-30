@@ -12,14 +12,14 @@ def initialized():
 
 
 def test_punjab_district_count(initialized):
-    from sailaab.ee_graphs import punjab_districts
+    from flood_watch.ee_graphs import punjab_districts
 
     n = punjab_districts().size().getInfo()
     assert 18 <= n <= 23
 
 
 def test_flood_mask_graph_builds(initialized):
-    from sailaab.ee_graphs import flood_mask_for_window, punjab_districts
+    from flood_watch.ee_graphs import flood_mask_for_window, punjab_districts
 
     aoi = punjab_districts().union(1).geometry()
     img = flood_mask_for_window(

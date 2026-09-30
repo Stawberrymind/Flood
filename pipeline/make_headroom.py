@@ -45,10 +45,10 @@ from matplotlib.lines import Line2D  # noqa: E402
 from matplotlib.patches import Patch  # noqa: E402
 from matplotlib.patheffects import withStroke  # noqa: E402
 
-from sailaab import headroom as hr  # noqa: E402
-from sailaab import figstyle  # noqa: E402
-from sailaab.causal import LIVE_CAPACITY_BCM  # noqa: E402
-from sailaab.reservoirs import normalize  # noqa: E402
+from flood_watch import headroom as hr  # noqa: E402
+from flood_watch import figstyle  # noqa: E402
+from flood_watch.causal import LIVE_CAPACITY_BCM  # noqa: E402
+from flood_watch.reservoirs import normalize  # noqa: E402
 
 DATA = ROOT / "data"
 OUT_CSV = DATA / "headroom_2025.csv"

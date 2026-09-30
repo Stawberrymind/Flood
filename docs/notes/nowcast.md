@@ -12,9 +12,9 @@ The earlier 10-day-window model with rainfall and reservoir predictors
 it.
 
 Pure logic (window resolution, the cos²(lat) mask→district reduction, coverage,
-JSON shaping) lives in `sailaab/nowcast.py`, TDD'd in `tests/test_nowcast.py`. All network / model IO lives in
+JSON shaping) lives in `flood_watch/nowcast.py`, TDD'd in `tests/test_nowcast.py`. All network / model IO lives in
 `pipeline/fetch_live_inputs.py` (fetchers) + `pipeline/nowcast.py` (driver) — the
-same pure/IO split as `sailaab.gfm` vs `pipeline.fetch_gfm`.
+same pure/IO split as `flood_watch.gfm` vs `pipeline.fetch_gfm`.
 
 Run: `python -m pipeline.nowcast` (wired into `.github/workflows/monitor.yml`
 after the `live_monitor` step).
@@ -63,7 +63,7 @@ every surface that renders it must present it as a ranking score.
   `past_days` filling the recent unsettled tail. Window sums: current window
   **so far** (days elapsed) + the two complete antecedent windows (lag1, lag2).
 - **Observed labels — Copernicus GFM** observed flood extent via the keyless
-  GloFAS WMS (recipe in `sailaab/gfm.py` / `pipeline/fetch_gfm.py`). Daily masks
+  GloFAS WMS (recipe in `flood_watch/gfm.py` / `pipeline/fetch_gfm.py`). Daily masks
   for the current window's days-so-far and the whole previous window, unioned,
   permanent (reference) water removed, reduced to per-district flooded
   fraction/km² with the same cos²(lat) Web-Mercator physics as the decade atlas

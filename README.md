@@ -12,6 +12,8 @@ The website displays the latest available products with observation and issue da
 
 The interface follows a scientific observatory style: warm paper, white instrument panels, quiet sans-serif headings, and monospaced measurements. Cyan guides navigation; map ramps and warning colors encode data. The opening map is explicitly labeled as a historical 2025 model output. All three language editions use self-hosted fonts and responsive layouts.
 
+The **reservoir desk** adds Bhakra and Pong reading cards, 7- or 30-day water-level and inflow/release graphs, catchment rainfall, a five-day storage outlook, and selectable downstream-flow forecasts. Every chart identifies observations or model estimates and carries units and dates. Missing bulletin days remain gaps. The daily publisher includes a compact 30-day bulletin history in `latest.json`, so the graphs update with each successful watch without changing the dated prospective records. Weather-model spread is shown as a range, not a calibrated confidence interval; routed flows are estimates rather than gauge measurements.
+
 ## What the project does
 
 | System | Inputs and methods | Outputs |

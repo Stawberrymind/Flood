@@ -15,6 +15,7 @@ import {RAW, REPO, BRANCH} from './repository';
 const FEED = RAW + 'river-watch/outputs/forecast/latest.json';
 const VERIFY = `${REPO}/blob/${BRANCH}/river-watch/docs/verification.md`;
 const RECORDS = `${REPO}/tree/${BRANCH}/river-watch/outputs/forecast/`;
+const RiverDataPanel = React.lazy(() => import('./RiverDataPanel'));
 
 // Every string the section shows, in the three languages of the page.
 const H_T = {
@@ -237,6 +238,9 @@ export default function HazardSection({lang}) {
 
           {watch && (
             <>
+              <React.Suspense fallback={<Text color="secondary">{t.loading}</Text>}>
+                <RiverDataPanel feed={feed} view={h} lang={lang} />
+              </React.Suspense>
               {/* The dam board: one ruled row per dam, five horizon cells at
                   the end. The five cells are the section's one loud element;
                   everything else is set quiet around them. */}

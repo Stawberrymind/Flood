@@ -26,6 +26,7 @@ from river_watch.catchments import Catchment
 from river_watch.imdrain import IMD_WEIGHT_COL, covered_area_km2
 from river_watch.openmeteo import OpenMeteo, OpenMeteoError, QuotaExhausted
 from river_watch.io import atomic_write_text
+from river_watch.site_history import recent_readings
 
 log = logging.getLogger(__name__)
 
@@ -727,8 +728,8 @@ def write_outputs(product: dict, out_dir: Path = Path("outputs/forecast")) -> tu
     """Write the dated record. A prospective record is never rewritten: if a record for the
     issue date already exists, the new run is saved beside it with its generation time in
     the name (``<date>_rerun_<UTC stamp>``), and the first record of the day stands.
-    ``latest.json`` is rewritten every run with the newest product and the name of its
-    dated record."""
+    ``latest.json`` is rewritten every run with the newest product, the name of its
+    dated record, and a compact view of recent bulletin readings for the site."""
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = str(product["issue_date"])
     if (out_dir / f"{stem}.json").exists():
@@ -746,7 +747,7 @@ def write_outputs(product: dict, out_dir: Path = Path("outputs/forecast")) -> tu
     atomic_write_text(mp, markdown)
     # the newest cycle, for readers that cannot list the directory (the public site); it
     # names the dated record it copies, and it is the one file here that is rewritten
-    latest = dict(product, record=jp.name)
+    latest = dict(product, record=jp.name, recent_readings=recent_readings(out_dir, product))
     atomic_write_text(out_dir / "latest.json",
                       json.dumps(latest, indent=2, default=str, allow_nan=False))
     return jp, mp

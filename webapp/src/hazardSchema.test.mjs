@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {dirname, join} from 'node:path';
+import {reservoirHistory, levelChange, catchmentRain, reachOutlook, storageOutlook} from './riverInsights.js';
 
 import {
   damRow,
@@ -225,4 +226,77 @@ test('a malformed feed is unavailable for a named reason, a fetch failure for an
   assert.equal(resolveHazardState({}).reason, 'malformed');
   assert.equal(resolveHazardState(feed({dams: {}})).reason, 'malformed');
   assert.equal(resolveHazardState(feed()).reason, null);
+});
+
+test('reservoir history leaves missing days and invalid measurements unknown', () => {
+  const f = {issue_date: '2026-09-29', recent_readings: {version: 1, end: '2026-09-29', readings: [
+    {date: '2026-09-28', dams: {Bhakra: {level_ft: 1639.78, inflow_cusecs: null, outflow_cusecs: -1}}},
+    {date: '2026-09-29', dams: {Bhakra: {level_ft: 1639.32, inflow_cusecs: 0, outflow_cusecs: '26688'}}},
+    {date: '2026-09-30', dams: {Bhakra: {level_ft: 9999}}},
+  ]}};
+  const rows = reservoirHistory(f, 'Bhakra', 7);
+  assert.equal(rows.length, 7);
+  assert.equal(rows[0].date, '2026-09-23');
+  assert.equal(rows[0].level, null);
+  assert.equal(rows.at(-2).outflow, null);
+  assert.equal(rows.at(-1).inflow, 0);
+  assert.equal(rows.at(-1).outflow, null);
+  assert.ok(Math.abs(levelChange(f, 'Bhakra') + 0.46) < 1e-8);
+  assert.equal(levelChange(f, 'Pong'), null);
+  assert.deepEqual(reservoirHistory({...f, recent_readings: {...f.recent_readings, end: '2026-09-28'}}, 'Bhakra'), []);
+});
+
+test('the committed recent readings include actual dates and retain publication gaps', () => {
+  const f = JSON.parse(readFileSync(FEED, 'utf8'));
+  const rows = reservoirHistory(f, 'Bhakra');
+  assert.equal(rows.length, 30);
+  assert.equal(rows.at(-1).date, f.issue_date);
+  assert.ok(rows.some((r) => r.level === null));
+  assert.ok(rows.some((r) => r.level !== null));
+  for (const r of f.recent_readings.readings) {
+    const source = JSON.parse(readFileSync(join(dirname(FEED), r.record), 'utf8'));
+    const [day, month, year] = source.bulletin.as_on_date.split('-');
+    assert.equal(r.date, `${year}-${month}-${day}`);
+    assert.equal(r.dams.Bhakra.level_ft, source.bulletin.bhakra_level_ft);
+  }
+});
+
+test('rainfall charts distinguish observations, model fallback, forecast and missing days', () => {
+  const f = {issue_date: '2026-09-29', weather: {Bhakra: {primary_model: 'gfs',
+    observed: {days: ['2026-09-26', '2026-09-27', '2026-09-28'], rain_mm: [0, 12, 8], sources: ['imd_rt', 'gfs', null]},
+    forecast: {dates: ['2026-09-30'], by_model_mm: {gfs: [2]}}}}};
+  const rows = catchmentRain(f, 'Bhakra');
+  assert.equal(rows[0].observed, 0);
+  assert.equal(rows[1].observed, null);
+  assert.equal(rows[1].fallback, 12);
+  assert.equal(rows[2].fallback, null);
+  assert.equal(rows.find((r) => r.date === '2026-09-29').forecast, null);
+  assert.equal(rows.at(-1).forecast, 2);
+});
+
+test('storage spread needs at least two runs and does not invent a missing primary forecast', () => {
+  const f = {issue_date: '2026-09-29', weather: {Bhakra: {primary_model: 'gfs'}}, dams: {Bhakra: {
+    state: {storage_bcm: 4}, deterministic: {
+      gfs: {horizons: {'5': {storage_by_day_bcm: [3, null, 2, 1, 0]}}},
+      ifs: {horizons: {'5': {storage_by_day_bcm: [5, 4, 3, 2, 1]}}},
+    }}}};
+  const rows = storageOutlook(f, 'Bhakra');
+  assert.deepEqual(rows[1].range, [3, 5]);
+  assert.equal(rows[2].primary, null);
+  assert.equal(rows[2].range, null);
+  assert.equal(rows[5].primary, 0);
+  assert.equal(rows[5].date, '2026-10-04');
+  f.weather.Bhakra.primary_model = 'missing';
+  assert.deepEqual(storageOutlook(f, 'Bhakra'), []);
+});
+
+test('routed outlooks preserve absent days and reject impossible, negative and duplicate values', () => {
+  const f = {issue_date: '2026-09-29', reaches: [{station: 'Harike', by_day: [
+    {date: '2026-09-30', cusecs: 0}, {date: '2026-10-02', cusecs: -1}, {date: '2026-09-31', cusecs: 999},
+  ]}]};
+  const rows = reachOutlook(f, 'Harike');
+  assert.equal(rows.length, 3);
+  assert.deepEqual(rows.map((r) => r.flow), [0, null, null]);
+  f.reaches[0].by_day.push({date: '2026-09-30', cusecs: 1});
+  assert.deepEqual(reachOutlook(f, 'Harike'), []);
 });

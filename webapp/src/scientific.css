@@ -74,6 +74,8 @@ a:focus-visible, button:focus-visible {outline: 2px solid #2382b8; outline-offse
   .observatory-index {grid-template-columns: 1fr; margin-top: 32px; gap: 10px;}
   .index-card {padding: 18px 20px;}
   .scientific-map {height: 420px;}
+  #explore .astryx-segmented-control {display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; height: auto; padding: 4px; gap: 4px; border-radius: 10px;}
+  #explore .astryx-segmented-control-item {height: auto; min-height: 44px; padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 1.4; letter-spacing: 0; white-space: normal;}
 }
 @media (max-width: 440px) {
   .observatory-nav, .observatory-intro {padding-inline: 18px;}
